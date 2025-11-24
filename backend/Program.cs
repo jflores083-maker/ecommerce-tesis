@@ -1,3 +1,7 @@
+using backend.Data;
+using Microsoft.EntityFrameworkCore;
+using MySqlConnector;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -5,6 +9,11 @@ builder.Services.AddEndpointsApiExplorer();   // para minimal APIs -> expone end
 builder.Services.AddSwaggerGen();            // Swashbuckle (Swagger UI)
 
 // si más adelante vas a usar EF Core, acá registraremos el DbContext
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
 var app = builder.Build();
 
