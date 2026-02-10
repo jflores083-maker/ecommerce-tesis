@@ -53,6 +53,7 @@ builder.Services.AddSwaggerGen(c =>
 // ----------------------------------------------------------------------
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<JwtHelper>();
+builder.Services.AddScoped<PasswordHelper>();
 
 // ----------------------------------------------------------------------
 // BASE DE DATOS
