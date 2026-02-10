@@ -121,3 +121,11 @@
 /Users/diego/ecommerce-tesis/backend/obj/Debug/net9.0/backend.pdb
 /Users/diego/ecommerce-tesis/backend/obj/Debug/net9.0/backend.genruntimeconfig.cache
 /Users/diego/ecommerce-tesis/backend/obj/Debug/net9.0/ref/backend.dll
+/Users/diego/ecommerce-tesis/backend/bin/Debug/net9.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
+/Users/diego/ecommerce-tesis/backend/bin/Debug/net9.0/Microsoft.IdentityModel.Abstractions.dll
+/Users/diego/ecommerce-tesis/backend/bin/Debug/net9.0/Microsoft.IdentityModel.JsonWebTokens.dll
+/Users/diego/ecommerce-tesis/backend/bin/Debug/net9.0/Microsoft.IdentityModel.Logging.dll
+/Users/diego/ecommerce-tesis/backend/bin/Debug/net9.0/Microsoft.IdentityModel.Protocols.dll
+/Users/diego/ecommerce-tesis/backend/bin/Debug/net9.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+/Users/diego/ecommerce-tesis/backend/bin/Debug/net9.0/Microsoft.IdentityModel.Tokens.dll
+/Users/diego/ecommerce-tesis/backend/bin/Debug/net9.0/System.IdentityModel.Tokens.Jwt.dll
