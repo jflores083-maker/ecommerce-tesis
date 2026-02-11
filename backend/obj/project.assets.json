@@ -3570,19 +3570,19 @@
     ]
   },
   "packageFolders": {
-    "/Users/diego/.nuget/packages/": {}
+    "C:\\Users\\Julio\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/diego/ecommerce-tesis/backend/backend.csproj",
+      "projectUniqueName": "C:\\Users\\Julio\\ecommerce-tesis\\backend\\backend.csproj",
       "projectName": "backend",
-      "projectPath": "/Users/diego/ecommerce-tesis/backend/backend.csproj",
-      "packagesPath": "/Users/diego/.nuget/packages/",
-      "outputPath": "/Users/diego/ecommerce-tesis/backend/obj/",
+      "projectPath": "C:\\Users\\Julio\\ecommerce-tesis\\backend\\backend.csproj",
+      "packagesPath": "C:\\Users\\Julio\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Julio\\ecommerce-tesis\\backend\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Users/diego/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\Julio\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net9.0"
@@ -3656,7 +3656,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.304/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
