@@ -113,6 +113,10 @@ namespace backend.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Apellido")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -126,6 +130,10 @@ namespace backend.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("Rol")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Telefono")
                         .IsRequired()
                         .HasColumnType("longtext");
 

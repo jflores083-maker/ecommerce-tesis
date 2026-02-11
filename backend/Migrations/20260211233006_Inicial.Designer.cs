@@ -12,7 +12,7 @@ using backend.Data;
 namespace backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260211224859_Inicial")]
+    [Migration("20260211233006_Inicial")]
     partial class Inicial
     {
         /// <inheritdoc />
@@ -116,6 +116,10 @@ namespace backend.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Apellido")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -129,6 +133,10 @@ namespace backend.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("Rol")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Telefono")
                         .IsRequired()
                         .HasColumnType("longtext");
 
