@@ -1,5 +1,5 @@
 using backend.Data;
-using backend.Dtos;
+using backend.Dtos.Usuarios;
 using backend.Models;
 using backend.Helpers;
 using Microsoft.AspNetCore.Authorization;
@@ -27,50 +27,56 @@ namespace backend.Controllers
         // 🔹 Obtener todos (Solo Admin)
         // ===============================
         [Authorize(Roles = "Admin")]
-        [HttpGet]
-        public async Task<IActionResult> ObtenerUsuarios()
+[HttpGet]
+public async Task<IActionResult> ObtenerUsuarios()
+{
+    var usuarios = await _context.Usuarios
+        .Select(u => new UsuarioResponseDto
         {
-            var usuarios = await _context.Usuarios
-                .Select(u => new UsuarioResponseDto
-                {
-                    Id = u.Id,
-                    Nombre = u.Nombre,
-                    Email = u.Email,
-                    Rol = u.Rol
-                })
-                .ToListAsync();
+            Id = u.Id,
+            Nombre = u.Nombre,
+            Apellido = u.Apellido,
+            Email = u.Email,
+            Telefono = u.Telefono,
+            Rol = u.Rol
+        })
+        .ToListAsync();
 
-            return Ok(usuarios);
-        }
+    return Ok(usuarios);
+}
+
 
         // ===============================
         // 🔹 Obtener mi perfil
         // ===============================
         [HttpGet("perfil")]
-        public async Task<IActionResult> MiPerfil()
-        {
-            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+public async Task<IActionResult> MiPerfil()
+{
+    var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-            var usuario = await _context.Usuarios.FindAsync(userId);
+    var usuario = await _context.Usuarios.FindAsync(userId);
 
-            if (usuario == null)
-                return NotFound();
+    if (usuario == null)
+        return NotFound();
 
-            return Ok(new UsuarioResponseDto
-            {
-                Id = usuario.Id,
-                Nombre = usuario.Nombre,
-                Email = usuario.Email,
-                Rol = usuario.Rol
-            });
-        }
+    return Ok(new UsuarioResponseDto
+    {
+        Id = usuario.Id,
+        Nombre = usuario.Nombre,
+        Apellido = usuario.Apellido,
+        Email = usuario.Email,
+        Telefono = usuario.Telefono,
+        Rol = usuario.Rol
+    });
+}
+
 
         // ===============================
         // 🔹 Crear usuario (Solo Admin)
         // ===============================
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> CrearUsuario(UsuarioRegistroDto dto)
+        public async Task<IActionResult> CrearUsuario(UsuarioCreateDto dto)
         {
             var existe = await _context.Usuarios.AnyAsync(u => u.Email == dto.Email);
             if (existe)
@@ -96,7 +102,7 @@ namespace backend.Controllers
         // ===============================
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditarUsuario(int id, UsuarioRegistroDto dto)
+        public async Task<IActionResult> EditarUsuario(int id, UsuarioUpdateDto dto)
         {
             var usuario = await _context.Usuarios.FindAsync(id);
 
@@ -105,6 +111,9 @@ namespace backend.Controllers
 
             usuario.Nombre = dto.Nombre;
             usuario.Email = dto.Email;
+            usuario.Telefono = dto.Telefono;
+            usuario.Apellido = dto.Apellido;
+            
 
             if (!string.IsNullOrEmpty(dto.Password))
             {

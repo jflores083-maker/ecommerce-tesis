@@ -3,9 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using backend.Data;
 using backend.Helpers;
-using backend.Dtos;
+using backend.Dtos.Usuarios;
 using backend.Models;
 using Microsoft.EntityFrameworkCore;
+using backend.Dtos.Auth;
 
 namespace backend.Controllers
 {
