@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Julio\\ecommerce-tesis\\backend\\backend.csproj": {}
+    "/Users/diego/ecommerce-tesis/backend/backend.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Julio\\ecommerce-tesis\\backend\\backend.csproj": {
+    "/Users/diego/ecommerce-tesis/backend/backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Julio\\ecommerce-tesis\\backend\\backend.csproj",
+        "projectUniqueName": "/Users/diego/ecommerce-tesis/backend/backend.csproj",
         "projectName": "backend",
-        "projectPath": "C:\\Users\\Julio\\ecommerce-tesis\\backend\\backend.csproj",
-        "packagesPath": "C:\\Users\\Julio\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Julio\\ecommerce-tesis\\backend\\obj\\",
+        "projectPath": "/Users/diego/ecommerce-tesis/backend/backend.csproj",
+        "packagesPath": "/Users/diego/.nuget/packages/",
+        "outputPath": "/Users/diego/ecommerce-tesis/backend/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Julio\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/Users/diego/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
@@ -88,7 +88,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.304/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
