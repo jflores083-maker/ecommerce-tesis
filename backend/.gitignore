@@ -1,28 +1,28 @@
-# Build
+﻿# --- .NET / C# ---
 bin/
 obj/
-
-# User-specific
 *.user
 *.suo
 *.userosscache
 *.sln.docstates
 
-# VS Code
+# --- IDEs ---
+.vs/
 .vscode/
-
-# Rider
 .idea/
 
-# Logs
+# --- Logs / OS ---
 *.log
-
-# OS files
-.DS_Store
+logs/
 Thumbs.db
+.DS_Store
 
-# EF Core local db
-*.db
+# --- EF Core tmp ---
+Migrations/**/.*tmp*
 
-# appsettings secretos
+# --- Secrets / settings de dev ---
 appsettings.Development.json
+*/appsettings.Development.json
+
+# --- Ignorar la solución en la raíz del repo ---
+../ecommerce-tesis.sln
