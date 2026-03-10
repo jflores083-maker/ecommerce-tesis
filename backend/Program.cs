@@ -8,7 +8,16 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
+// Agregar el servicio CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFlutter", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
 // ----------------------------------------------------------------------
 // SWAGGER
 // ----------------------------------------------------------------------
@@ -131,6 +140,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowFlutter");
+// ORDEN CORRECTO
 app.UseCors("AllowFlutter");      // ← después del Build(), antes de Auth
 app.UseAuthentication();
 app.UseAuthorization();
