@@ -30,7 +30,6 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1"
     });
 
-    // Seguridad JWT en Swagger
     c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -81,7 +80,7 @@ builder.Services.AddControllers();
 // JWT AUTH
 // ----------------------------------------------------------------------
 var jwt = builder.Configuration.GetSection("Jwt");
-var key = Encoding.UTF8.GetBytes(jwt["Key"]);
+var key = Encoding.UTF8.GetBytes(jwt["Key"]!);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -103,7 +102,7 @@ builder.Services.AddAuthentication(options =>
 });
 
 // ----------------------------------------------------------------------
-// AUTHORIZATION GLOBAL (todo requiere token)
+// AUTHORIZATION GLOBAL
 // ----------------------------------------------------------------------
 builder.Services.AddAuthorization(options =>
 {
@@ -113,11 +112,23 @@ builder.Services.AddAuthorization(options =>
 });
 
 // ----------------------------------------------------------------------
+// CORS  ← tiene que estar acá, antes del Build()
+// ----------------------------------------------------------------------
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFlutter", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
+// ----------------------------------------------------------------------
 // BUILD APP
 // ----------------------------------------------------------------------
 var app = builder.Build();
 
-// Swagger solo en desarrollo
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -131,6 +142,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors("AllowFlutter");
 // ORDEN CORRECTO
+app.UseCors("AllowFlutter");      // ← después del Build(), antes de Auth
 app.UseAuthentication();
 app.UseAuthorization();
 
