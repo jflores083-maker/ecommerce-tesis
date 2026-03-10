@@ -84,7 +84,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   keyboardType: TextInputType.emailAddress),
                 const SizedBox(height: 12),
                 AuthField(
-                  label: 'TELÉFONO (+541112345678)',
+                  label: 'TELÉFONO (ej: +5435112345678)',
                   controller: _telefonoCtrl,
                   keyboardType: TextInputType.phone,
                   hint: '+54...',
