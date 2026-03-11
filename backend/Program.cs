@@ -131,6 +131,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();             // sirve wwwroot/ (imágenes de productos)
 app.UseCors("AllowFlutter");      // ← después del Build(), antes de Auth
 app.UseAuthentication();
 app.UseAuthorization();

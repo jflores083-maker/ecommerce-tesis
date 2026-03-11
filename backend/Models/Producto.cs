@@ -21,6 +21,8 @@ namespace backend.Models
         [Column(TypeName = "decimal(10,2)")]
         public decimal Precio { get; set; }
 
+        public int Stock { get; set; } = 0;
+
         [Required]
         public string Talles { get; set; } = string.Empty;
 

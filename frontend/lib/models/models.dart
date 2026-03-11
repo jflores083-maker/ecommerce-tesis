@@ -7,6 +7,7 @@ class Producto {
   final String titulo;
   final String descripcion;
   final double precio;
+  final int stock;
   final List<String> talles;   // Talles viene como JSON string en el backend
   final String categoria;
   final String estado;         // "disponible" | etc.
@@ -14,6 +15,7 @@ class Producto {
   final DateTime fechaPublicacion;
   final bool activo;
   final String vendedorNombre;
+  final String? imagenPrincipalUrl;
 
   const Producto({
     required this.id,
@@ -21,6 +23,7 @@ class Producto {
     required this.titulo,
     required this.descripcion,
     required this.precio,
+    required this.stock,
     required this.talles,
     required this.categoria,
     required this.estado,
@@ -28,6 +31,7 @@ class Producto {
     required this.fechaPublicacion,
     required this.activo,
     required this.vendedorNombre,
+    this.imagenPrincipalUrl,
   });
 
   factory Producto.fromJson(Map<String, dynamic> json) {
@@ -43,18 +47,20 @@ class Producto {
     }
 
     return Producto(
-      id:               (json['id'] as num).toInt(),
-      vendedorId:       (json['vendedorId'] as num? ?? 0).toInt(),
-      titulo:           json['titulo'] ?? '',
-      descripcion:      json['descripcion'] ?? '',
-      precio:           (json['precio'] as num).toDouble(),
-      talles:           parseTalles(json['talles']),
-      categoria:        json['categoria'] ?? '',
-      estado:           json['estado'] ?? '',
-      color:            json['color'],
-      fechaPublicacion: DateTime.tryParse(json['fechaPublicacion'] ?? '') ?? DateTime.now(),
-      activo:           json['activo'] ?? true,
-      vendedorNombre:   json['vendedorNombre'] ?? '',
+      id:                  (json['id'] as num).toInt(),
+      vendedorId:          (json['vendedorId'] as num? ?? 0).toInt(),
+      titulo:              json['titulo'] ?? '',
+      descripcion:         json['descripcion'] ?? '',
+      precio:              (json['precio'] as num).toDouble(),
+      stock:               (json['stock'] as num? ?? 0).toInt(),
+      talles:              parseTalles(json['talles']),
+      categoria:           json['categoria'] ?? '',
+      estado:              json['estado'] ?? '',
+      color:               json['color'],
+      fechaPublicacion:    DateTime.tryParse(json['fechaPublicacion'] ?? '') ?? DateTime.now(),
+      activo:              json['activo'] ?? true,
+      vendedorNombre:      json['vendedorNombre'] ?? '',
+      imagenPrincipalUrl:  json['imagenPrincipalUrl'],
     );
   }
 

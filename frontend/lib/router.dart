@@ -8,6 +8,7 @@ import '../screens/detail_screen.dart';
 import '../screens/cart_screen.dart';
 import '../screens/login_screen.dart';
 import '../screens/register_screen.dart';
+import '../screens/admin_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -24,6 +25,12 @@ GoRouter createRouter(AuthProvider authProvider) {
       // Si el carrito requiere login y no está autenticado
       if (state.matchedLocation == '/carrito' && !isLoggedIn) {
         return '/login';
+      }
+
+      // Panel admin — solo usuarios con rol Admin
+      if (state.matchedLocation == '/admin') {
+        if (!isLoggedIn) return '/login';
+        if (authProvider.user?.isAdmin != true) return '/';
       }
 
       // Si ya está logueado y va a login/register, redirigir a home
@@ -61,6 +68,10 @@ GoRouter createRouter(AuthProvider authProvider) {
       GoRoute(
         path: '/register',
         builder: (ctx, state) => const RegisterScreen(),
+      ),
+      GoRoute(
+        path: '/admin',
+        builder: (ctx, state) => const AdminScreen(),
       ),
     ],
   );
