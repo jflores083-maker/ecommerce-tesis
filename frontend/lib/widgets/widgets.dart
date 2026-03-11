@@ -20,10 +20,21 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
     final carrito = context.watch<CarritoProvider>();
     final auth    = context.watch<AuthProvider>();
 
+    final location = GoRouterState.of(context).matchedLocation;
+    final canGoBack = location != '/';
+
     return AppBar(
       backgroundColor: AppColors.cream,
       elevation: 0,
       scrolledUnderElevation: 0,
+      automaticallyImplyLeading: false,
+      leading: canGoBack
+          ? IconButton(
+              onPressed: () => context.go('/'),
+              icon: const Icon(Icons.arrow_back, size: 18, color: AppColors.charcoal),
+              splashRadius: 20,
+            )
+          : null,
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
         child: Container(height: 1, color: AppColors.sand),
@@ -219,9 +230,12 @@ class _ProductCardState extends State<ProductCard> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                Text(p.precioFormateado,
-                  style: GoogleFonts.dmMono(
-                    fontSize: 12, color: AppColors.gray,
+                Flexible(
+                  child: Text(p.precioFormateado,
+                    style: GoogleFonts.dmMono(
+                      fontSize: 12, color: AppColors.gray,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
