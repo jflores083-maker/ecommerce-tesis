@@ -33,7 +33,7 @@ class _DetailScreenState extends State<DetailScreen> {
     if (_talleSeleccionado == null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Seleccioná un talle',
-          style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.cream)),
+            style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.cream)),
         backgroundColor: AppColors.charcoal,
       ));
       return;
@@ -48,16 +48,16 @@ class _DetailScreenState extends State<DetailScreen> {
     setState(() => _agregando = true);
 
     final ok = await context.read<CarritoProvider>().agregar(
-      productoId: p.id,
-      talle: _talleSeleccionado!,
-    );
+          productoId: p.id,
+          talle: _talleSeleccionado!,
+        );
 
     setState(() => _agregando = false);
 
     if (ok && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('✓ ${p.titulo} agregado al carrito',
-          style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.cream)),
+            style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.cream)),
         backgroundColor: AppColors.ink,
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
@@ -79,7 +79,8 @@ class _DetailScreenState extends State<DetailScreen> {
       appBar: const AppNavBar(),
       backgroundColor: AppColors.cream,
       body: provider.loading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.charcoal))
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.charcoal))
           : provider.error != null
               ? Center(child: ErrorMsg(provider.error!))
               : provider.productoDetalle == null
@@ -88,14 +89,16 @@ class _DetailScreenState extends State<DetailScreen> {
                       ? _MobileLayout(
                           producto: provider.productoDetalle!,
                           talleSeleccionado: _talleSeleccionado,
-                          onTalleSelected: (t) => setState(() => _talleSeleccionado = t),
+                          onTalleSelected: (t) =>
+                              setState(() => _talleSeleccionado = t),
                           agregando: _agregando,
                           onAgregar: _agregarAlCarrito,
                         )
                       : _DesktopLayout(
                           producto: provider.productoDetalle!,
                           talleSeleccionado: _talleSeleccionado,
-                          onTalleSelected: (t) => setState(() => _talleSeleccionado = t),
+                          onTalleSelected: (t) =>
+                              setState(() => _talleSeleccionado = t),
                           agregando: _agregando,
                           onAgregar: _agregarAlCarrito,
                         ),
@@ -135,11 +138,14 @@ class _DesktopLayout extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(Icons.shopping_bag_outlined,
-                      size: 72, color: AppColors.stone.withOpacity(0.2)),
+                        size: 72, color: AppColors.stone.withOpacity(0.2)),
                     const SizedBox(height: 12),
-                    Text('FOTO DEL PRODUCTO',
+                    Text(
+                      'FOTO DEL PRODUCTO',
                       style: GoogleFonts.dmMono(
-                        fontSize: 10, color: AppColors.stone, letterSpacing: 0.18,
+                        fontSize: 10,
+                        color: AppColors.stone,
+                        letterSpacing: 0.18,
                       ),
                     ),
                   ],
@@ -193,7 +199,7 @@ class _MobileLayout extends StatelessWidget {
             color: AppColors.beige,
             child: Center(
               child: Icon(Icons.shopping_bag_outlined,
-                size: 60, color: AppColors.stone.withOpacity(0.2)),
+                  size: 60, color: AppColors.stone.withOpacity(0.2)),
             ),
           ),
           // Info
@@ -241,71 +247,100 @@ class _ProductInfo extends StatelessWidget {
           children: [
             GestureDetector(
               onTap: () => context.go('/'),
-              child: Text('Inicio', style: GoogleFonts.dmMono(
-                fontSize: 10, color: AppColors.stone, letterSpacing: 0.12,
-              )),
+              child: Text('Inicio',
+                  style: GoogleFonts.dmMono(
+                    fontSize: 10,
+                    color: AppColors.stone,
+                    letterSpacing: 0.12,
+                  )),
             ),
-            Text(' › ', style: GoogleFonts.dmMono(
-              fontSize: 10, color: AppColors.stone.withOpacity(0.4),
-            )),
+            Text(' › ',
+                style: GoogleFonts.dmMono(
+                  fontSize: 10,
+                  color: AppColors.stone.withOpacity(0.4),
+                )),
             GestureDetector(
               onTap: () => context.go('/catalogo'),
-              child: Text('Colección', style: GoogleFonts.dmMono(
-                fontSize: 10, color: AppColors.stone, letterSpacing: 0.12,
-              )),
+              child: Text('Colección',
+                  style: GoogleFonts.dmMono(
+                    fontSize: 10,
+                    color: AppColors.stone,
+                    letterSpacing: 0.12,
+                  )),
             ),
-            Text(' › ', style: GoogleFonts.dmMono(
-              fontSize: 10, color: AppColors.stone.withOpacity(0.4),
-            )),
+            Text(' › ',
+                style: GoogleFonts.dmMono(
+                  fontSize: 10,
+                  color: AppColors.stone.withOpacity(0.4),
+                )),
             Flexible(
-              child: Text(p.titulo, style: GoogleFonts.dmMono(
-                fontSize: 10, color: AppColors.charcoal, letterSpacing: 0.12,
-              ), overflow: TextOverflow.ellipsis),
+              child: Text(p.titulo,
+                  style: GoogleFonts.dmMono(
+                    fontSize: 10,
+                    color: AppColors.charcoal,
+                    letterSpacing: 0.12,
+                  ),
+                  overflow: TextOverflow.ellipsis),
             ),
           ],
         ),
         const SizedBox(height: 24),
 
         // Categoría
-        Text('${p.categoria.toUpperCase()} / TEMPORADA 2025',
+        Text(
+          '${p.categoria.toUpperCase()} / TEMPORADA 2025',
           style: GoogleFonts.dmMono(
-            fontSize: 10, color: AppColors.accent, letterSpacing: 0.2,
+            fontSize: 10,
+            color: AppColors.accent,
+            letterSpacing: 0.2,
           ),
         ),
         const SizedBox(height: 12),
 
         // Nombre
-        Text(p.titulo,
+        Text(
+          p.titulo,
           style: GoogleFonts.cormorantGaramond(
-            fontSize: 48, fontWeight: FontWeight.w300,
-            color: AppColors.ink, height: 1.05,
+            fontSize: 48,
+            fontWeight: FontWeight.w300,
+            color: AppColors.ink,
+            height: 1.05,
             fontStyle: FontStyle.italic,
           ),
         ),
         const SizedBox(height: 8),
 
         // Precio
-        Text(p.precioFormateado,
+        Text(
+          p.precioFormateado,
           style: GoogleFonts.syne(
-            fontSize: 24, fontWeight: FontWeight.w400, color: AppColors.charcoal,
+            fontSize: 24,
+            fontWeight: FontWeight.w400,
+            color: AppColors.charcoal,
           ),
         ),
         const Divider(color: AppColors.sand, height: 48, thickness: 1),
 
         // Talles
-        Text('TALLE',
+        Text(
+          'TALLE',
           style: GoogleFonts.dmMono(
-            fontSize: 10, color: AppColors.gray, letterSpacing: 0.15,
+            fontSize: 10,
+            color: AppColors.gray,
+            letterSpacing: 0.15,
           ),
         ),
         const SizedBox(height: 14),
         Wrap(
-          spacing: 8, runSpacing: 8,
-          children: p.talles.map((t) => _TalleBtn(
-            talle: t,
-            selected: talleSeleccionado == t,
-            onTap: () => onTalleSelected(t),
-          )).toList(),
+          spacing: 8,
+          runSpacing: 8,
+          children: p.talles
+              .map((t) => _TalleBtn(
+                    talle: t,
+                    selected: talleSeleccionado == t,
+                    onTap: () => onTalleSelected(t),
+                  ))
+              .toList(),
         ),
         const SizedBox(height: 32),
 
@@ -324,10 +359,11 @@ class _ProductInfo extends StatelessWidget {
         const SizedBox(height: 32),
 
         // Acordeón
-        _Accordion('Descripción', p.descripcion.isNotEmpty ? p.descripcion : 'Sin descripción.'),
+        _Accordion('Descripción',
+            p.descripcion.isNotEmpty ? p.descripcion : 'Sin descripción.'),
         _Accordion('Materiales', 'Consultar en el detalle del producto.'),
         _Accordion('Envío & devoluciones',
-          'Envío gratis en compras mayores a \$60.000. Entrega en 3-5 días hábiles.'),
+            'Envío gratis en compras mayores a \$60.000. Entrega en 3-5 días hábiles.'),
       ],
     );
   }
@@ -337,7 +373,8 @@ class _TalleBtn extends StatelessWidget {
   final String talle;
   final bool selected;
   final VoidCallback onTap;
-  const _TalleBtn({required this.talle, required this.selected, required this.onTap});
+  const _TalleBtn(
+      {required this.talle, required this.selected, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -345,7 +382,8 @@ class _TalleBtn extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        width: 48, height: 48,
+        width: 48,
+        height: 48,
         decoration: BoxDecoration(
           color: selected ? AppColors.ink : Colors.transparent,
           border: Border.all(
@@ -353,7 +391,8 @@ class _TalleBtn extends StatelessWidget {
           ),
         ),
         child: Center(
-          child: Text(talle,
+          child: Text(
+            talle,
             style: GoogleFonts.dmMono(
               fontSize: 11,
               color: selected ? AppColors.cream : AppColors.gray,
@@ -389,15 +428,19 @@ class _AccordionState extends State<_Accordion> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(widget.title.toUpperCase(),
+                Text(
+                  widget.title.toUpperCase(),
                   style: GoogleFonts.dmMono(
-                    fontSize: 11, color: AppColors.charcoal, letterSpacing: 0.12,
+                    fontSize: 11,
+                    color: AppColors.charcoal,
+                    letterSpacing: 0.12,
                   ),
                 ),
                 AnimatedRotation(
                   turns: _open ? 0.125 : 0,
                   duration: const Duration(milliseconds: 250),
-                  child: const Icon(Icons.add, size: 18, color: AppColors.charcoal),
+                  child: const Icon(Icons.add,
+                      size: 18, color: AppColors.charcoal),
                 ),
               ],
             ),
@@ -406,9 +449,12 @@ class _AccordionState extends State<_Accordion> {
         if (_open) ...[
           Padding(
             padding: const EdgeInsets.only(bottom: 16),
-            child: Text(widget.content,
+            child: Text(
+              widget.content,
               style: GoogleFonts.dmMono(
-                fontSize: 12, color: AppColors.gray, height: 1.8,
+                fontSize: 12,
+                color: AppColors.gray,
+                height: 1.8,
               ),
             ),
           ),

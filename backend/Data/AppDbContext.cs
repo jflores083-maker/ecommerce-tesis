@@ -16,6 +16,8 @@ namespace backend.Data
         public DbSet<ImagenProducto> ImagenesProducto { get; set; }
         public DbSet<Carrito> Carritos { get; set; } = null!;
         public DbSet<ItemCarrito> ItemsCarrito { get; set; } = null!;
+        public DbSet<Orden> Ordenes { get; set; } = null!;
+        public DbSet<ItemOrden> ItemsOrden { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -84,6 +86,53 @@ namespace backend.Data
             // Si no lo tenías ya en Producto, asegurate también de la precisión:
             modelBuilder.Entity<Producto>()
                 .Property(p => p.Precio)
+                .HasPrecision(10, 2);
+            
+            // ===== Órdenes e Items de Orden =====
+            modelBuilder.Entity<Orden>().ToTable("Ordenes");
+            modelBuilder.Entity<ItemOrden>().ToTable("ItemsOrden");
+
+            modelBuilder.Entity<Orden>()
+                .HasOne(o => o.Comprador)
+                .WithMany() // si luego agregas nav inversa en Usuario, cámbialo
+                .HasForeignKey(o => o.CompradorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ItemOrden>()
+                .HasOne(i => i.Orden)
+                .WithMany(o => o.Items)
+                .HasForeignKey(i => i.OrdenId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ItemOrden>()
+                .HasOne(i => i.Producto)
+                .WithMany()
+                .HasForeignKey(i => i.ProductoId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Índices útiles
+            modelBuilder.Entity<Orden>()
+                .HasIndex(o => new { o.CompradorId, o.FechaCreacion });
+
+            modelBuilder.Entity<ItemOrden>()
+                .HasIndex(i => i.ProductoId);
+
+            // Precisión decimal coherente con MySQL
+            modelBuilder.Entity<Orden>()
+                .Property(p => p.Subtotal)
+                .HasPrecision(10, 2);
+            modelBuilder.Entity<Orden>()
+                .Property(p => p.CostoEnvio)
+                .HasPrecision(10, 2);
+            modelBuilder.Entity<Orden>()
+                .Property(p => p.Total)
+                .HasPrecision(10, 2);
+
+            modelBuilder.Entity<ItemOrden>()
+                .Property(p => p.PrecioUnitario)
+                .HasPrecision(10, 2);
+            modelBuilder.Entity<ItemOrden>()
+                .Property(p => p.Subtotal)
                 .HasPrecision(10, 2);
         }
     }

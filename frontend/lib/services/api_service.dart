@@ -6,7 +6,8 @@ import '../models/models.dart';
 
 class ApiService {
   // ── Cambiá esta URL por la de tu backend ──────────────────
-  static const String _baseUrl = 'http://localhost:5005/api';
+  //static const String _baseUrl = 'http://localhost:5005/api';
+  static const String _baseUrl = 'http://10.0.2.2:5005/api';
   // ─────────────────────────────────────────────────────────
 
   static const _tokenKey = 'auth_token';
@@ -37,7 +38,9 @@ class ApiService {
       String message;
       try {
         final body = jsonDecode(res.body);
-        message = body is String ? body : (body['message'] ?? body['title'] ?? 'Error ${res.statusCode}');
+        message = body is String
+            ? body
+            : (body['message'] ?? body['title'] ?? 'Error ${res.statusCode}');
       } catch (_) {
         message = res.body.isNotEmpty ? res.body : 'Error ${res.statusCode}';
       }
@@ -85,11 +88,11 @@ class ApiService {
       uri,
       headers: await _headers(),
       body: jsonEncode({
-        'nombre':    nombre,
-        'apellido':  apellido,
-        'email':     email,
-        'telefono':  telefono,
-        'password':  password,
+        'nombre': nombre,
+        'apellido': apellido,
+        'email': email,
+        'telefono': telefono,
+        'password': password,
       }),
     );
     _checkStatus(res);
@@ -120,10 +123,12 @@ class ApiService {
     String? estado,
   }) async {
     final params = <String, String>{};
-    if (categoria != null && categoria.isNotEmpty) params['categoria'] = categoria;
+    if (categoria != null && categoria.isNotEmpty)
+      params['categoria'] = categoria;
     if (estado != null && estado.isNotEmpty) params['estado'] = estado;
 
-    final uri = Uri.parse('$_baseUrl/productos').replace(queryParameters: params.isNotEmpty ? params : null);
+    final uri = Uri.parse('$_baseUrl/productos')
+        .replace(queryParameters: params.isNotEmpty ? params : null);
     final res = await http.get(uri, headers: await _headers());
     _checkStatus(res);
 
@@ -214,8 +219,8 @@ class ApiService {
       headers: await _headers(auth: true),
       body: jsonEncode({
         'productoId': productoId,
-        'talle':      talle,
-        'cantidad':   cantidad,
+        'talle': talle,
+        'cantidad': cantidad,
       }),
     );
     _checkStatus(res);
@@ -268,7 +273,7 @@ class ApiException implements Exception {
   String toString() => 'ApiException($statusCode): $message';
 
   bool get isUnauthorized => statusCode == 401;
-  bool get isForbidden    => statusCode == 403;
-  bool get isNotFound     => statusCode == 404;
-  bool get isBadRequest   => statusCode == 400;
+  bool get isForbidden => statusCode == 403;
+  bool get isNotFound => statusCode == 404;
+  bool get isBadRequest => statusCode == 400;
 }
