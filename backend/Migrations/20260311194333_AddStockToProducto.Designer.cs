@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using backend.Data;
 
@@ -11,9 +12,11 @@ using backend.Data;
 namespace backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260311194333_AddStockToProducto")]
+    partial class AddStockToProducto
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -112,99 +115,6 @@ namespace backend.Migrations
                         .IsUnique();
 
                     b.ToTable("ItemsCarrito", (string)null);
-                });
-
-            modelBuilder.Entity("backend.Models.ItemOrden", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Cantidad")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OrdenId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("PrecioUnitario")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<int>("ProductoId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Subtotal")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<string>("Talle")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrdenId");
-
-                    b.HasIndex("ProductoId");
-
-                    b.ToTable("ItemsOrden", (string)null);
-                });
-
-            modelBuilder.Entity("backend.Models.Orden", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Ciudad")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("CodigoPostal")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("CompradorId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("CostoEnvio")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<string>("DireccionEnvio")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Estado")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime>("FechaActualizacion")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("NumeroSeguimiento")
-                        .HasColumnType("longtext");
-
-                    b.Property<decimal>("Subtotal")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<decimal>("Total")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal(10,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CompradorId", "FechaCreacion");
-
-                    b.ToTable("Ordenes", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.Producto", b =>
@@ -343,36 +253,6 @@ namespace backend.Migrations
                     b.Navigation("Producto");
                 });
 
-            modelBuilder.Entity("backend.Models.ItemOrden", b =>
-                {
-                    b.HasOne("backend.Models.Orden", "Orden")
-                        .WithMany("Items")
-                        .HasForeignKey("OrdenId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("backend.Models.Producto", "Producto")
-                        .WithMany()
-                        .HasForeignKey("ProductoId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Orden");
-
-                    b.Navigation("Producto");
-                });
-
-            modelBuilder.Entity("backend.Models.Orden", b =>
-                {
-                    b.HasOne("backend.Models.Usuario", "Comprador")
-                        .WithMany()
-                        .HasForeignKey("CompradorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Comprador");
-                });
-
             modelBuilder.Entity("backend.Models.Producto", b =>
                 {
                     b.HasOne("backend.Models.Usuario", "Vendedor")
@@ -385,11 +265,6 @@ namespace backend.Migrations
                 });
 
             modelBuilder.Entity("backend.Models.Carrito", b =>
-                {
-                    b.Navigation("Items");
-                });
-
-            modelBuilder.Entity("backend.Models.Orden", b =>
                 {
                     b.Navigation("Items");
                 });

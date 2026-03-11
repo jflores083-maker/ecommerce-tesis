@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/models.dart';
@@ -135,6 +136,45 @@ class ApiService {
   Future<Producto> getProducto(int id) async {
     final uri = Uri.parse('$_baseUrl/productos/$id');
     final res = await http.get(uri, headers: await _headers());
+    _checkStatus(res);
+    return Producto.fromJson(jsonDecode(res.body));
+  }
+
+  // POST /api/productos (multipart/form-data) — solo Admin
+  // Crea un nuevo producto con imagen opcional
+
+  Future<Producto> crearProducto({
+    required String titulo,
+    required String descripcion,
+    required double precio,
+    required int stock,
+    required String talles,     // JSON string: '["S","M","L"]'
+    required String categoria,
+    required String estado,
+    String? color,
+    File? imagen,
+  }) async {
+    final uri = Uri.parse('$_baseUrl/productos');
+    final token = await getToken();
+
+    final request = http.MultipartRequest('POST', uri);
+    if (token != null) request.headers['Authorization'] = 'Bearer $token';
+
+    request.fields['titulo']      = titulo;
+    request.fields['descripcion'] = descripcion;
+    request.fields['precio']      = precio.toString();
+    request.fields['stock']       = stock.toString();
+    request.fields['talles']      = talles;
+    request.fields['categoria']   = categoria;
+    request.fields['estado']      = estado;
+    if (color != null && color.isNotEmpty) request.fields['color'] = color;
+
+    if (imagen != null) {
+      request.files.add(await http.MultipartFile.fromPath('imagen', imagen.path));
+    }
+
+    final streamed = await request.send();
+    final res = await http.Response.fromStream(streamed);
     _checkStatus(res);
     return Producto.fromJson(jsonDecode(res.body));
   }

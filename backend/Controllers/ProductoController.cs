@@ -13,10 +13,12 @@ namespace backend.Controllers
     public class ProductoController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public ProductoController(AppDbContext context)
+        public ProductoController(AppDbContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
         // GET: api/productos
@@ -50,11 +52,13 @@ namespace backend.Controllers
                     Id = p.Id,
                     Titulo = p.Titulo,
                     Precio = p.Precio,
+                    Stock = p.Stock,
                     Categoria = p.Categoria,
                     Estado = p.Estado,
                     Color = p.Color,
                     VendedorNombre = p.Vendedor.Nombre,
-                    FechaPublicacion = p.FechaPublicacion
+                    FechaPublicacion = p.FechaPublicacion,
+                    ImagenPrincipalUrl = p.Imagenes.OrderBy(i => i.Orden).Select(i => i.Url).FirstOrDefault()
                 })
                 .ToListAsync();
 
@@ -68,6 +72,7 @@ namespace backend.Controllers
         {
             var producto = await _context.Productos
                 .Include(p => p.Vendedor)
+                .Include(p => p.Imagenes)
                 .FirstOrDefaultAsync(p => p.Id == id && p.Activo);
 
             if (producto == null)
@@ -80,13 +85,15 @@ namespace backend.Controllers
                 Titulo = producto.Titulo,
                 Descripcion = producto.Descripcion,
                 Precio = producto.Precio,
+                Stock = producto.Stock,
                 Talles = producto.Talles,
                 Categoria = producto.Categoria,
                 Estado = producto.Estado,
                 Color = producto.Color,
                 FechaPublicacion = producto.FechaPublicacion,
                 Activo = producto.Activo,
-                VendedorNombre = $"{producto.Vendedor.Nombre} {producto.Vendedor.Apellido}"
+                VendedorNombre = $"{producto.Vendedor.Nombre} {producto.Vendedor.Apellido}",
+                ImagenPrincipalUrl = producto.Imagenes.OrderBy(i => i.Orden).FirstOrDefault()?.Url
             };
 
             return Ok(response);
@@ -94,18 +101,15 @@ namespace backend.Controllers
 
         // POST: api/productos
         [HttpPost]
-        [Authorize] // Solo usuarios autenticados pueden crear productos
-        public async Task<ActionResult<ProductoResponseDto>> CreateProducto(ProductoCreateDto dto)
+        [Authorize(Roles = "Admin")]
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult<ProductoResponseDto>> CreateProducto([FromForm] ProductoCreateDto dto)
         {
-            // Obtener el ID del usuario autenticado desde el token JWT
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            
-            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int vendedorId))
-            {
-                return Unauthorized("Token inválido");
-            }
 
-            // Verificar que el usuario existe
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int vendedorId))
+                return Unauthorized("Token inválido");
+
             var vendedor = await _context.Usuarios.FindAsync(vendedorId);
             if (vendedor == null)
                 return NotFound("Usuario no encontrado");
@@ -116,6 +120,7 @@ namespace backend.Controllers
                 Titulo = dto.Titulo,
                 Descripcion = dto.Descripcion,
                 Precio = dto.Precio,
+                Stock = dto.Stock,
                 Talles = dto.Talles,
                 Categoria = dto.Categoria,
                 Color = dto.Color,
@@ -127,6 +132,32 @@ namespace backend.Controllers
             _context.Productos.Add(producto);
             await _context.SaveChangesAsync();
 
+            // Guardar imagen si se adjuntó
+            string? imagenUrl = null;
+            if (dto.Imagen != null && dto.Imagen.Length > 0)
+            {
+                var uploadsDir = Path.Combine(_env.WebRootPath, "uploads", "productos");
+                Directory.CreateDirectory(uploadsDir);
+
+                var ext = Path.GetExtension(dto.Imagen.FileName);
+                var fileName = $"{Guid.NewGuid()}{ext}";
+                var filePath = Path.Combine(uploadsDir, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                    await dto.Imagen.CopyToAsync(stream);
+
+                imagenUrl = $"/uploads/productos/{fileName}";
+
+                _context.ImagenesProducto.Add(new ImagenProducto
+                {
+                    ProductoId = producto.Id,
+                    Url = imagenUrl,
+                    Orden = 0,
+                    FechaSubida = DateTime.Now
+                });
+                await _context.SaveChangesAsync();
+            }
+
             var response = new ProductoResponseDto
             {
                 Id = producto.Id,
@@ -134,13 +165,15 @@ namespace backend.Controllers
                 Titulo = producto.Titulo,
                 Descripcion = producto.Descripcion,
                 Precio = producto.Precio,
+                Stock = producto.Stock,
                 Talles = producto.Talles,
                 Categoria = producto.Categoria,
                 Estado = producto.Estado,
                 Color = producto.Color,
                 FechaPublicacion = producto.FechaPublicacion,
                 Activo = producto.Activo,
-                VendedorNombre = $"{vendedor.Nombre} {vendedor.Apellido}"
+                VendedorNombre = $"{vendedor.Nombre} {vendedor.Apellido}",
+                ImagenPrincipalUrl = imagenUrl
             };
 
             return CreatedAtAction(nameof(GetProducto), new { id = producto.Id }, response);
@@ -246,11 +279,13 @@ namespace backend.Controllers
                     Id = p.Id,
                     Titulo = p.Titulo,
                     Precio = p.Precio,
+                    Stock = p.Stock,
                     Categoria = p.Categoria,
                     Estado = p.Estado,
                     Color = p.Color,
                     VendedorNombre = p.Vendedor.Nombre,
-                    FechaPublicacion = p.FechaPublicacion
+                    FechaPublicacion = p.FechaPublicacion,
+                    ImagenPrincipalUrl = p.Imagenes.OrderBy(i => i.Orden).Select(i => i.Url).FirstOrDefault()
                 })
                 .ToListAsync();
 
