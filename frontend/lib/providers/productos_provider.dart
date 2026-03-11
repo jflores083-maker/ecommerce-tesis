@@ -28,7 +28,6 @@ class ProductosProvider extends ChangeNotifier {
     try {
       _productos = await _api.getProductos(
         categoria: categoria,
-        estado: 'disponible',
       );
     } on ApiException catch (e) {
       _error = e.message;

@@ -7,12 +7,14 @@ namespace backend.Dtos.Productos
         public string Titulo { get; set; } = string.Empty;
         public string Descripcion { get; set; } = string.Empty;
         public decimal Precio { get; set; }
+        public int Stock { get; set; }
         public string Talles { get; set; } = string.Empty;
         public string Categoria { get; set; } = string.Empty;
         public string Estado { get; set; } = string.Empty;
         public string? Color { get; set; }
         public DateTime FechaPublicacion { get; set; }
         public bool Activo { get; set; }
-        public string VendedorNombre { get; set; } = string.Empty; // Para mostrar el nombre del vendedor
+        public string VendedorNombre { get; set; } = string.Empty;
+        public string? ImagenPrincipalUrl { get; set; }
     }
 }

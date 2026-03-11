@@ -81,13 +81,24 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
             ),
           ),
         ),
+        // Botón Admin (solo visible para rol Admin)
+        if (auth.isLoggedIn && (auth.user?.isAdmin ?? false))
+          TextButton(
+            onPressed: () => context.go('/admin'),
+            child: Text('Admin',
+              style: GoogleFonts.dmMono(
+                fontSize: 11, color: AppColors.charcoal,
+                letterSpacing: 0.1,
+              ),
+            ),
+          ),
         // Auth
         if (!auth.isLoggedIn)
           TextButton(
             onPressed: () => context.go('/login'),
             child: Text('Ingresar',
               style: GoogleFonts.dmMono(
-                fontSize: 11, color: AppColors.gray,
+                fontSize: 11, color: AppColors.charcoal,
                 letterSpacing: 0.1,
               ),
             ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
+import 'providers/admin_provider.dart';
 import 'providers/carrito_provider.dart';
 import 'providers/productos_provider.dart';
 import 'services/api_service.dart';
@@ -29,6 +30,9 @@ class App638 extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => ProductosProvider(apiService),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => AdminProvider(apiService),
         ),
       ],
       child: const _AppContent(),

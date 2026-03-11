@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace backend.Dtos.Productos
 {
@@ -15,6 +16,9 @@ namespace backend.Dtos.Productos
         [Range(0.01, double.MaxValue, ErrorMessage = "El precio debe ser mayor a 0")]
         public decimal Precio { get; set; }
 
+        [Range(0, int.MaxValue, ErrorMessage = "El stock no puede ser negativo")]
+        public int Stock { get; set; } = 0;
+
         [Required(ErrorMessage = "Los talles son obligatorios")]
         public string Talles { get; set; } = string.Empty; // JSON: ["S", "M", "L"]
 
@@ -26,5 +30,7 @@ namespace backend.Dtos.Productos
         public string? Color { get; set; }
 
         public string Estado { get; set; } = "disponible";
+
+        public IFormFile? Imagen { get; set; }
     }
 }
