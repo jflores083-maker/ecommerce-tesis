@@ -22,12 +22,12 @@ class _AdminScreenState extends State<AdminScreen> {
   final _colorCtrl       = TextEditingController();
 
   String _categoriaSeleccionada = 'Remeras';
-  String _estadoSeleccionado    = 'Nuevo';
+  String _estadoSeleccionado    = 'disponible';
   final Set<String> _tallesSeleccionados = {};
   File? _imagenSeleccionada;
 
   static const _categorias = ['Remeras', 'Pantalones', 'Buzos', 'Accesorios', 'Calzado', 'Otros'];
-  static const _estados    = ['Nuevo', 'Usado'];
+  static const _estados    = ['disponible', 'no disponible'];
   static const _talles     = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
   @override
@@ -126,7 +126,7 @@ class _AdminScreenState extends State<AdminScreen> {
         _tallesSeleccionados.clear();
         _imagenSeleccionada = null;
         _categoriaSeleccionada = 'Remeras';
-        _estadoSeleccionado = 'Nuevo';
+        _estadoSeleccionado = 'disponible';
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
