@@ -50,12 +50,16 @@ namespace backend.Controllers
                 .Select(p => new ProductoListaDto
                 {
                     Id = p.Id,
+                    VendedorId = p.VendedorId,
                     Titulo = p.Titulo,
+                    Descripcion = p.Descripcion,
                     Precio = p.Precio,
                     Stock = p.Stock,
+                    Talles = p.Talles,
                     Categoria = p.Categoria,
                     Estado = p.Estado,
                     Color = p.Color,
+                    Activo = p.Activo,
                     VendedorNombre = p.Vendedor.Nombre,
                     FechaPublicacion = p.FechaPublicacion,
                     ImagenPrincipalUrl = p.Imagenes.OrderBy(i => i.Orden).Select(i => i.Url).FirstOrDefault()
@@ -277,12 +281,16 @@ namespace backend.Controllers
                 .Select(p => new ProductoListaDto
                 {
                     Id = p.Id,
+                    VendedorId = p.VendedorId,
                     Titulo = p.Titulo,
+                    Descripcion = p.Descripcion,
                     Precio = p.Precio,
                     Stock = p.Stock,
+                    Talles = p.Talles,
                     Categoria = p.Categoria,
                     Estado = p.Estado,
                     Color = p.Color,
+                    Activo = p.Activo,
                     VendedorNombre = p.Vendedor.Nombre,
                     FechaPublicacion = p.FechaPublicacion,
                     ImagenPrincipalUrl = p.Imagenes.OrderBy(i => i.Orden).Select(i => i.Url).FirstOrDefault()

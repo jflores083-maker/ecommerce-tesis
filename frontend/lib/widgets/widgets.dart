@@ -299,11 +299,12 @@ class _QuickAdd extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Si tiene un solo talle, agregar directo; sino ir al detalle
-        if (producto.talles.length == 1) {
+        // 0 o 1 talle → agregar directo; más de uno → ir al detalle
+        if (producto.talles.length <= 1) {
+          final talle = producto.talles.isNotEmpty ? producto.talles.first : 'Único';
           context.read<CarritoProvider>().agregar(
             productoId: producto.id,
-            talle: producto.talles.first,
+            talle: talle,
           );
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

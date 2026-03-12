@@ -124,11 +124,9 @@ namespace backend.Controllers
             if (producto == null || !string.Equals(producto.Estado, "disponible", StringComparison.OrdinalIgnoreCase))
                 return BadRequest("Producto no disponible.");
 
-            // Validar talle
+            // Validar talle — si el producto no tiene talles, acepta cualquier valor (ej: "Único")
             var talles = ParseTalles(producto.Talles);
-            if (!talles.Any())
-                return BadRequest("El producto no tiene talles configurados.");
-            if (!talles.Contains(dto.Talle, StringComparer.OrdinalIgnoreCase))
+            if (talles.Any() && !talles.Contains(dto.Talle, StringComparer.OrdinalIgnoreCase))
                 return BadRequest("Talle inválido para este producto.");
 
             // Unificar por (ProductoId + Talle)
