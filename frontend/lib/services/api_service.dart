@@ -210,6 +210,24 @@ class ApiService {
     return data.map((j) => Producto.fromJson(j)).toList();
   }
 
+  // PUT /api/productos/{id}
+  Future<void> actualizarProducto(int id, Map<String, dynamic> campos) async {
+    final uri = Uri.parse('$_baseUrl/productos/$id');
+    final res = await http.put(
+      uri,
+      headers: await _headers(auth: true),
+      body: jsonEncode(campos),
+    );
+    _checkStatus(res);
+  }
+
+  // DELETE /api/productos/{id} (borrado lógico)
+  Future<void> eliminarProducto(int id) async {
+    final uri = Uri.parse('$_baseUrl/productos/$id');
+    final res = await http.delete(uri, headers: await _headers(auth: true));
+    _checkStatus(res);
+  }
+
   // ── CARRITO ───────────────────────────────────────────────
   // GET /api/carrito → CarritoDto
 

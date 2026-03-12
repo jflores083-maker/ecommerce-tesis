@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
+import '../models/models.dart';
 import '../services/api_service.dart';
 
 class AdminProvider extends ChangeNotifier {
@@ -47,6 +48,59 @@ class AdminProvider extends ChangeNotifier {
         imagen:      imagen,
       );
       _exito = true;
+      _loading = false;
+      notifyListeners();
+      return true;
+    } on ApiException catch (e) {
+      _error = e.message;
+      _loading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  List<Producto> _misProductos = [];
+  List<Producto> get misProductos => _misProductos;
+
+  Future<void> cargarMisProductos() async {
+    _loading = true;
+    _error = null;
+    notifyListeners();
+    try {
+      _misProductos = await _api.getMisProductos();
+    } on ApiException catch (e) {
+      _error = e.message;
+    } finally {
+      _loading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> modificarProducto(int id, Map<String, dynamic> campos) async {
+    _loading = true;
+    _error = null;
+    notifyListeners();
+    try {
+      await _api.actualizarProducto(id, campos);
+      await cargarMisProductos();
+      _loading = false;
+      notifyListeners();
+      return true;
+    } on ApiException catch (e) {
+      _error = e.message;
+      _loading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> eliminarProducto(int id) async {
+    _loading = true;
+    _error = null;
+    notifyListeners();
+    try {
+      await _api.eliminarProducto(id);
+      _misProductos.removeWhere((p) => p.id == id);
       _loading = false;
       notifyListeners();
       return true;
