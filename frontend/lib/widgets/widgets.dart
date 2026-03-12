@@ -30,7 +30,15 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
       automaticallyImplyLeading: false,
       leading: canGoBack
           ? IconButton(
-              onPressed: () => context.go('/'),
+              onPressed: () {
+                if (context.canPop()) {
+                  context.pop();
+                } else if (location.startsWith('/producto/')) {
+                  context.go('/catalogo');
+                } else {
+                  context.go('/');
+                }
+              },
               icon: const Icon(Icons.arrow_back, size: 18, color: AppColors.charcoal),
               splashRadius: 20,
             )
