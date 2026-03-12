@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import '../app_constants.dart';
 import '../providers/productos_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/widgets.dart';
@@ -304,11 +305,9 @@ class _PlaceholderCard extends StatelessWidget {
 
 // ─── CATEGORÍAS ────────────────────────────────────────────
 class _CategoriesSection extends StatelessWidget {
-  static const _cats = [
-    {'label': 'Remeras', 'count': '24 productos', 'cat': 'Remeras'},
-    {'label': 'Pantalones', 'count': '18 productos', 'cat': 'Pantalones'},
-    {'label': 'Abrigos', 'count': '12 productos', 'cat': 'Abrigos'},
-  ];
+  static List<Map<String, String>> get _cats => AppCategorias.todas
+      .map((c) => {'label': c, 'cat': c})
+      .toList();
 
   @override
   Widget build(BuildContext context) {
@@ -343,7 +342,6 @@ class _CategoriesSection extends StatelessWidget {
             physics: const NeverScrollableScrollPhysics(),
             children: _cats.map((c) => _CategoryItem(
               label: c['label']!,
-              count: c['count']!,
               categoria: c['cat']!,
             )).toList(),
           ),
@@ -355,10 +353,9 @@ class _CategoriesSection extends StatelessWidget {
 
 class _CategoryItem extends StatelessWidget {
   final String label;
-  final String count;
   final String categoria;
   const _CategoryItem({
-    required this.label, required this.count, required this.categoria,
+    required this.label, required this.categoria,
   });
 
   @override
@@ -377,11 +374,6 @@ class _CategoryItem extends StatelessWidget {
               Text(label,
                 style: GoogleFonts.cormorantGaramond(
                   fontSize: 28, fontWeight: FontWeight.w300, color: AppColors.ink,
-                ),
-              ),
-              Text(count,
-                style: GoogleFonts.dmMono(
-                  fontSize: 10, color: AppColors.gray, letterSpacing: 0.1,
                 ),
               ),
             ],
