@@ -326,6 +326,92 @@ class _OrderSummary extends StatefulWidget {
 class _OrderSummaryState extends State<_OrderSummary> {
   final _promoCtrl = TextEditingController();
 
+  Future<void> _checkout() async {
+    final direccionCtrl  = TextEditingController();
+    final ciudadCtrl     = TextEditingController();
+    final cpCtrl         = TextEditingController();
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.cream,
+        title: Text('Datos de envío',
+          style: GoogleFonts.cormorantGaramond(
+            fontSize: 24, fontWeight: FontWeight.w300, color: AppColors.ink,
+          ),
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AuthField(label: 'DIRECCIÓN', controller: direccionCtrl, hint: 'Av. Corrientes 1234'),
+              const SizedBox(height: 16),
+              AuthField(label: 'CIUDAD', controller: ciudadCtrl, hint: 'Buenos Aires'),
+              const SizedBox(height: 16),
+              AuthField(label: 'CÓDIGO POSTAL', controller: cpCtrl,
+                hint: '1043', keyboardType: TextInputType.number),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Cancelar',
+              style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.stone)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.ink,
+              foregroundColor: AppColors.cream,
+              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+              elevation: 0,
+            ),
+            child: Text('Confirmar',
+              style: GoogleFonts.dmMono(fontSize: 11)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    final dir = direccionCtrl.text.trim();
+    final ciudad = ciudadCtrl.text.trim();
+    final cp = cpCtrl.text.trim();
+
+    if (dir.isEmpty || ciudad.isEmpty || cp.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Completá todos los campos de envío',
+          style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.cream)),
+        backgroundColor: AppColors.charcoal,
+        behavior: SnackBarBehavior.floating,
+      ));
+      return;
+    }
+
+    final carrito = context.read<CarritoProvider>();
+    final result = await carrito.confirmarCompra(
+      direccionEnvio: dir,
+      ciudad: ciudad,
+      codigoPostal: cp,
+    );
+
+    if (!mounted) return;
+
+    if (result != null) {
+      final ordenId = result['ordenId'];
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('✓ Orden #$ordenId confirmada',
+          style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.cream)),
+        backgroundColor: AppColors.ink,
+        duration: const Duration(seconds: 3),
+        behavior: SnackBarBehavior.floating,
+      ));
+      context.go('/');
+    }
+  }
+
   @override
   void dispose() {
     _promoCtrl.dispose();
@@ -427,9 +513,8 @@ class _OrderSummaryState extends State<_OrderSummary> {
         PrimaryButton(
           label: 'Finalizar compra',
           fullWidth: true,
-          onPressed: () {
-            // TODO: integrar checkout
-          },
+          loading: widget.carrito.loading,
+          onPressed: _checkout,
         ),
         const SizedBox(height: 12),
         Center(
