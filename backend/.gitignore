@@ -1,4 +1,7 @@
-﻿# --- .NET / C# ---
+﻿# --- Imágenes subidas por usuarios ---
+wwwroot/uploads/
+
+# --- .NET / C# ---
 bin/
 obj/
 *.user

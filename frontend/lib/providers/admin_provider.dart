@@ -1,5 +1,5 @@
-import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:image_picker/image_picker.dart';
 import '../services/api_service.dart';
 
 class AdminProvider extends ChangeNotifier {
@@ -24,7 +24,7 @@ class AdminProvider extends ChangeNotifier {
     required String categoria,
     required String estado,
     String? color,
-    File? imagen,
+    XFile? imagen,
   }) async {
     _loading = true;
     _error = null;

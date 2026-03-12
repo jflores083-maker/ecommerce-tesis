@@ -6,6 +6,7 @@ import '../providers/productos_provider.dart';
 import '../providers/carrito_provider.dart';
 import '../providers/auth_provider.dart';
 import '../models/models.dart';
+import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/widgets.dart';
 
@@ -131,27 +132,7 @@ class _DesktopLayout extends StatelessWidget {
         Expanded(
           child: SizedBox(
             height: MediaQuery.of(context).size.height - 64,
-            child: Container(
-              color: AppColors.beige,
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.shopping_bag_outlined,
-                        size: 72, color: AppColors.stone.withOpacity(0.2)),
-                    const SizedBox(height: 12),
-                    Text(
-                      'FOTO DEL PRODUCTO',
-                      style: GoogleFonts.dmMono(
-                        fontSize: 10,
-                        color: AppColors.stone,
-                        letterSpacing: 0.18,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            child: _DetailImage(producto: producto),
           ),
         ),
         // Info
@@ -194,13 +175,9 @@ class _MobileLayout extends StatelessWidget {
       child: Column(
         children: [
           // Imagen
-          Container(
+          SizedBox(
             height: MediaQuery.of(context).size.width * 0.85,
-            color: AppColors.beige,
-            child: Center(
-              child: Icon(Icons.shopping_bag_outlined,
-                  size: 60, color: AppColors.stone.withOpacity(0.2)),
-            ),
+            child: _DetailImage(producto: producto),
           ),
           // Info
           Padding(
@@ -402,6 +379,35 @@ class _TalleBtn extends StatelessWidget {
       ),
     );
   }
+}
+
+class _DetailImage extends StatelessWidget {
+  final Producto producto;
+  const _DetailImage({required this.producto});
+
+  @override
+  Widget build(BuildContext context) {
+    final url = producto.imagenPrincipalUrl;
+    if (url != null && url.isNotEmpty) {
+      return Image.network(
+        '${ApiService.serverUrl}$url',
+        fit: BoxFit.cover,
+        width: double.infinity,
+        loadingBuilder: (_, child, progress) =>
+            progress == null ? child : Container(color: AppColors.beige),
+        errorBuilder: (_, __, ___) => _placeholder(),
+      );
+    }
+    return _placeholder();
+  }
+
+  Widget _placeholder() => Container(
+        color: AppColors.beige,
+        child: Center(
+          child: Icon(Icons.shopping_bag_outlined,
+              size: 72, color: AppColors.stone.withOpacity(0.2)),
+        ),
+      );
 }
 
 class _Accordion extends StatefulWidget {

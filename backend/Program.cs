@@ -133,8 +133,8 @@ if (app.Environment.IsDevelopment())
 // ORDEN CORRECTO DEL PIPELINE
 app.UseHttpsRedirection();
 
+app.UseCors("AllowFlutter");     // CORS SIEMPRE antes de Auth/Z y de archivos estáticos
 app.UseStaticFiles();            // sirve wwwroot/ (imágenes de productos)
-app.UseCors("AllowFlutter");     // CORS SIEMPRE antes de Auth/Z
 
 app.UseAuthentication();
 app.UseAuthorization();

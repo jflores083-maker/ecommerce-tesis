@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../models/models.dart';
 import '../providers/auth_provider.dart';
 import '../providers/carrito_provider.dart';
+import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 
 // ─── APP NAVBAR ────────────────────────────────────────────
@@ -264,14 +264,28 @@ class _ProductImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final url = producto.imagenPrincipalUrl;
+    if (url != null && url.isNotEmpty) {
+      return Image.network(
+        '${ApiService.serverUrl}$url',
+        fit: BoxFit.cover,
+        loadingBuilder: (_, child, progress) =>
+            progress == null ? child : Container(color: AppColors.beige),
+        errorBuilder: (_, __, ___) => Container(
+          color: AppColors.beige,
+          child: Center(
+            child: Icon(Icons.shopping_bag_outlined,
+                size: 48, color: AppColors.stone.withOpacity(0.35)),
+          ),
+        ),
+      );
+    }
     return Container(
       color: AppColors.beige,
       child: Center(
         child: Icon(Icons.shopping_bag_outlined,
-          size: 48, color: AppColors.stone.withOpacity(0.35)),
+            size: 48, color: AppColors.stone.withOpacity(0.35)),
       ),
-      // Cuando tengas imágenes del backend, reemplazá por:
-      // CachedNetworkImage(imageUrl: producto.imageUrl, fit: BoxFit.cover)
     );
   }
 }
