@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -24,7 +24,8 @@ class _AdminScreenState extends State<AdminScreen> {
   String _categoriaSeleccionada = 'Remeras';
   String _estadoSeleccionado    = 'disponible';
   final Set<String> _tallesSeleccionados = {};
-  File? _imagenSeleccionada;
+  XFile? _imagenSeleccionada;
+  Uint8List? _imagenBytes;
 
   static const _categorias = ['Remeras', 'Pantalones', 'Buzos', 'Accesorios', 'Calzado', 'Otros'];
   static const _estados    = ['disponible', 'no disponible'];
@@ -43,7 +44,13 @@ class _AdminScreenState extends State<AdminScreen> {
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final picked = await picker.pickImage(source: ImageSource.gallery, imageQuality: 85);
-    if (picked != null) setState(() => _imagenSeleccionada = File(picked.path));
+    if (picked != null) {
+      final bytes = await picked.readAsBytes();
+      setState(() {
+        _imagenSeleccionada = picked;
+        _imagenBytes = bytes;
+      });
+    }
   }
 
   Future<void> _submit() async {
@@ -125,6 +132,7 @@ class _AdminScreenState extends State<AdminScreen> {
       setState(() {
         _tallesSeleccionados.clear();
         _imagenSeleccionada = null;
+        _imagenBytes = null;
         _categoriaSeleccionada = 'Remeras';
         _estadoSeleccionado = 'disponible';
       });
@@ -311,7 +319,7 @@ class _AdminScreenState extends State<AdminScreen> {
                           ? Stack(
                               fit: StackFit.expand,
                               children: [
-                                Image.file(_imagenSeleccionada!, fit: BoxFit.cover),
+                                Image.memory(_imagenBytes!, fit: BoxFit.cover),
                                 Positioned(
                                   top: 8, right: 8,
                                   child: GestureDetector(

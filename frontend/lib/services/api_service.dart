@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/models.dart';
 
@@ -11,8 +11,14 @@ class ApiService {
   // Emulador Android    → 10.0.2.2 (alias del host en el emulador)
   static String get _baseUrl {
     if (kIsWeb) return 'http://localhost:5005/api';
-    if (Platform.isAndroid) return 'http://10.0.2.2:5005/api';
+    if (defaultTargetPlatform == TargetPlatform.android) return 'http://10.0.2.2:5005/api';
     return 'http://localhost:5005/api'; // iOS, macOS, etc.
+  }
+
+  static String get serverUrl {
+    if (kIsWeb) return 'http://localhost:5005';
+    if (defaultTargetPlatform == TargetPlatform.android) return 'http://10.0.2.2:5005';
+    return 'http://localhost:5005';
   }
   // ─────────────────────────────────────────────────────────
 
@@ -163,7 +169,7 @@ class ApiService {
     required String categoria,
     required String estado,
     String? color,
-    File? imagen,
+    XFile? imagen,
   }) async {
     final uri = Uri.parse('$_baseUrl/productos');
     final token = await getToken();
@@ -181,7 +187,11 @@ class ApiService {
     if (color != null && color.isNotEmpty) request.fields['color'] = color;
 
     if (imagen != null) {
-      request.files.add(await http.MultipartFile.fromPath('imagen', imagen.path));
+      final bytes = await imagen.readAsBytes();
+      request.files.add(http.MultipartFile.fromBytes(
+        'imagen', bytes,
+        filename: imagen.name,
+      ));
     }
 
     final streamed = await request.send();
