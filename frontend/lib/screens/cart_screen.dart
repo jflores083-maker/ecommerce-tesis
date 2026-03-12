@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/carrito_provider.dart';
 import '../models/models.dart';
+import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/widgets.dart';
 
@@ -179,13 +180,9 @@ class _CartItemRow extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Thumbnail
-              Container(
+              SizedBox(
                 width: 88, height: 110,
-                color: AppColors.beige,
-                child: Center(
-                  child: Icon(Icons.shopping_bag_outlined,
-                    size: 32, color: AppColors.stone.withOpacity(0.3)),
-                ),
+                child: _ItemThumbnail(url: item.imagenPrincipalUrl),
               ),
               const SizedBox(width: 24),
               // Info
@@ -553,4 +550,31 @@ class _SummaryRow extends StatelessWidget {
       ),
     );
   }
+}
+
+class _ItemThumbnail extends StatelessWidget {
+  final String? url;
+  const _ItemThumbnail({this.url});
+
+  @override
+  Widget build(BuildContext context) {
+    if (url != null && url!.isNotEmpty) {
+      return Image.network(
+        '${ApiService.serverUrl}$url',
+        fit: BoxFit.cover,
+        loadingBuilder: (_, child, progress) =>
+            progress == null ? child : Container(color: AppColors.beige),
+        errorBuilder: (_, __, ___) => _placeholder(),
+      );
+    }
+    return _placeholder();
+  }
+
+  Widget _placeholder() => Container(
+        color: AppColors.beige,
+        child: Center(
+          child: Icon(Icons.shopping_bag_outlined,
+              size: 32, color: AppColors.stone.withOpacity(0.3)),
+        ),
+      );
 }
