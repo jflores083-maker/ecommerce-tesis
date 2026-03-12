@@ -9,6 +9,9 @@ import '../screens/cart_screen.dart';
 import '../screens/login_screen.dart';
 import '../screens/register_screen.dart';
 import '../screens/admin_screen.dart';
+import '../screens/admin_agregar_screen.dart';
+import '../screens/admin_modificar_screen.dart';
+import '../screens/admin_eliminar_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -28,7 +31,7 @@ GoRouter createRouter(AuthProvider authProvider) {
       }
 
       // Panel admin — solo usuarios con rol Admin
-      if (state.matchedLocation == '/admin') {
+      if (state.matchedLocation.startsWith('/admin')) {
         if (!isLoggedIn) return '/login';
         if (authProvider.user?.isAdmin != true) return '/';
       }
@@ -72,6 +75,18 @@ GoRouter createRouter(AuthProvider authProvider) {
       GoRoute(
         path: '/admin',
         builder: (ctx, state) => const AdminScreen(),
+      ),
+      GoRoute(
+        path: '/admin/agregar',
+        builder: (ctx, state) => const AdminAgregarScreen(),
+      ),
+      GoRoute(
+        path: '/admin/modificar',
+        builder: (ctx, state) => const AdminModificarScreen(),
+      ),
+      GoRoute(
+        path: '/admin/eliminar',
+        builder: (ctx, state) => const AdminEliminarScreen(),
       ),
     ],
   );

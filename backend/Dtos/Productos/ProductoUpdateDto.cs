@@ -12,6 +12,9 @@ namespace backend.Dtos.Productos
         [Range(0.01, double.MaxValue, ErrorMessage = "El precio debe ser mayor a 0")]
         public decimal? Precio { get; set; }
 
+        [Range(0, int.MaxValue)]
+        public int? Stock { get; set; }
+
         public string? Talles { get; set; }
 
         [MaxLength(100)]

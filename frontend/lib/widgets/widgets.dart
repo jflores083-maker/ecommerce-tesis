@@ -35,6 +35,8 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
                   context.pop();
                 } else if (location.startsWith('/producto/')) {
                   context.go('/catalogo');
+                } else if (location.startsWith('/admin/')) {
+                  context.go('/admin');
                 } else {
                   context.go('/');
                 }

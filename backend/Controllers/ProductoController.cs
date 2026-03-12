@@ -214,6 +214,9 @@ namespace backend.Controllers
             if (dto.Precio.HasValue)
                 producto.Precio = dto.Precio.Value;
 
+            if (dto.Stock.HasValue)
+                producto.Stock = dto.Stock.Value;
+
             if (!string.IsNullOrEmpty(dto.Talles))
                 producto.Talles = dto.Talles;
 
