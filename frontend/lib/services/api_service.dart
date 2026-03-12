@@ -1,13 +1,19 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/models.dart';
 
 class ApiService {
-  // ── Cambiá esta URL por la de tu backend ──────────────────
-  //static const String _baseUrl = 'http://localhost:5005/api';
-  static const String _baseUrl = 'http://10.0.2.2:5005/api';
+  // ── URL dinámica por plataforma ───────────────────────────
+  // Web y iOS Simulator → localhost
+  // Emulador Android    → 10.0.2.2 (alias del host en el emulador)
+  static String get _baseUrl {
+    if (kIsWeb) return 'http://localhost:5005/api';
+    if (Platform.isAndroid) return 'http://10.0.2.2:5005/api';
+    return 'http://localhost:5005/api'; // iOS, macOS, etc.
+  }
   // ─────────────────────────────────────────────────────────
 
   static const _tokenKey = 'auth_token';
