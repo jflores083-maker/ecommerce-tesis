@@ -24,7 +24,7 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
     final canGoBack = location != '/';
 
     return AppBar(
-      backgroundColor: AppColors.cream,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       elevation: 0,
       scrolledUnderElevation: 0,
       automaticallyImplyLeading: false,

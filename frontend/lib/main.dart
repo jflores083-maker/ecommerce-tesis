@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/admin_provider.dart';
 import 'providers/carrito_provider.dart';
+import 'providers/config_provider.dart';
 import 'providers/productos_provider.dart';
 import 'services/api_service.dart';
 import 'router.dart';
@@ -34,6 +35,9 @@ class App638 extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => AdminProvider(apiService),
         ),
+        ChangeNotifierProvider(
+          create: (_) => ConfigProvider(apiService),
+        ),
       ],
       child: const _AppContent(),
     );
@@ -56,6 +60,9 @@ class _AppContentState extends State<_AppContent> {
     final auth = context.read<AuthProvider>();
     _router = createRouter(auth);
 
+    // Cargar configuración de la tienda (hero + tema)
+    context.read<ConfigProvider>().cargarConfig();
+
     // Cuando el usuario hace login, cargar el carrito
     auth.addListener(() {
       if (auth.isLoggedIn) {
@@ -68,9 +75,10 @@ class _AppContentState extends State<_AppContent> {
 
   @override
   Widget build(BuildContext context) {
+    final paleta = context.watch<ConfigProvider>().paleta;
     return MaterialApp.router(
       title: '638',
-      theme: AppTheme.theme,
+      theme: AppTheme.forPaleta(paleta),
       routerConfig: _router,
       debugShowCheckedModeBanner: false,
     );

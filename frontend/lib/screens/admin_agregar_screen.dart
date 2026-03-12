@@ -117,7 +117,6 @@ class _AdminAgregarScreenState extends State<AdminAgregarScreen> {
     final isMobile = MediaQuery.of(context).size.width < 768;
 
     return Scaffold(
-      backgroundColor: AppColors.cream,
       appBar: const AppNavBar(),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: isMobile ? 20 : 0, vertical: 48),

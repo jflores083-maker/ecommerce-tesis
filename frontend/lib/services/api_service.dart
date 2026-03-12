@@ -210,6 +210,28 @@ class ApiService {
     return data.map((j) => Producto.fromJson(j)).toList();
   }
 
+  // ── CONFIGURACIÓN ────────────────────────────────────────
+
+  Future<Map<String, dynamic>> getConfiguracion() async {
+    final uri = Uri.parse('$_baseUrl/configuracion');
+    final res = await http.get(uri, headers: await _headers());
+    _checkStatus(res);
+    return jsonDecode(res.body) as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> subirHeroImage(XFile imagen) async {
+    final uri = Uri.parse('$_baseUrl/configuracion/hero');
+    final token = await getToken();
+    final request = http.MultipartRequest('POST', uri);
+    if (token != null) request.headers['Authorization'] = 'Bearer $token';
+    final bytes = await imagen.readAsBytes();
+    request.files.add(http.MultipartFile.fromBytes('imagen', bytes, filename: imagen.name));
+    final streamed = await request.send();
+    final res = await http.Response.fromStream(streamed);
+    _checkStatus(res);
+    return jsonDecode(res.body) as Map<String, dynamic>;
+  }
+
   // PUT /api/productos/{id}
   Future<void> actualizarProducto(int id, Map<String, dynamic> campos) async {
     final uri = Uri.parse('$_baseUrl/productos/$id');

@@ -78,7 +78,6 @@ class _DetailScreenState extends State<DetailScreen> {
 
     return Scaffold(
       appBar: const AppNavBar(),
-      backgroundColor: AppColors.cream,
       body: provider.loading
           ? const Center(
               child: CircularProgressIndicator(color: AppColors.charcoal))
