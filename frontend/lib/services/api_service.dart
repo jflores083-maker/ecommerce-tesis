@@ -277,6 +277,26 @@ class ApiService {
     final res = await http.delete(uri, headers: await _headers(auth: true));
     _checkStatus(res);
   }
+
+  // POST /api/ordenes — crear orden desde el carrito
+  Future<Map<String, dynamic>> crearOrden({
+    required String direccionEnvio,
+    required String ciudad,
+    required String codigoPostal,
+  }) async {
+    final uri = Uri.parse('$_baseUrl/ordenes');
+    final res = await http.post(
+      uri,
+      headers: await _headers(auth: true),
+      body: jsonEncode({
+        'direccionEnvio': direccionEnvio,
+        'ciudad': ciudad,
+        'codigoPostal': codigoPostal,
+      }),
+    );
+    _checkStatus(res);
+    return jsonDecode(res.body) as Map<String, dynamic>;
+  }
 }
 
 // ── Excepción custom ──────────────────────────────────────

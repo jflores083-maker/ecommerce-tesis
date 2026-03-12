@@ -99,6 +99,35 @@ class CarritoProvider extends ChangeNotifier {
     }
   }
 
+  // Confirmar compra — crea la orden y limpia el carrito
+  Future<Map<String, dynamic>?> confirmarCompra({
+    required String direccionEnvio,
+    required String ciudad,
+    required String codigoPostal,
+  }) async {
+    _error = null;
+    _loading = true;
+    notifyListeners();
+    try {
+      final result = await _api.crearOrden(
+        direccionEnvio: direccionEnvio,
+        ciudad: ciudad,
+        codigoPostal: codigoPostal,
+      );
+      _carrito = _carrito != null
+          ? Carrito(carritoId: _carrito!.carritoId, items: [])
+          : null;
+      _loading = false;
+      notifyListeners();
+      return result;
+    } on ApiException catch (e) {
+      _error = e.message;
+      _loading = false;
+      notifyListeners();
+      return null;
+    }
+  }
+
   void limpiarLocal() {
     _carrito = null;
     notifyListeners();
