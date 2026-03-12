@@ -207,11 +207,15 @@ class _ProductCardState extends State<ProductCard> {
                       ),
                     ),
                   // Quick add (visible en hover desktop)
-                  if (_hovered)
-                    Positioned(
-                      bottom: 0, left: 0, right: 0,
+                  // Offstage mantiene el widget montado para que el async
+                  // no pierda el context cuando el mouse sale durante la espera
+                  Positioned(
+                    bottom: 0, left: 0, right: 0,
+                    child: Offstage(
+                      offstage: !_hovered,
                       child: _QuickAdd(producto: p),
                     ),
+                  ),
                 ],
               ),
             ),
@@ -291,44 +295,106 @@ class _Badge extends StatelessWidget {
   }
 }
 
-class _QuickAdd extends StatelessWidget {
+class _QuickAdd extends StatefulWidget {
   final Producto producto;
   const _QuickAdd({required this.producto});
 
   @override
+  State<_QuickAdd> createState() => _QuickAddState();
+}
+
+class _QuickAddState extends State<_QuickAdd> {
+  bool _loading = false;
+
+  Future<void> _onTap() async {
+    if (_loading) return;
+
+    // Producto no disponible → mostrar error inmediatamente
+    if (!widget.producto.disponible) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Producto no disponible',
+          style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.cream),
+        ),
+        backgroundColor: AppColors.charcoal,
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+      ));
+      return;
+    }
+
+    // Más de un talle → ir al detalle para que el usuario elija
+    if (widget.producto.talles.length > 1) {
+      context.go('/producto/${widget.producto.id}');
+      return;
+    }
+
+    // Sin login → redirigir
+    if (!context.read<AuthProvider>().isLoggedIn) {
+      context.go('/login');
+      return;
+    }
+
+    // Capturar referencias ANTES del await para no usar context tras gap asíncrono
+    final messenger = ScaffoldMessenger.of(context);
+    final carritoProvider = context.read<CarritoProvider>();
+
+    setState(() => _loading = true);
+
+    final talle = widget.producto.talles.isNotEmpty
+        ? widget.producto.talles.first
+        : 'Único';
+
+    final ok = await carritoProvider.agregar(
+      productoId: widget.producto.id,
+      talle: talle,
+    );
+
+    if (!mounted) return;
+    setState(() => _loading = false);
+
+    if (ok) {
+      messenger.showSnackBar(SnackBar(
+        content: Text('✓ ${widget.producto.titulo} agregado',
+          style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.cream),
+        ),
+        backgroundColor: AppColors.ink,
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+      ));
+    } else {
+      final error = carritoProvider.error ?? 'No se pudo agregar';
+      messenger.showSnackBar(SnackBar(
+        content: Text(error,
+          style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.cream),
+        ),
+        backgroundColor: AppColors.charcoal,
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+      ));
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        // 0 o 1 talle → agregar directo; más de uno → ir al detalle
-        if (producto.talles.length <= 1) {
-          final talle = producto.talles.isNotEmpty ? producto.talles.first : 'Único';
-          context.read<CarritoProvider>().agregar(
-            productoId: producto.id,
-            talle: talle,
-          );
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('✓ ${producto.titulo} agregado',
-                style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.cream),
-              ),
-              backgroundColor: AppColors.ink,
-              duration: const Duration(seconds: 2),
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
-        } else {
-          context.go('/producto/${producto.id}');
-        }
-      },
+      onTap: _onTap,
       child: Container(
         color: AppColors.ink,
         padding: const EdgeInsets.symmetric(vertical: 12),
         child: Center(
-          child: Text('+ AGREGAR AL CARRITO',
-            style: GoogleFonts.dmMono(
-              fontSize: 10, color: AppColors.cream, letterSpacing: 0.15,
-            ),
-          ),
+          child: _loading
+              ? const SizedBox(
+                  width: 12, height: 12,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 1.5, color: AppColors.cream,
+                  ),
+                )
+              : Text(
+                  widget.producto.disponible ? '+ AGREGAR AL CARRITO' : 'AGOTADO',
+                  style: GoogleFonts.dmMono(
+                    fontSize: 10, color: AppColors.cream, letterSpacing: 0.15,
+                  ),
+                ),
         ),
       ),
     );
