@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import '../app_constants.dart';
 import '../providers/admin_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/widgets.dart';
@@ -27,7 +28,7 @@ class _AdminScreenState extends State<AdminScreen> {
   XFile? _imagenSeleccionada;
   Uint8List? _imagenBytes;
 
-  static const _categorias = ['Remeras', 'Pantalones', 'Buzos', 'Accesorios', 'Calzado', 'Otros'];
+  static List<String> get _categorias => AppCategorias.todas;
   static const _estados    = ['disponible', 'no disponible'];
   static const _talles     = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 

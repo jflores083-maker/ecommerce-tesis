@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import '../app_constants.dart';
 import '../providers/productos_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/widgets.dart';
@@ -14,7 +15,7 @@ class CatalogScreen extends StatefulWidget {
 }
 
 class _CatalogScreenState extends State<CatalogScreen> {
-  final _categorias = ['Todos', 'Remeras', 'Pantalones', 'Abrigos', 'Accesorios'];
+  final _categorias = ['Todos', ...AppCategorias.todas];
 
   @override
   void initState() {
