@@ -18,7 +18,6 @@ class CartScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: const AppNavBar(),
-      backgroundColor: AppColors.cream,
       body: carrito.loading
           ? const Center(child: CircularProgressIndicator(color: AppColors.charcoal))
           : carrito.items.isEmpty

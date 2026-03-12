@@ -12,6 +12,7 @@ import '../screens/admin_screen.dart';
 import '../screens/admin_agregar_screen.dart';
 import '../screens/admin_modificar_screen.dart';
 import '../screens/admin_eliminar_screen.dart';
+import '../screens/admin_personalizacion_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -87,6 +88,10 @@ GoRouter createRouter(AuthProvider authProvider) {
       GoRoute(
         path: '/admin/eliminar',
         builder: (ctx, state) => const AdminEliminarScreen(),
+      ),
+      GoRoute(
+        path: '/admin/personalizacion',
+        builder: (ctx, state) => const AdminPersonalizacionScreen(),
       ),
     ],
   );

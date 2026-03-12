@@ -12,7 +12,6 @@ class AdminScreen extends StatelessWidget {
     final isMobile = MediaQuery.of(context).size.width < 768;
 
     return Scaffold(
-      backgroundColor: AppColors.cream,
       appBar: const AppNavBar(),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(
@@ -54,6 +53,13 @@ class AdminScreen extends StatelessWidget {
                   label: 'Eliminar producto',
                   description: 'Dar de baja un producto de la tienda',
                   onTap: () => context.go('/admin/eliminar'),
+                ),
+                const SizedBox(height: 16),
+                _AdminMenuBtn(
+                  icon: Icons.palette_outlined,
+                  label: 'Personalización',
+                  description: 'Imagen del inicio y tema de colores',
+                  onTap: () => context.go('/admin/personalizacion'),
                 ),
               ],
             ),

@@ -3,7 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../app_constants.dart';
+import '../providers/config_provider.dart';
 import '../providers/productos_provider.dart';
+import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/widgets.dart';
 
@@ -30,7 +32,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: const AppNavBar(),
-      backgroundColor: AppColors.cream,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -123,27 +124,9 @@ class _HeroDesktop extends StatelessWidget {
               ),
             ),
           ),
-          // Lado derecho (placeholder imagen campaña)
+          // Lado derecho — imagen hero del admin
           Expanded(
-            child: Container(
-              color: AppColors.charcoal,
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.shopping_bag_outlined,
-                      size: 72, color: AppColors.stone.withOpacity(0.2)),
-                    const SizedBox(height: 12),
-                    Text('FOTO DE CAMPAÑA',
-                      style: GoogleFonts.dmMono(
-                        fontSize: 10, color: AppColors.stone,
-                        letterSpacing: 0.18,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            child: _HeroImage(),
           ),
         ],
       ),
@@ -158,13 +141,9 @@ class _HeroMobile extends StatelessWidget {
     return Column(
       children: [
         // Imagen arriba
-        Container(
+        SizedBox(
           height: MediaQuery.of(context).size.width * 0.9,
-          color: AppColors.charcoal,
-          child: Center(
-            child: Icon(Icons.shopping_bag_outlined,
-              size: 60, color: AppColors.stone.withOpacity(0.2)),
-          ),
+          child: _HeroImage(),
         ),
         // Texto abajo
         Container(
@@ -215,6 +194,46 @@ class _HeroMobile extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+// ─── HERO IMAGE ────────────────────────────────────────────
+class _HeroImage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final heroUrl = context.watch<ConfigProvider>().heroImageUrl;
+    if (heroUrl != null) {
+      return Image.network(
+        '${ApiService.serverUrl}$heroUrl',
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+        errorBuilder: (_, __, ___) => _placeholder(),
+      );
+    }
+    return _placeholder();
+  }
+
+  Widget _placeholder() {
+    return Container(
+      color: AppColors.charcoal,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.shopping_bag_outlined,
+              size: 72, color: AppColors.stone.withOpacity(0.2)),
+            const SizedBox(height: 12),
+            Text('FOTO DE CAMPAÑA',
+              style: GoogleFonts.dmMono(
+                fontSize: 10, color: AppColors.stone,
+                letterSpacing: 0.18,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

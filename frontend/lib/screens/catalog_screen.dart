@@ -35,7 +35,6 @@ class _CatalogScreenState extends State<CatalogScreen> {
 
     return Scaffold(
       appBar: const AppNavBar(),
-      backgroundColor: AppColors.cream,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

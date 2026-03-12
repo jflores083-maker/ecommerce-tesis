@@ -12,15 +12,66 @@ class AppColors {
   static const accent    = Color(0xFFC9B99A);
 }
 
+class AppPaleta {
+  final String nombre;
+  final Color fondo;
+  final Color appBar;
+  final Color secundario; // beige equivalent
+
+  const AppPaleta({
+    required this.nombre,
+    required this.fondo,
+    required this.appBar,
+    required this.secundario,
+  });
+
+  static const clasico = AppPaleta(
+    nombre: 'Clásico',
+    fondo:      Color(0xFFFAF7F2),
+    appBar:     Color(0xFFFAF7F2),
+    secundario: Color(0xFFF0EBE3),
+  );
+  static const piedra = AppPaleta(
+    nombre: 'Piedra',
+    fondo:      Color(0xFFEFEFED),
+    appBar:     Color(0xFFEFEFED),
+    secundario: Color(0xFFE3E3E0),
+  );
+  static const arena = AppPaleta(
+    nombre: 'Arena',
+    fondo:      Color(0xFFF5EFE0),
+    appBar:     Color(0xFFF5EFE0),
+    secundario: Color(0xFFEDE4D0),
+  );
+  static const lavanda = AppPaleta(
+    nombre: 'Lavanda',
+    fondo:      Color(0xFFF2F0F7),
+    appBar:     Color(0xFFF2F0F7),
+    secundario: Color(0xFFE8E4F2),
+  );
+  static const menta = AppPaleta(
+    nombre: 'Menta',
+    fondo:      Color(0xFFF0F4F0),
+    appBar:     Color(0xFFF0F4F0),
+    secundario: Color(0xFFE3EDE3),
+  );
+
+  static const todas = [clasico, piedra, arena, lavanda, menta];
+}
+
 class AppTheme {
-  static ThemeData get theme {
+  static ThemeData forPaleta(AppPaleta p) => _buildTheme(p);
+
+  static ThemeData get theme => _buildTheme(AppPaleta.clasico);
+
+  static ThemeData _buildTheme(AppPaleta p) {
     return ThemeData(
       useMaterial3: true,
-      scaffoldBackgroundColor: AppColors.cream,
-      colorScheme: const ColorScheme.light(
+      scaffoldBackgroundColor: p.fondo,
+      colorScheme: ColorScheme.light(
         primary:    AppColors.ink,
         secondary:  AppColors.accent,
-        surface:    AppColors.cream,
+        surface:    p.fondo,
         onPrimary:  AppColors.cream,
         onSecondary: AppColors.ink,
         onSurface:  AppColors.charcoal,
@@ -71,7 +122,7 @@ class AppTheme {
         ),
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.cream,
+        backgroundColor: p.appBar,
         foregroundColor: AppColors.ink,
         elevation: 0,
         scrolledUnderElevation: 0,
@@ -110,7 +161,7 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.cream,
+        fillColor: p.fondo,
         border: const OutlineInputBorder(
           borderRadius: BorderRadius.zero,
           borderSide: BorderSide(color: AppColors.sand),
