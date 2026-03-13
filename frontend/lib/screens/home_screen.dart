@@ -260,7 +260,7 @@ class _FeaturedSection extends StatelessWidget {
             children: [
               Text('Destacados',
                 style: GoogleFonts.cormorantGaramond(
-                  fontSize: isMobile ? 30 : 40, fontWeight: FontWeight.w300,
+                  fontSize: isMobile ? 30 : 40, fontWeight: FontWeight.w500,
                   color: AppColors.ink,
                 ),
               ),
@@ -282,7 +282,7 @@ class _FeaturedSection extends StatelessWidget {
               crossAxisCount: isMobile ? 2 : 4,
               crossAxisSpacing: isMobile ? 12 : 24,
               mainAxisSpacing: isMobile ? 20 : 28,
-              childAspectRatio: isMobile ? 0.55 : 0.60,
+              childAspectRatio: isMobile ? 0.50 : 0.55,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               children: List.generate(4, (_) => _PlaceholderCard()),
@@ -292,7 +292,7 @@ class _FeaturedSection extends StatelessWidget {
               crossAxisCount: isMobile ? 2 : 4,
               crossAxisSpacing: isMobile ? 12 : 24,
               mainAxisSpacing: isMobile ? 20 : 28,
-              childAspectRatio: isMobile ? 0.55 : 0.60,
+              childAspectRatio: isMobile ? 0.50 : 0.55,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               children: featured.map((p) => ProductCard(producto: p)).toList(),
@@ -324,13 +324,23 @@ class _PlaceholderCard extends StatelessWidget {
 
 // ─── CATEGORÍAS ────────────────────────────────────────────
 class _CategoriesSection extends StatelessWidget {
-  static List<Map<String, String>> get _cats => AppCategorias.todas
-      .map((c) => {'label': c, 'cat': c})
-      .toList();
-
   @override
   Widget build(BuildContext context) {
-    final isMobile = MediaQuery.of(context).size.width < 768;
+    final isMobile  = MediaQuery.of(context).size.width < 768;
+    final productos = context.watch<ProductosProvider>().productos;
+
+    // Para cada categoría, buscar el primer producto con imagen
+    String? imagenParaCategoria(String cat) {
+      try {
+        return productos
+            .firstWhere((p) =>
+                p.categoria.toLowerCase() == cat.toLowerCase() &&
+                p.imagenPrincipalUrl != null)
+            .imagenPrincipalUrl;
+      } catch (_) {
+        return null;
+      }
+    }
 
     return Container(
       color: AppColors.beige,
@@ -344,7 +354,7 @@ class _CategoriesSection extends StatelessWidget {
             children: [
               Text('Categorías',
                 style: GoogleFonts.cormorantGaramond(
-                  fontSize: isMobile ? 30 : 40, fontWeight: FontWeight.w300,
+                  fontSize: isMobile ? 30 : 40, fontWeight: FontWeight.w500,
                   color: AppColors.ink,
                 ),
               ),
@@ -359,9 +369,10 @@ class _CategoriesSection extends StatelessWidget {
             childAspectRatio: isMobile ? 16 / 7 : 4 / 3,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            children: _cats.map((c) => _CategoryItem(
-              label: c['label']!,
-              categoria: c['cat']!,
+            children: AppCategorias.todas.map((cat) => _CategoryItem(
+              label: cat,
+              categoria: cat,
+              imagenUrl: imagenParaCategoria(cat),
             )).toList(),
           ),
         ],
@@ -373,31 +384,51 @@ class _CategoriesSection extends StatelessWidget {
 class _CategoryItem extends StatelessWidget {
   final String label;
   final String categoria;
+  final String? imagenUrl;
   const _CategoryItem({
-    required this.label, required this.categoria,
+    required this.label, required this.categoria, this.imagenUrl,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => context.go('/catalogo?categoria=$categoria'),
-      child: Container(
-        color: AppColors.sand,
-        padding: const EdgeInsets.all(24),
-        child: Align(
-          alignment: Alignment.bottomLeft,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(label,
-                style: GoogleFonts.cormorantGaramond(
-                  fontSize: 28, fontWeight: FontWeight.w300, color: AppColors.ink,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Fondo: imagen del producto o color sólido
+          if (imagenUrl != null)
+            Image.network(
+              '${ApiService.serverUrl}$imagenUrl',
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(color: AppColors.sand),
+            )
+          else
+            Container(color: AppColors.sand),
+
+          // Overlay oscuro para legibilidad
+          if (imagenUrl != null)
+            Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Colors.transparent, Colors.black54],
                 ),
               ),
-            ],
+            ),
+
+          // Nombre de la categoría
+          Positioned(
+            left: 20, right: 20, bottom: 20,
+            child: Text(label,
+              style: GoogleFonts.cormorantGaramond(
+                fontSize: 28, fontWeight: FontWeight.w300,
+                color: imagenUrl != null ? AppColors.cream : AppColors.ink,
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
