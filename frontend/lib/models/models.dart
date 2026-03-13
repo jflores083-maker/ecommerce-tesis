@@ -69,6 +69,11 @@ class Producto {
       '\$${precio.toStringAsFixed(0).replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (m) => '.')}';
 
   bool get disponible => estado.toLowerCase() == 'disponible' && activo;
+
+  String get precioTransferenciaFormateado {
+    final descuento = precio * 0.9;
+    return '\$${descuento.toStringAsFixed(0).replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (m) => '.')}';
+  }
 }
 
 // ─── ItemCarritoDto ────────────────────────────────────────

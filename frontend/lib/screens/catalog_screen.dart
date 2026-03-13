@@ -106,7 +106,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                               crossAxisCount: isMobile ? 2 : 4,
                               crossAxisSpacing: isMobile ? 12 : 24,
                               mainAxisSpacing: isMobile ? 20 : 32,
-                              childAspectRatio: isMobile ? 0.55 : 0.58,
+                              childAspectRatio: isMobile ? 0.50 : 0.55,
                             ),
                             itemCount: provider.productos.length,
                             itemBuilder: (_, i) =>

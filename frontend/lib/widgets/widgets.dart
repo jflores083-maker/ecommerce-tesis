@@ -66,42 +66,7 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
           const SizedBox(width: 12),
         ],
         // Carrito
-        GestureDetector(
-          onTap: () => context.go('/carrito'),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              children: [
-                const Icon(Icons.shopping_bag_outlined,
-                    size: 18, color: AppColors.charcoal),
-                const SizedBox(width: 6),
-                if (MediaQuery.of(context).size.width > 480)
-                  Text('Bolsa',
-                    style: GoogleFonts.dmMono(
-                      fontSize: 11, color: AppColors.charcoal,
-                      letterSpacing: 0.1,
-                    ),
-                  ),
-                if (carrito.totalItems > 0) ...[
-                  const SizedBox(width: 6),
-                  Container(
-                    width: 18, height: 18,
-                    decoration: const BoxDecoration(
-                      color: AppColors.ink, shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Text('${carrito.totalItems}',
-                        style: const TextStyle(
-                          color: AppColors.cream, fontSize: 10,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ),
+        _CartButton(carrito: carrito),
         // Botón Admin (solo visible para rol Admin)
         if (auth.isLoggedIn && (auth.user?.isAdmin ?? false))
           TextButton(
@@ -148,6 +113,48 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         const SizedBox(width: 8),
       ],
+    );
+  }
+}
+
+class _CartButton extends StatelessWidget {
+  final CarritoProvider carrito;
+  const _CartButton({required this.carrito});
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      onPressed: () => context.go('/carrito'),
+      child: Row(
+        children: [
+          const Icon(Icons.shopping_bag_outlined,
+              size: 18, color: AppColors.charcoal),
+          const SizedBox(width: 6),
+          if (MediaQuery.of(context).size.width > 480)
+            Text('Bolsa',
+              style: GoogleFonts.dmMono(
+                fontSize: 11, color: AppColors.charcoal,
+                letterSpacing: 0.1,
+              ),
+            ),
+          if (carrito.totalItems > 0) ...[
+            const SizedBox(width: 6),
+            Container(
+              width: 18, height: 18,
+              decoration: const BoxDecoration(
+                color: AppColors.ink, shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text('${carrito.totalItems}',
+                  style: const TextStyle(
+                    color: AppColors.cream, fontSize: 10,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }
@@ -234,14 +241,11 @@ class _ProductCardState extends State<ProductCard> {
                     duration: const Duration(milliseconds: 350),
                     child: _ProductImage(producto: p),
                   ),
-                  // Badge
-                  if (p.color != null || !p.disponible)
+                  // Badge SIN STOCK
+                  if (!p.disponible)
                     Positioned(
-                      top: 12, left: 12,
-                      child: _Badge(
-                        label: !p.disponible ? 'Agotado' : p.color!,
-                        dark: !p.disponible,
-                      ),
+                      top: 12, right: 12,
+                      child: _Badge(label: 'SIN STOCK', dark: true),
                     ),
                   // Quick add (visible en hover desktop)
                   // Offstage mantiene el widget montado para que el async
@@ -249,7 +253,7 @@ class _ProductCardState extends State<ProductCard> {
                   Positioned(
                     bottom: 0, left: 0, right: 0,
                     child: Offstage(
-                      offstage: !_hovered,
+                      offstage: !_hovered || !p.disponible,
                       child: _QuickAdd(producto: p),
                     ),
                   ),
@@ -280,6 +284,14 @@ class _ProductCardState extends State<ProductCard> {
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 2),
+            Text('${p.precioTransferenciaFormateado} con Transferencia',
+              style: GoogleFonts.dmMono(
+                fontSize: 10, color: AppColors.accent,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.05,
+              ),
             ),
             const SizedBox(height: 4),
             Text(p.categoria.toUpperCase(),
