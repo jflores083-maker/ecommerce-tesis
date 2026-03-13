@@ -104,6 +104,7 @@ class _AdminDropsScreenState extends State<AdminDropsScreen> {
                 else
                   ...provider.drops.map((drop) => _DropListItem(
                     drop: drop,
+                    onEditar: () => context.go('/admin/drops/${drop.id}/editar'),
                     onEliminar: () => _eliminar(drop),
                     onVer: () => context.go('/drops/${drop.id}'),
                   )),
@@ -118,10 +119,11 @@ class _AdminDropsScreenState extends State<AdminDropsScreen> {
 
 class _DropListItem extends StatelessWidget {
   final Drop drop;
+  final VoidCallback onEditar;
   final VoidCallback onEliminar;
   final VoidCallback onVer;
 
-  const _DropListItem({required this.drop, required this.onEliminar, required this.onVer});
+  const _DropListItem({required this.drop, required this.onEditar, required this.onEliminar, required this.onVer});
 
   @override
   Widget build(BuildContext context) {
@@ -166,6 +168,11 @@ class _DropListItem extends StatelessWidget {
             icon: const Icon(Icons.open_in_new, size: 18, color: AppColors.charcoal),
             tooltip: 'Ver drop',
             onPressed: onVer,
+          ),
+          IconButton(
+            icon: const Icon(Icons.edit_outlined, size: 18, color: AppColors.charcoal),
+            tooltip: 'Editar',
+            onPressed: onEditar,
           ),
           IconButton(
             icon: const Icon(Icons.delete_outline, size: 18, color: AppColors.charcoal),

@@ -48,6 +48,38 @@ class DropsProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> actualizarDrop({
+    required int id,
+    required String nombre,
+    required List<int> productoIds,
+    XFile? imagen,
+  }) async {
+    try {
+      await _api.actualizarDrop(id: id, nombre: nombre, productoIds: productoIds, imagen: imagen);
+      await cargarDrops();
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<List<int>> getDropsPorProducto(int productoId) async {
+    try {
+      return await _api.getDropsPorProducto(productoId);
+    } catch (_) {
+      return [];
+    }
+  }
+
+  Future<void> sincronizarProductoConDrops(int productoId, List<int> dropIdsSeleccionados) async {
+    final actuales = await _api.getDropsPorProducto(productoId);
+    final agregar  = dropIdsSeleccionados.where((id) => !actuales.contains(id));
+    final quitar   = actuales.where((id) => !dropIdsSeleccionados.contains(id));
+    for (final id in agregar) await _api.agregarProductoADrop(id, productoId);
+    for (final id in quitar)  await _api.quitarProductoDeDrop(id, productoId);
+    await cargarDrops();
+  }
+
   Future<bool> eliminarDrop(int id) async {
     try {
       await _api.eliminarDrop(id);

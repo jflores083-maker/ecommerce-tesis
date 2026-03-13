@@ -20,6 +20,7 @@ import '../screens/drops_screen.dart';
 import '../screens/drop_detalle_screen.dart';
 import '../screens/admin_drops_screen.dart';
 import '../screens/admin_crear_drop_screen.dart';
+import '../screens/admin_editar_drop_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -131,6 +132,13 @@ GoRouter createRouter(AuthProvider authProvider) {
       GoRoute(
         path: '/admin/drops/nuevo',
         builder: (ctx, state) => const AdminCrearDropScreen(),
+      ),
+      GoRoute(
+        path: '/admin/drops/:id/editar',
+        builder: (ctx, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return AdminEditarDropScreen(dropId: id);
+        },
       ),
     ],
   );
