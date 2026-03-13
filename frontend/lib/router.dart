@@ -14,6 +14,7 @@ import '../screens/admin_modificar_screen.dart';
 import '../screens/admin_eliminar_screen.dart';
 import '../screens/admin_personalizacion_screen.dart';
 import '../screens/acerca_screen.dart';
+import '../screens/perfil_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -27,8 +28,9 @@ GoRouter createRouter(AuthProvider authProvider) {
       final isAuthRoute = state.matchedLocation == '/login' ||
           state.matchedLocation == '/register';
 
-      // Si el carrito requiere login y no está autenticado
-      if (state.matchedLocation == '/carrito' && !isLoggedIn) {
+      // Rutas que requieren login
+      if ((state.matchedLocation == '/carrito' ||
+           state.matchedLocation == '/perfil') && !isLoggedIn) {
         return '/login';
       }
 
@@ -97,6 +99,10 @@ GoRouter createRouter(AuthProvider authProvider) {
       GoRoute(
         path: '/acerca-de',
         builder: (ctx, state) => const AcercaScreen(),
+      ),
+      GoRoute(
+        path: '/perfil',
+        builder: (ctx, state) => const PerfilScreen(),
       ),
     ],
   );
