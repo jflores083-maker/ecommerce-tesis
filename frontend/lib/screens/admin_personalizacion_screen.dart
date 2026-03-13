@@ -23,20 +23,32 @@ class _AdminPersonalizacionScreenState extends State<AdminPersonalizacionScreen>
 
   late final TextEditingController _tituloCtrl;
   late final TextEditingController _descripcionCtrl;
-  bool _acercaInicializado = false;
+  late final TextEditingController _contactoEmailCtrl;
+  late final TextEditingController _contactoTelefonoCtrl;
+  late final TextEditingController _contactoDireccionCtrl;
+  late final TextEditingController _contactoHorarioCtrl;
+  bool _inicializado = false;
 
   @override
   void dispose() {
     _tituloCtrl.dispose();
     _descripcionCtrl.dispose();
+    _contactoEmailCtrl.dispose();
+    _contactoTelefonoCtrl.dispose();
+    _contactoDireccionCtrl.dispose();
+    _contactoHorarioCtrl.dispose();
     super.dispose();
   }
 
   void _inicializarAcerca(ConfigProvider config) {
-    if (_acercaInicializado) return;
-    _tituloCtrl = TextEditingController(text: config.acercaTitulo);
-    _descripcionCtrl = TextEditingController(text: config.acercaDescripcion);
-    _acercaInicializado = true;
+    if (_inicializado) return;
+    _tituloCtrl            = TextEditingController(text: config.acercaTitulo);
+    _descripcionCtrl       = TextEditingController(text: config.acercaDescripcion);
+    _contactoEmailCtrl     = TextEditingController(text: config.contactoEmail);
+    _contactoTelefonoCtrl  = TextEditingController(text: config.contactoTelefono);
+    _contactoDireccionCtrl = TextEditingController(text: config.contactoDireccion);
+    _contactoHorarioCtrl   = TextEditingController(text: config.contactoHorario);
+    _inicializado = true;
   }
 
   Future<void> _pickHero() async {
@@ -67,13 +79,20 @@ class _AdminPersonalizacionScreenState extends State<AdminPersonalizacionScreen>
 
   Future<void> _guardarYVolver() async {
     setState(() => _guardando = true);
-    final ok = await context.read<ConfigProvider>().guardarAcerca(
+    final config = context.read<ConfigProvider>();
+    final okAcerca = await config.guardarAcerca(
       titulo: _tituloCtrl.text.trim(),
       descripcion: _descripcionCtrl.text.trim(),
     );
+    final okContacto = await config.guardarContacto(
+      email:     _contactoEmailCtrl.text.trim(),
+      telefono:  _contactoTelefonoCtrl.text.trim(),
+      direccion: _contactoDireccionCtrl.text.trim(),
+      horario:   _contactoHorarioCtrl.text.trim(),
+    );
     if (mounted) {
       setState(() => _guardando = false);
-      if (ok) {
+      if (okAcerca && okContacto) {
         context.go('/admin');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -237,6 +256,24 @@ class _AdminPersonalizacionScreenState extends State<AdminPersonalizacionScreen>
                 ),
                 const SizedBox(height: 48),
 
+                // ── Contacto ──────────────────────────────────
+                Text('DATOS DE CONTACTO',
+                  style: GoogleFonts.dmMono(fontSize: 10, color: AppColors.gray, letterSpacing: 0.15),
+                ),
+                const SizedBox(height: 8),
+                Text('Se muestran en el pie de página.',
+                  style: GoogleFonts.dmMono(fontSize: 10, color: AppColors.stone),
+                ),
+                const SizedBox(height: 12),
+                _campoTexto('Email', _contactoEmailCtrl, keyboardType: TextInputType.emailAddress),
+                const SizedBox(height: 12),
+                _campoTexto('Teléfono / WhatsApp (ej: +5491112345678)', _contactoTelefonoCtrl, keyboardType: TextInputType.phone),
+                const SizedBox(height: 12),
+                _campoTexto('Dirección', _contactoDireccionCtrl),
+                const SizedBox(height: 12),
+                _campoTexto('Horario (ej: Lun – Vie, 10 a 18 hs.)', _contactoHorarioCtrl),
+                const SizedBox(height: 48),
+
                 // ── Guardar ───────────────────────────────────
                 SizedBox(
                   width: double.infinity,
@@ -262,6 +299,24 @@ class _AdminPersonalizacionScreenState extends State<AdminPersonalizacionScreen>
           ),
         ),
       ),
+    );
+  }
+
+  Widget _campoTexto(String label, TextEditingController ctrl, {TextInputType? keyboardType}) {
+    return TextField(
+      controller: ctrl,
+      keyboardType: keyboardType,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: GoogleFonts.dmMono(fontSize: 11, color: AppColors.stone),
+        border: const OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: AppColors.sand)),
+        enabledBorder: const OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: AppColors.sand)),
+        focusedBorder: const OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: AppColors.ink)),
+        filled: true,
+        fillColor: AppColors.beige,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      ),
+      style: GoogleFonts.dmMono(fontSize: 13, color: AppColors.ink),
     );
   }
 

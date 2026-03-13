@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../app_constants.dart';
@@ -515,71 +518,158 @@ class _Footer extends StatelessWidget {
 
     return Container(
       color: AppColors.ink,
-      padding: EdgeInsets.all(isMobile ? 20 : 64),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          isMobile
-              ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: _footerContent(isMobile),
-                )
-              : Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: _footerContent(isMobile),
-                ),
-          const SizedBox(height: 32),
+          // ── Contenido principal ──────────────────────────
+          Padding(
+            padding: EdgeInsets.fromLTRB(
+              isMobile ? 24 : 64, isMobile ? 48 : 72,
+              isMobile ? 24 : 64, isMobile ? 40 : 64,
+            ),
+            child: isMobile
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _FooterBrand(),
+                      const SizedBox(height: 40),
+                      _FooterCol(
+                        title: 'Tienda',
+                        items: [
+                          _FooterLink('Nueva colección', '/catalogo'),
+                          _FooterLink('Remeras', '/catalogo?categoria=Remeras'),
+                          _FooterLink('Pantalones', '/catalogo?categoria=Pantalones'),
+                          _FooterLink('Abrigos', '/catalogo?categoria=Abrigos'),
+                          _FooterLink('Ver todo', '/catalogo'),
+                        ],
+                      ),
+                      const SizedBox(height: 32),
+                      _FooterCol(
+                        title: 'Nosotros',
+                        items: [
+                          _FooterLink('Acerca de', '/acerca-de'),
+                          _FooterLink('Colección', '/catalogo'),
+                        ],
+                      ),
+                      const SizedBox(height: 32),
+                      _FooterContact(),
+                    ],
+                  )
+                : Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(flex: 3, child: _FooterBrand()),
+                      Expanded(
+                        flex: 2,
+                        child: _FooterCol(
+                          title: 'Tienda',
+                          items: [
+                            _FooterLink('Nueva colección', '/catalogo'),
+                            _FooterLink('Remeras', '/catalogo?categoria=Remeras'),
+                            _FooterLink('Pantalones', '/catalogo?categoria=Pantalones'),
+                            _FooterLink('Abrigos', '/catalogo?categoria=Abrigos'),
+                            _FooterLink('Ver todo', '/catalogo'),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: _FooterCol(
+                          title: 'Nosotros',
+                          items: [
+                            _FooterLink('Acerca de', '/acerca-de'),
+                            _FooterLink('Colección', '/catalogo'),
+                          ],
+                        ),
+                      ),
+                      Expanded(flex: 2, child: _FooterContact()),
+                    ],
+                  ),
+          ),
+
+          // ── Divider ──────────────────────────────────────
           const Divider(color: Color(0xFF2E2B28), height: 1),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('© 2025 638. Todos los derechos reservados.',
-                style: GoogleFonts.dmMono(fontSize: 10, color: AppColors.gray),
-              ),
-              Text('Buenos Aires, Argentina',
-                style: GoogleFonts.dmMono(fontSize: 10, color: AppColors.gray),
-              ),
-            ],
+
+          // ── Bottom bar ───────────────────────────────────
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: isMobile ? 24 : 64, vertical: 20,
+            ),
+            child: isMobile
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('© 2025 638. Todos los derechos reservados.',
+                        style: GoogleFonts.dmMono(fontSize: 10, color: AppColors.gray),
+                      ),
+                      const SizedBox(height: 6),
+                      Text('Buenos Aires, Argentina',
+                        style: GoogleFonts.dmMono(fontSize: 10, color: AppColors.gray),
+                      ),
+                    ],
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('© 2025 638. Todos los derechos reservados.',
+                        style: GoogleFonts.dmMono(fontSize: 10, color: AppColors.gray),
+                      ),
+                      Text('Hecho con cuidado en Buenos Aires.',
+                        style: GoogleFonts.dmMono(fontSize: 10, color: AppColors.gray),
+                      ),
+                    ],
+                  ),
           ),
         ],
       ),
     );
   }
+}
 
-  List<Widget> _footerContent(bool isMobile) {
-    return [
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text('638',
-            style: GoogleFonts.syne(
-              fontSize: 22, fontWeight: FontWeight.w800,
-              color: AppColors.cream, letterSpacing: -0.5,
-            ),
+class _FooterBrand extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('638',
+          style: GoogleFonts.syne(
+            fontSize: 48, fontWeight: FontWeight.w800,
+            color: AppColors.cream, letterSpacing: -1,
+            height: 1,
           ),
-          const SizedBox(height: 12),
-          Text('Ropa urbana de Buenos Aires\npara el mundo.',
-            style: GoogleFonts.dmMono(
-              fontSize: 12, color: AppColors.stone, height: 1.8,
-            ),
+        ),
+        const SizedBox(height: 16),
+        Text('Ropa urbana de Buenos Aires\npara el mundo.',
+          style: GoogleFonts.dmMono(
+            fontSize: 12, color: AppColors.stone, height: 2.0,
           ),
-        ],
-      ),
-      if (isMobile) const SizedBox(height: 32),
-      _FooterCol('Tienda', ['Nueva colección', 'Remeras', 'Pantalones', 'Abrigos']),
-      if (isMobile) const SizedBox(height: 24),
-      _FooterCol('Ayuda', ['Guía de talles', 'Envíos', 'Devoluciones', 'Contacto']),
-    ];
+        ),
+        const SizedBox(height: 24),
+        Container(height: 1, width: 40, color: AppColors.accent),
+        const SizedBox(height: 24),
+        Text('Diseño propio. Producción local.\nEdiciones limitadas.',
+          style: GoogleFonts.cormorantGaramond(
+            fontSize: 18, fontWeight: FontWeight.w300,
+            color: Color(0xFF7A7570), height: 1.6,
+            fontStyle: FontStyle.italic,
+          ),
+        ),
+      ],
+    );
   }
+}
+
+class _FooterLink {
+  final String label;
+  final String route;
+  const _FooterLink(this.label, this.route);
 }
 
 class _FooterCol extends StatelessWidget {
   final String title;
-  final List<String> items;
-  const _FooterCol(this.title, this.items);
+  final List<_FooterLink> items;
+  const _FooterCol({required this.title, required this.items});
 
   @override
   Widget build(BuildContext context) {
@@ -588,17 +678,143 @@ class _FooterCol extends StatelessWidget {
       children: [
         Text(title.toUpperCase(),
           style: GoogleFonts.dmMono(
-            fontSize: 10, color: AppColors.stone, letterSpacing: 0.2,
+            fontSize: 10, color: AppColors.accent,
+            letterSpacing: 0.2, fontWeight: FontWeight.w700,
           ),
         ),
-        const SizedBox(height: 16),
-        ...items.map((item) => Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: Text(item,
-            style: GoogleFonts.dmMono(fontSize: 12, color: AppColors.gray),
+        const SizedBox(height: 20),
+        ...items.map((link) => Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: GestureDetector(
+            onTap: () => context.go(link.route),
+            child: MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: Text(link.label,
+                style: GoogleFonts.dmMono(
+                  fontSize: 13, color: AppColors.stone, height: 1.2,
+                ),
+              ),
+            ),
           ),
         )),
       ],
+    );
+  }
+}
+
+class _FooterContact extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final config = context.watch<ConfigProvider>();
+    final telefono  = config.contactoTelefono;
+    final email     = config.contactoEmail;
+    final direccion = config.contactoDireccion;
+    final horario   = config.contactoHorario;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('CONTACTO',
+          style: GoogleFonts.dmMono(
+            fontSize: 10, color: AppColors.accent,
+            letterSpacing: 0.2, fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 20),
+        if (direccion.isNotEmpty) ...[
+          Text(direccion,
+            style: GoogleFonts.dmMono(fontSize: 13, color: AppColors.stone),
+          ),
+          const SizedBox(height: 12),
+        ],
+        if (email.isNotEmpty) ...[
+          Text(email,
+            style: GoogleFonts.dmMono(fontSize: 13, color: AppColors.stone),
+          ),
+          const SizedBox(height: 12),
+        ],
+        if (horario.isNotEmpty) ...[
+          Text(horario,
+            style: GoogleFonts.dmMono(fontSize: 12, color: AppColors.gray),
+          ),
+          const SizedBox(height: 24),
+        ] else
+          const SizedBox(height: 24),
+        Row(
+          children: [
+            _SocialChip(label: 'IG'),
+            const SizedBox(width: 8),
+            _SocialChip(label: 'TK'),
+            if (telefono.isNotEmpty) ...[
+              const SizedBox(width: 8),
+              _SocialChip(
+                label: 'WhatsApp',
+                icon: FontAwesomeIcons.whatsapp,
+                onTap: () async {
+                  final numero = telefono.replaceAll(RegExp(r'[^\d]'), '');
+                  try {
+                    await launchUrl(
+                      Uri.parse('https://wa.me/$numero'),
+                      webOnlyWindowName: '_blank',
+                    );
+                  } catch (_) {}
+                },
+              ),
+            ],
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _SocialChip extends StatefulWidget {
+  final String label;
+  final FaIconData? icon;
+  final VoidCallback? onTap;
+  const _SocialChip({required this.label, this.icon, this.onTap});
+
+  @override
+  State<_SocialChip> createState() => _SocialChipState();
+}
+
+class _SocialChipState extends State<_SocialChip> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _hovered ? AppColors.accent : AppColors.gray;
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit:  (_) => setState(() => _hovered = false),
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 160),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: _hovered ? AppColors.accent : const Color(0xFF3A3632),
+            ),
+            color: _hovered ? AppColors.accent.withValues(alpha: 0.1) : Colors.transparent,
+          ),
+          child: widget.icon != null
+              ? Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    FaIcon(widget.icon!, size: 11, color: color),
+                    const SizedBox(width: 6),
+                    Text(widget.label,
+                      style: GoogleFonts.dmMono(fontSize: 10, color: color, fontWeight: FontWeight.w700, letterSpacing: 0.1),
+                    ),
+                  ],
+                )
+              : Text(widget.label,
+                  style: GoogleFonts.dmMono(fontSize: 10, color: color, fontWeight: FontWeight.w700, letterSpacing: 0.1),
+                ),
+        ),
+      ),
     );
   }
 }
