@@ -219,6 +219,23 @@ class ApiService {
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
 
+  Future<Map<String, dynamic>> getAcercaDe() async {
+    final uri = Uri.parse('$_baseUrl/configuracion/acerca');
+    final res = await http.get(uri, headers: await _headers());
+    _checkStatus(res);
+    return jsonDecode(res.body) as Map<String, dynamic>;
+  }
+
+  Future<void> guardarAcercaDe({required String titulo, required String descripcion}) async {
+    final uri = Uri.parse('$_baseUrl/configuracion/acerca');
+    final res = await http.put(
+      uri,
+      headers: await _headers(auth: true),
+      body: jsonEncode({'titulo': titulo, 'descripcion': descripcion}),
+    );
+    _checkStatus(res);
+  }
+
   Future<Map<String, dynamic>> subirHeroImage(XFile imagen) async {
     final uri = Uri.parse('$_baseUrl/configuracion/hero');
     final token = await getToken();

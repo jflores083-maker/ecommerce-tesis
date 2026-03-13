@@ -19,6 +19,25 @@ class AdminPersonalizacionScreen extends StatefulWidget {
 class _AdminPersonalizacionScreenState extends State<AdminPersonalizacionScreen> {
   Uint8List? _previewBytes;
   bool _subiendo = false;
+  bool _guardando = false;
+
+  late final TextEditingController _tituloCtrl;
+  late final TextEditingController _descripcionCtrl;
+  bool _acercaInicializado = false;
+
+  @override
+  void dispose() {
+    _tituloCtrl.dispose();
+    _descripcionCtrl.dispose();
+    super.dispose();
+  }
+
+  void _inicializarAcerca(ConfigProvider config) {
+    if (_acercaInicializado) return;
+    _tituloCtrl = TextEditingController(text: config.acercaTitulo);
+    _descripcionCtrl = TextEditingController(text: config.acercaDescripcion);
+    _acercaInicializado = true;
+  }
 
   Future<void> _pickHero() async {
     final picker = ImagePicker();
@@ -46,9 +65,32 @@ class _AdminPersonalizacionScreenState extends State<AdminPersonalizacionScreen>
     }
   }
 
+  Future<void> _guardarYVolver() async {
+    setState(() => _guardando = true);
+    final ok = await context.read<ConfigProvider>().guardarAcerca(
+      titulo: _tituloCtrl.text.trim(),
+      descripcion: _descripcionCtrl.text.trim(),
+    );
+    if (mounted) {
+      setState(() => _guardando = false);
+      if (ok) {
+        context.go('/admin');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Error al guardar',
+            style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.cream),
+          ),
+          backgroundColor: AppColors.charcoal,
+          behavior: SnackBarBehavior.floating,
+        ));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final config   = context.watch<ConfigProvider>();
+    _inicializarAcerca(config);
     final isMobile = MediaQuery.of(context).size.width < 768;
 
     return Scaffold(
@@ -153,11 +195,53 @@ class _AdminPersonalizacionScreenState extends State<AdminPersonalizacionScreen>
                 ),
                 const SizedBox(height: 48),
 
+                // ── Acerca de ─────────────────────────────────
+                Text('PÁGINA "ACERCA DE"',
+                  style: GoogleFonts.dmMono(fontSize: 10, color: AppColors.gray, letterSpacing: 0.15),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _tituloCtrl,
+                  decoration: InputDecoration(
+                    labelText: 'Título',
+                    labelStyle: GoogleFonts.dmMono(fontSize: 11, color: AppColors.stone),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: AppColors.sand)),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: AppColors.sand)),
+                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: AppColors.ink)),
+                    filled: true,
+                    fillColor: AppColors.beige,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  ),
+                  style: GoogleFonts.cormorantGaramond(fontSize: 20, color: AppColors.ink),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _descripcionCtrl,
+                  maxLines: 6,
+                  decoration: InputDecoration(
+                    labelText: 'Descripción',
+                    alignLabelWithHint: true,
+                    labelStyle: GoogleFonts.dmMono(fontSize: 11, color: AppColors.stone),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: AppColors.sand)),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: AppColors.sand)),
+                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: AppColors.ink)),
+                    filled: true,
+                    fillColor: AppColors.beige,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  ),
+                  style: GoogleFonts.dmMono(fontSize: 12, color: AppColors.charcoal, height: 1.8),
+                ),
+                const SizedBox(height: 8),
+                Text('Este texto aparece en la página "Acerca de" de la tienda.',
+                  style: GoogleFonts.dmMono(fontSize: 10, color: AppColors.stone),
+                ),
+                const SizedBox(height: 48),
+
                 // ── Guardar ───────────────────────────────────
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () => context.go('/admin'),
+                    onPressed: _guardando ? null : _guardarYVolver,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.ink,
                       foregroundColor: AppColors.cream,
@@ -165,9 +249,11 @@ class _AdminPersonalizacionScreenState extends State<AdminPersonalizacionScreen>
                       shape: const RoundedRectangleBorder(),
                       elevation: 0,
                     ),
-                    child: Text('Guardar y volver',
-                      style: GoogleFonts.dmMono(fontSize: 12, letterSpacing: 0.1),
-                    ),
+                    child: _guardando
+                        ? const SizedBox(height: 16, width: 16, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.cream))
+                        : Text('Guardar y volver',
+                            style: GoogleFonts.dmMono(fontSize: 12, letterSpacing: 0.1),
+                          ),
                   ),
                 ),
                 const SizedBox(height: 48),
