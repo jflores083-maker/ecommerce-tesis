@@ -62,7 +62,7 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
         // Links de navegación (solo desktop/tablet)
         if (MediaQuery.of(context).size.width > 768) ...[
           _NavLink('Colección', () => context.go('/catalogo')),
-          _NavLink('Acerca de', () {}),
+          _NavLink('Acerca de', () => context.go('/acerca-de')),
           const SizedBox(width: 12),
         ],
         // Carrito
@@ -106,7 +106,7 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
         if (auth.isLoggedIn && (auth.user?.isAdmin ?? false))
           TextButton(
             onPressed: () => context.go('/admin'),
-            child: Text('Admin',
+            child: Text('Panel de Administración',
               style: GoogleFonts.dmMono(
                 fontSize: 11, color: AppColors.charcoal,
                 letterSpacing: 0.1,
