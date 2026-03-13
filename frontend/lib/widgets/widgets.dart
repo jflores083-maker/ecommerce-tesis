@@ -126,9 +126,9 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         if (auth.isLoggedIn)
           PopupMenuButton<String>(
-            icon: const Icon(Icons.person_outline,
-                color: AppColors.charcoal, size: 20),
+            icon: _UserAvatar(fotoUrl: auth.user?.fotoPerfilUrl),
             onSelected: (v) {
+              if (v == 'perfil') context.go('/perfil');
               if (v == 'logout') context.read<AuthProvider>().logout();
             },
             itemBuilder: (_) => [
@@ -168,6 +168,33 @@ class _NavLink extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _UserAvatar extends StatelessWidget {
+  final String? fotoUrl;
+  const _UserAvatar({this.fotoUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    if (fotoUrl != null) {
+      return Container(
+        width: 28, height: 28,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: AppColors.sand),
+        ),
+        child: ClipOval(
+          child: Image.network(
+            '${ApiService.serverUrl}$fotoUrl',
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) =>
+                const Icon(Icons.person_outline, size: 18, color: AppColors.charcoal),
+          ),
+        ),
+      );
+    }
+    return const Icon(Icons.person_outline, size: 20, color: AppColors.charcoal);
   }
 }
 

@@ -126,6 +126,34 @@ class ApiService {
     return AppUser.fromJson(jsonDecode(res.body), token: token);
   }
 
+  // PUT /api/usuarios/perfil
+  Future<AppUser> actualizarPerfil({
+    required String nombre,
+    required String apellido,
+    required String telefono,
+    String? passwordActual,
+    String? passwordNueva,
+  }) async {
+    final uri = Uri.parse('$_baseUrl/usuarios/perfil');
+    final body = <String, dynamic>{
+      'nombre': nombre,
+      'apellido': apellido,
+      'telefono': telefono,
+    };
+    if (passwordNueva != null && passwordNueva.isNotEmpty) {
+      body['passwordActual'] = passwordActual;
+      body['passwordNueva']  = passwordNueva;
+    }
+    final res = await http.put(
+      uri,
+      headers: await _headers(auth: true),
+      body: jsonEncode(body),
+    );
+    _checkStatus(res);
+    final token = await getToken();
+    return AppUser.fromJson(jsonDecode(res.body), token: token);
+  }
+
   // ── PRODUCTOS ─────────────────────────────────────────────
   // GET /api/productos?categoria=&estado=
   // Devuelve lista de ProductoListaDto
@@ -215,6 +243,19 @@ class ApiService {
   Future<Map<String, dynamic>> getConfiguracion() async {
     final uri = Uri.parse('$_baseUrl/configuracion');
     final res = await http.get(uri, headers: await _headers());
+    _checkStatus(res);
+    return jsonDecode(res.body) as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> subirFotoPerfil(XFile imagen) async {
+    final uri = Uri.parse('$_baseUrl/usuarios/perfil/foto');
+    final token = await getToken();
+    final request = http.MultipartRequest('POST', uri);
+    if (token != null) request.headers['Authorization'] = 'Bearer $token';
+    final bytes = await imagen.readAsBytes();
+    request.files.add(http.MultipartFile.fromBytes('imagen', bytes, filename: imagen.name));
+    final streamed = await request.send();
+    final res = await http.Response.fromStream(streamed);
     _checkStatus(res);
     return jsonDecode(res.body) as Map<String, dynamic>;
   }

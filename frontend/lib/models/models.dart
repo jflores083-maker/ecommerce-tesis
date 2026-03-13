@@ -145,6 +145,7 @@ class AppUser {
   final String telefono;
   final String rol;
   final String? token;
+  final String? fotoPerfilUrl;
 
   const AppUser({
     required this.id,
@@ -154,9 +155,9 @@ class AppUser {
     required this.telefono,
     required this.rol,
     this.token,
+    this.fotoPerfilUrl,
   });
 
-  // Login solo devuelve { token } — el perfil se obtiene con GET /api/usuarios/perfil
   factory AppUser.fromToken(String token) => AppUser(
         id: 0, nombre: '', apellido: '', email: '',
         telefono: '', rol: '', token: token,
@@ -164,13 +165,14 @@ class AppUser {
 
   factory AppUser.fromJson(Map<String, dynamic> json, {String? token}) {
     return AppUser(
-      id:       (json['id'] as num? ?? 0).toInt(),
-      nombre:   json['nombre'] ?? '',
-      apellido: json['apellido'] ?? '',
-      email:    json['email'] ?? '',
-      telefono: json['telefono'] ?? '',
-      rol:      json['rol'] ?? 'Cliente',
-      token:    token,
+      id:            (json['id'] as num? ?? 0).toInt(),
+      nombre:        json['nombre'] ?? '',
+      apellido:      json['apellido'] ?? '',
+      email:         json['email'] ?? '',
+      telefono:      json['telefono'] ?? '',
+      rol:           json['rol'] ?? 'Cliente',
+      token:         token,
+      fotoPerfilUrl: json['fotoPerfilUrl'],
     );
   }
 

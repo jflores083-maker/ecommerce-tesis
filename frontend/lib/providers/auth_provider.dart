@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:image_picker/image_picker.dart';
 import '../models/models.dart';
 import '../services/api_service.dart';
 
@@ -97,6 +98,49 @@ class AuthProvider extends ChangeNotifier {
     _user = null;
     _status = AuthStatus.unauthenticated;
     notifyListeners();
+  }
+
+  Future<bool> subirFotoPerfil(XFile imagen) async {
+    try {
+      final result = await _api.subirFotoPerfil(imagen);
+      final fotoUrl = result['fotoPerfilUrl'] as String?;
+      if (_user != null && fotoUrl != null) {
+        _user = AppUser(
+          id: _user!.id, nombre: _user!.nombre, apellido: _user!.apellido,
+          email: _user!.email, telefono: _user!.telefono, rol: _user!.rol,
+          token: _user!.token, fotoPerfilUrl: fotoUrl,
+        );
+        notifyListeners();
+      }
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<bool> actualizarPerfil({
+    required String nombre,
+    required String apellido,
+    required String telefono,
+    String? passwordActual,
+    String? passwordNueva,
+  }) async {
+    _error = null;
+    try {
+      _user = await _api.actualizarPerfil(
+        nombre: nombre,
+        apellido: apellido,
+        telefono: telefono,
+        passwordActual: passwordActual,
+        passwordNueva: passwordNueva,
+      );
+      notifyListeners();
+      return true;
+    } on ApiException catch (e) {
+      _error = e.message;
+      notifyListeners();
+      return false;
+    }
   }
 
   void clearError() {
