@@ -11,14 +11,22 @@ class ConfigProvider extends ChangeNotifier {
   String? _heroImageUrl;
   String _acercaTitulo = 'Sobre 638';
   String _acercaDescripcion = '';
+  String _contactoEmail = '';
+  String _contactoTelefono = '';
+  String _contactoDireccion = '';
+  String _contactoHorario = '';
 
   ConfigProvider(this._api);
 
   int         get temaIndex          => _temaIndex;
   String?     get heroImageUrl       => _heroImageUrl;
   AppPaleta   get paleta             => AppPaleta.todas[_temaIndex];
-  String      get acercaTitulo       => _acercaTitulo;
-  String      get acercaDescripcion  => _acercaDescripcion;
+  String      get acercaTitulo        => _acercaTitulo;
+  String      get acercaDescripcion   => _acercaDescripcion;
+  String      get contactoEmail       => _contactoEmail;
+  String      get contactoTelefono    => _contactoTelefono;
+  String      get contactoDireccion   => _contactoDireccion;
+  String      get contactoHorario     => _contactoHorario;
 
   Future<void> cargarConfig() async {
     // Cargar tema guardado localmente
@@ -28,12 +36,31 @@ class ConfigProvider extends ChangeNotifier {
     // Cargar hero image y acerca del backend
     try {
       final config = await _api.getConfiguracion();
-      _heroImageUrl       = config['heroImageUrl'] as String?;
-      _acercaTitulo       = (config['acercaTitulo'] as String?) ?? 'Sobre 638';
-      _acercaDescripcion  = (config['acercaDescripcion'] as String?) ?? '';
+      _heroImageUrl        = config['heroImageUrl']     as String?;
+      _acercaTitulo        = (config['acercaTitulo']     as String?) ?? 'Sobre 638';
+      _acercaDescripcion   = (config['acercaDescripcion'] as String?) ?? '';
+      _contactoEmail       = (config['contactoEmail']    as String?) ?? '';
+      _contactoTelefono    = (config['contactoTelefono'] as String?) ?? '';
+      _contactoDireccion   = (config['contactoDireccion'] as String?) ?? '';
+      _contactoHorario     = (config['contactoHorario']  as String?) ?? '';
     } catch (_) {}
 
     notifyListeners();
+  }
+
+  Future<bool> guardarContacto({
+    required String email, required String telefono,
+    required String direccion, required String horario,
+  }) async {
+    try {
+      await _api.guardarContacto(email: email, telefono: telefono, direccion: direccion, horario: horario);
+      _contactoEmail     = email;
+      _contactoTelefono  = telefono;
+      _contactoDireccion = direccion;
+      _contactoHorario   = horario;
+      notifyListeners();
+      return true;
+    } catch (_) { return false; }
   }
 
   Future<bool> guardarAcerca({required String titulo, required String descripcion}) async {

@@ -9,7 +9,8 @@ namespace backend.Controllers
     public class ConfiguracionController : ControllerBase
     {
         private readonly IWebHostEnvironment _env;
-        private string AcercaPath => Path.Combine(_env.WebRootPath, "uploads", "acerca.json");
+        private string AcercaPath   => Path.Combine(_env.WebRootPath, "uploads", "acerca.json");
+        private string ContactoPath => Path.Combine(_env.WebRootPath, "uploads", "contacto.json");
 
         public ConfiguracionController(IWebHostEnvironment env)
         {
@@ -21,9 +22,9 @@ namespace backend.Controllers
         [AllowAnonymous]
         public IActionResult Get()
         {
+            // Hero
             var heroDir = Path.Combine(_env.WebRootPath, "uploads", "hero");
             string? heroUrl = null;
-
             if (Directory.Exists(heroDir))
             {
                 var file = Directory.GetFiles(heroDir).FirstOrDefault();
@@ -38,11 +39,28 @@ namespace backend.Controllers
             {
                 var json = System.IO.File.ReadAllText(AcercaPath);
                 var doc = JsonDocument.Parse(json).RootElement;
-                acercaTitulo = doc.GetProperty("titulo").GetString() ?? acercaTitulo;
+                acercaTitulo     = doc.GetProperty("titulo").GetString()      ?? acercaTitulo;
                 acercaDescripcion = doc.GetProperty("descripcion").GetString() ?? "";
             }
 
-            return Ok(new { heroImageUrl = heroUrl, acercaTitulo, acercaDescripcion });
+            // Contacto
+            string contactoEmail = ""; string contactoTelefono = "";
+            string contactoDireccion = ""; string contactoHorario = "";
+            if (System.IO.File.Exists(ContactoPath))
+            {
+                var cJson = System.IO.File.ReadAllText(ContactoPath);
+                var cDoc = JsonDocument.Parse(cJson).RootElement;
+                contactoEmail     = cDoc.GetProperty("email").GetString()     ?? "";
+                contactoTelefono  = cDoc.GetProperty("telefono").GetString()  ?? "";
+                contactoDireccion = cDoc.GetProperty("direccion").GetString() ?? "";
+                contactoHorario   = cDoc.GetProperty("horario").GetString()   ?? "";
+            }
+
+            return Ok(new {
+                heroImageUrl = heroUrl,
+                acercaTitulo, acercaDescripcion,
+                contactoEmail, contactoTelefono, contactoDireccion, contactoHorario
+            });
         }
 
         // POST /api/configuracion/hero
@@ -52,12 +70,11 @@ namespace backend.Controllers
         public async Task<IActionResult> SubirHero(IFormFile imagen)
         {
             if (imagen == null || imagen.Length == 0)
-                return BadRequest("No se recibió ninguna imagen.");
+                return BadRequest("No se recibio ninguna imagen.");
 
             var heroDir = Path.Combine(_env.WebRootPath, "uploads", "hero");
             Directory.CreateDirectory(heroDir);
 
-            // Eliminar imagen anterior
             foreach (var old in Directory.GetFiles(heroDir))
                 System.IO.File.Delete(old);
 
@@ -82,7 +99,7 @@ namespace backend.Controllers
             {
                 var json = System.IO.File.ReadAllText(AcercaPath);
                 var doc = JsonDocument.Parse(json).RootElement;
-                titulo = doc.GetProperty("titulo").GetString() ?? titulo;
+                titulo      = doc.GetProperty("titulo").GetString()      ?? titulo;
                 descripcion = doc.GetProperty("descripcion").GetString() ?? "";
             }
             return Ok(new { titulo, descripcion });
@@ -98,11 +115,35 @@ namespace backend.Controllers
             System.IO.File.WriteAllText(AcercaPath, json);
             return Ok(new { titulo = dto.Titulo, descripcion = dto.Descripcion });
         }
+
+        // PUT /api/configuracion/contacto
+        [HttpPut("contacto")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult GuardarContacto([FromBody] ContactoDto dto)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(ContactoPath)!);
+            var json = JsonSerializer.Serialize(new {
+                email     = dto.Email,
+                telefono  = dto.Telefono,
+                direccion = dto.Direccion,
+                horario   = dto.Horario
+            });
+            System.IO.File.WriteAllText(ContactoPath, json);
+            return Ok(dto);
+        }
     }
 
     public class AcercaDto
     {
-        public string Titulo { get; set; } = string.Empty;
+        public string Titulo      { get; set; } = string.Empty;
         public string Descripcion { get; set; } = string.Empty;
+    }
+
+    public class ContactoDto
+    {
+        public string Email     { get; set; } = string.Empty;
+        public string Telefono  { get; set; } = string.Empty;
+        public string Direccion { get; set; } = string.Empty;
+        public string Horario   { get; set; } = string.Empty;
     }
 }
