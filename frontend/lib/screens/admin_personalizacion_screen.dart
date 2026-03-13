@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -149,6 +150,25 @@ class _AdminPersonalizacionScreenState extends State<AdminPersonalizacionScreen>
                       ),
                     );
                   }),
+                ),
+                const SizedBox(height: 48),
+
+                // ── Guardar ───────────────────────────────────
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => context.go('/admin'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.ink,
+                      foregroundColor: AppColors.cream,
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      shape: const RoundedRectangleBorder(),
+                      elevation: 0,
+                    ),
+                    child: Text('Guardar y volver',
+                      style: GoogleFonts.dmMono(fontSize: 12, letterSpacing: 0.1),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 48),
               ],
