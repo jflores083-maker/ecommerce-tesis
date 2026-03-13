@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../app_constants.dart';
 import '../providers/admin_provider.dart';
+import '../providers/drops_provider.dart';
 import '../models/models.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
@@ -168,6 +169,7 @@ class _FormEditarState extends State<_FormEditar> {
   late String _categoriaSeleccionada;
   late String _estadoSeleccionado;
   late Set<String> _tallesSeleccionados;
+  Set<int> _dropsSeleccionados = {};
 
   static const _estados = ['disponible', 'no disponible'];
   static const _talles  = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
@@ -184,6 +186,12 @@ class _FormEditarState extends State<_FormEditar> {
     _categoriaSeleccionada = AppCategorias.todas.contains(p.categoria) ? p.categoria : AppCategorias.todas.first;
     _estadoSeleccionado    = p.estado;
     _tallesSeleccionados   = Set<String>.from(p.talles);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final dropsProvider = context.read<DropsProvider>();
+      await dropsProvider.cargarDrops();
+      final actuales = await dropsProvider.getDropsPorProducto(p.id);
+      if (mounted) setState(() => _dropsSeleccionados = actuales.toSet());
+    });
   }
 
   @override
@@ -230,11 +238,12 @@ class _FormEditarState extends State<_FormEditar> {
     final admin = context.read<AdminProvider>();
     final ok = await admin.modificarProducto(widget.producto.id, campos);
 
-    if (mounted) {
-      if (ok) {
-        _snack('Producto actualizado correctamente');
-        widget.onVolver();
-      }
+    if (mounted && ok) {
+      await context.read<DropsProvider>().sincronizarProductoConDrops(
+        widget.producto.id, _dropsSeleccionados.toList(),
+      );
+      _snack('Producto actualizado correctamente');
+      widget.onVolver();
     }
   }
 
@@ -375,6 +384,53 @@ class _FormEditarState extends State<_FormEditar> {
           ),
         ),
         const SizedBox(height: 40),
+
+        // ── Drops ──────────────────────────────────────────
+        Builder(builder: (ctx) {
+          final drops = ctx.watch<DropsProvider>().drops;
+          if (drops.isEmpty) return const SizedBox.shrink();
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('DROPS',
+                style: GoogleFonts.dmMono(fontSize: 10, color: AppColors.gray, letterSpacing: 0.15),
+              ),
+              const SizedBox(height: 4),
+              Text('Asigná o quitá este producto de los drops existentes.',
+                style: GoogleFonts.dmMono(fontSize: 10, color: AppColors.stone),
+              ),
+              const SizedBox(height: 12),
+              ...drops.map((drop) {
+                final sel = _dropsSeleccionados.contains(drop.id);
+                return GestureDetector(
+                  onTap: () => setState(() {
+                    if (sel) _dropsSeleccionados.remove(drop.id);
+                    else _dropsSeleccionados.add(drop.id);
+                  }),
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: sel ? AppColors.ink : AppColors.sand, width: sel ? 2 : 1),
+                      color: sel ? AppColors.ink.withValues(alpha: 0.04) : AppColors.cream,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(drop.nombre,
+                            style: GoogleFonts.syne(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.ink),
+                          ),
+                        ),
+                        if (sel) const Icon(Icons.check_circle, size: 18, color: AppColors.ink),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+              const SizedBox(height: 40),
+            ],
+          );
+        }),
 
         PrimaryButton(
           label: 'Guardar cambios',

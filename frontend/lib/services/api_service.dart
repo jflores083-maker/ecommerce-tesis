@@ -452,6 +452,50 @@ class ApiService {
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
 
+  Future<void> actualizarDrop({
+    required int id,
+    required String nombre,
+    required List<int> productoIds,
+    XFile? imagen,
+  }) async {
+    final uri = Uri.parse('$_baseUrl/drops/$id');
+    final token = await getToken();
+    final request = http.MultipartRequest('PUT', uri);
+    if (token != null) request.headers['Authorization'] = 'Bearer $token';
+
+    request.fields['nombre'] = nombre;
+    if (productoIds.isNotEmpty) {
+      request.fields['productoIds'] = productoIds.join(',');
+    }
+    if (imagen != null) {
+      final bytes = await imagen.readAsBytes();
+      request.files.add(http.MultipartFile.fromBytes('imagen', bytes, filename: imagen.name));
+    }
+
+    final streamed = await request.send();
+    final res = await http.Response.fromStream(streamed);
+    _checkStatus(res);
+  }
+
+  Future<List<int>> getDropsPorProducto(int productoId) async {
+    final uri = Uri.parse('$_baseUrl/drops/por-producto/$productoId');
+    final res = await http.get(uri, headers: await _headers());
+    _checkStatus(res);
+    return (jsonDecode(res.body) as List).cast<int>();
+  }
+
+  Future<void> agregarProductoADrop(int dropId, int productoId) async {
+    final uri = Uri.parse('$_baseUrl/drops/$dropId/productos/$productoId');
+    final res = await http.post(uri, headers: await _headers(auth: true));
+    _checkStatus(res);
+  }
+
+  Future<void> quitarProductoDeDrop(int dropId, int productoId) async {
+    final uri = Uri.parse('$_baseUrl/drops/$dropId/productos/$productoId');
+    final res = await http.delete(uri, headers: await _headers(auth: true));
+    _checkStatus(res);
+  }
+
   Future<void> eliminarDrop(int id) async {
     final uri = Uri.parse('$_baseUrl/drops/$id');
     final res = await http.delete(uri, headers: await _headers(auth: true));

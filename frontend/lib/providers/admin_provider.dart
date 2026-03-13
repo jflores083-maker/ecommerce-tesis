@@ -16,7 +16,7 @@ class AdminProvider extends ChangeNotifier {
   String? get error   => _error;
   bool    get exito   => _exito;
 
-  Future<bool> crearProducto({
+  Future<Producto?> crearProducto({
     required String titulo,
     required String descripcion,
     required double precio,
@@ -33,10 +33,8 @@ class AdminProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Talles se serializa como JSON array string: ["S","M","L"]
       final tallesJson = '[${talles.map((t) => '"$t"').join(',')}]';
-
-      await _api.crearProducto(
+      final producto = await _api.crearProducto(
         titulo:      titulo,
         descripcion: descripcion,
         precio:      precio,
@@ -50,12 +48,12 @@ class AdminProvider extends ChangeNotifier {
       _exito = true;
       _loading = false;
       notifyListeners();
-      return true;
+      return producto;
     } on ApiException catch (e) {
       _error = e.message;
       _loading = false;
       notifyListeners();
-      return false;
+      return null;
     }
   }
 

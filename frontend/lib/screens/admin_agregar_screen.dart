@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../app_constants.dart';
 import '../providers/admin_provider.dart';
+import '../providers/drops_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/widgets.dart';
 
@@ -25,12 +26,21 @@ class _AdminAgregarScreenState extends State<AdminAgregarScreen> {
   String _categoriaSeleccionada = 'Remeras';
   String _estadoSeleccionado    = 'disponible';
   final Set<String> _tallesSeleccionados = {};
+  final Set<int> _dropsSeleccionados = {};
   XFile? _imagenSeleccionada;
   Uint8List? _imagenBytes;
 
   static List<String> get _categorias => AppCategorias.todas;
   static const _estados = ['disponible', 'no disponible'];
   static const _talles  = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<DropsProvider>().cargarDrops();
+    });
+  }
 
   @override
   void dispose() {
@@ -74,7 +84,7 @@ class _AdminAgregarScreenState extends State<AdminAgregarScreen> {
     if (_tallesSeleccionados.isEmpty) { _snack('Seleccioná al menos un talle', error: true); return; }
 
     final admin = context.read<AdminProvider>();
-    final ok = await admin.crearProducto(
+    final producto = await admin.crearProducto(
       titulo:      titulo,
       descripcion: descripcion,
       precio:      precio,
@@ -86,7 +96,13 @@ class _AdminAgregarScreenState extends State<AdminAgregarScreen> {
       imagen:      _imagenSeleccionada,
     );
 
-    if (ok && mounted) {
+    if (producto != null && mounted) {
+      // Asignar a drops seleccionados
+      if (_dropsSeleccionados.isNotEmpty) {
+        await context.read<DropsProvider>().sincronizarProductoConDrops(
+          producto.id, _dropsSeleccionados.toList(),
+        );
+      }
       _tituloCtrl.clear();
       _descripcionCtrl.clear();
       _precioCtrl.clear();
@@ -94,6 +110,7 @@ class _AdminAgregarScreenState extends State<AdminAgregarScreen> {
       _colorCtrl.clear();
       setState(() {
         _tallesSeleccionados.clear();
+        _dropsSeleccionados.clear();
         _imagenSeleccionada = null;
         _imagenBytes = null;
         _categoriaSeleccionada = 'Remeras';
@@ -289,6 +306,53 @@ class _AdminAgregarScreenState extends State<AdminAgregarScreen> {
                   ),
                 ),
                 const SizedBox(height: 40),
+
+                // ── Drops ──────────────────────────────────
+                Builder(builder: (ctx) {
+                  final drops = ctx.watch<DropsProvider>().drops;
+                  if (drops.isEmpty) return const SizedBox.shrink();
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('AGREGAR A UN DROP',
+                        style: GoogleFonts.dmMono(fontSize: 10, color: AppColors.gray, letterSpacing: 0.15),
+                      ),
+                      const SizedBox(height: 4),
+                      Text('Opcional. Podés asignarlo a uno o más drops.',
+                        style: GoogleFonts.dmMono(fontSize: 10, color: AppColors.stone),
+                      ),
+                      const SizedBox(height: 12),
+                      ...drops.map((drop) {
+                        final sel = _dropsSeleccionados.contains(drop.id);
+                        return GestureDetector(
+                          onTap: () => setState(() {
+                            if (sel) _dropsSeleccionados.remove(drop.id);
+                            else _dropsSeleccionados.add(drop.id);
+                          }),
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 8),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: sel ? AppColors.ink : AppColors.sand, width: sel ? 2 : 1),
+                              color: sel ? AppColors.ink.withValues(alpha: 0.04) : AppColors.cream,
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(drop.nombre,
+                                    style: GoogleFonts.syne(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.ink),
+                                  ),
+                                ),
+                                if (sel) const Icon(Icons.check_circle, size: 18, color: AppColors.ink),
+                              ],
+                            ),
+                          ),
+                        );
+                      }),
+                      const SizedBox(height: 40),
+                    ],
+                  );
+                }),
 
                 PrimaryButton(
                   label: 'Publicar producto',
