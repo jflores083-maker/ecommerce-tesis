@@ -15,6 +15,10 @@ import '../screens/admin_eliminar_screen.dart';
 import '../screens/admin_personalizacion_screen.dart';
 import '../screens/acerca_screen.dart';
 import '../screens/perfil_screen.dart';
+import '../screens/drops_screen.dart';
+import '../screens/drop_detalle_screen.dart';
+import '../screens/admin_drops_screen.dart';
+import '../screens/admin_crear_drop_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -103,6 +107,25 @@ GoRouter createRouter(AuthProvider authProvider) {
       GoRoute(
         path: '/perfil',
         builder: (ctx, state) => const PerfilScreen(),
+      ),
+      GoRoute(
+        path: '/drops',
+        builder: (ctx, state) => const DropsScreen(),
+      ),
+      GoRoute(
+        path: '/drops/:id',
+        builder: (ctx, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return DropDetalleScreen(dropId: id);
+        },
+      ),
+      GoRoute(
+        path: '/admin/drops',
+        builder: (ctx, state) => const AdminDropsScreen(),
+      ),
+      GoRoute(
+        path: '/admin/drops/nuevo',
+        builder: (ctx, state) => const AdminCrearDropScreen(),
       ),
     ],
   );

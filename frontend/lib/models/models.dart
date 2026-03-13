@@ -1,5 +1,83 @@
 import 'dart:convert';
 
+// ─── Drop ──────────────────────────────────────────────────────
+class Drop {
+  final int id;
+  final String nombre;
+  final String? imagenUrl;
+  final DateTime fechaCreacion;
+  final int totalProductos;
+
+  const Drop({
+    required this.id,
+    required this.nombre,
+    this.imagenUrl,
+    required this.fechaCreacion,
+    required this.totalProductos,
+  });
+
+  factory Drop.fromJson(Map<String, dynamic> j) => Drop(
+    id: j['id'] as int,
+    nombre: j['nombre'] as String,
+    imagenUrl: j['imagenUrl'] as String?,
+    fechaCreacion: DateTime.parse(j['fechaCreacion'] as String),
+    totalProductos: j['totalProductos'] as int? ?? 0,
+  );
+}
+
+class DropDetalle {
+  final int id;
+  final String nombre;
+  final String? imagenUrl;
+  final DateTime fechaCreacion;
+  final List<DropProductoItem> productos;
+
+  const DropDetalle({
+    required this.id,
+    required this.nombre,
+    this.imagenUrl,
+    required this.fechaCreacion,
+    required this.productos,
+  });
+
+  factory DropDetalle.fromJson(Map<String, dynamic> j) => DropDetalle(
+    id: j['id'] as int,
+    nombre: j['nombre'] as String,
+    imagenUrl: j['imagenUrl'] as String?,
+    fechaCreacion: DateTime.parse(j['fechaCreacion'] as String),
+    productos: (j['productos'] as List)
+        .map((p) => DropProductoItem.fromJson(p as Map<String, dynamic>))
+        .toList(),
+  );
+}
+
+class DropProductoItem {
+  final int id;
+  final String titulo;
+  final double precio;
+  final String estado;
+  final String? imagenUrl;
+
+  const DropProductoItem({
+    required this.id,
+    required this.titulo,
+    required this.precio,
+    required this.estado,
+    this.imagenUrl,
+  });
+
+  factory DropProductoItem.fromJson(Map<String, dynamic> j) => DropProductoItem(
+    id: j['id'] as int,
+    titulo: j['titulo'] as String,
+    precio: (j['precio'] as num).toDouble(),
+    estado: j['estado'] as String,
+    imagenUrl: j['imagenUrl'] as String?,
+  );
+
+  String get precioFormateado =>
+      '\$${precio.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+$)'), (m) => '${m[1]}.')}';
+}
+
 // ─── Producto (mapea ProductoResponseDto / ProductoListaDto) ───
 class Producto {
   final int id;
