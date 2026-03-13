@@ -14,6 +14,7 @@ import '../screens/admin_modificar_screen.dart';
 import '../screens/admin_eliminar_screen.dart';
 import '../screens/admin_personalizacion_screen.dart';
 import '../screens/acerca_screen.dart';
+import '../screens/contacto_screen.dart';
 import '../screens/perfil_screen.dart';
 import '../screens/drops_screen.dart';
 import '../screens/drop_detalle_screen.dart';
@@ -103,6 +104,10 @@ GoRouter createRouter(AuthProvider authProvider) {
       GoRoute(
         path: '/acerca-de',
         builder: (ctx, state) => const AcercaScreen(),
+      ),
+      GoRoute(
+        path: '/contacto',
+        builder: (ctx, state) => const ContactoScreen(),
       ),
       GoRoute(
         path: '/perfil',

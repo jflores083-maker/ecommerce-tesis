@@ -15,12 +15,42 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => const Size.fromHeight(64);
 
+  void _openMobileMenu(BuildContext context) {
+    final auth = context.read<AuthProvider>();
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: 'menu',
+      barrierColor: Colors.black54,
+      transitionDuration: const Duration(milliseconds: 220),
+      pageBuilder: (_, __, ___) => const SizedBox.shrink(),
+      transitionBuilder: (ctx, anim, _, __) {
+        return Stack(
+          children: [
+            Positioned(
+              top: 0, bottom: 0, right: 0,
+              width: 280,
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(1, 0),
+                  end: Offset.zero,
+                ).animate(CurvedAnimation(parent: anim, curve: Curves.easeOut)),
+                child: _MobileMenuPanel(auth: auth),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final carrito = context.watch<CarritoProvider>();
-    final auth    = context.watch<AuthProvider>();
+    final carrito  = context.watch<CarritoProvider>();
+    final auth     = context.watch<AuthProvider>();
+    final isMobile = MediaQuery.of(context).size.width <= 768;
 
-    final location = GoRouterState.of(context).matchedLocation;
+    final location  = GoRouterState.of(context).matchedLocation;
     final canGoBack = location != '/';
 
     return AppBar(
@@ -35,6 +65,8 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
                   context.pop();
                 } else if (location.startsWith('/producto/')) {
                   context.go('/catalogo');
+                } else if (location.startsWith('/drops/')) {
+                  context.go('/drops');
                 } else if (location.startsWith('/admin/')) {
                   context.go('/admin');
                 } else {
@@ -59,61 +91,200 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
       actions: [
-        // Links de navegación (solo desktop/tablet)
-        if (MediaQuery.of(context).size.width > 768) ...[
+        // Links de navegación (solo desktop)
+        if (!isMobile) ...[
           _NavLink('Colección', () => context.go('/catalogo')),
           _NavLink('Drops', () => context.go('/drops')),
           _NavLink('Acerca de', () => context.go('/acerca-de')),
+          _NavLink('Contacto', () => context.go('/contacto')),
           const SizedBox(width: 12),
         ],
         // Carrito
         _CartButton(carrito: carrito),
-        // Botón Admin (solo visible para rol Admin)
-        if (auth.isLoggedIn && (auth.user?.isAdmin ?? false))
-          TextButton(
-            onPressed: () => context.go('/admin'),
-            child: Text('Panel de Administración',
-              style: GoogleFonts.dmMono(
-                fontSize: 11, color: AppColors.charcoal,
-                letterSpacing: 0.1,
+        // Desktop: admin + auth
+        if (!isMobile) ...[
+          if (auth.isLoggedIn && (auth.user?.isAdmin ?? false))
+            TextButton(
+              onPressed: () => context.go('/admin'),
+              child: Text('Panel de Administración',
+                style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.charcoal, letterSpacing: 0.1),
               ),
             ),
-          ),
-        // Auth
-        if (!auth.isLoggedIn)
-          TextButton(
-            onPressed: () => context.go('/login'),
-            child: Text('Ingresar',
-              style: GoogleFonts.dmMono(
-                fontSize: 11, color: AppColors.charcoal,
-                letterSpacing: 0.1,
+          if (!auth.isLoggedIn)
+            TextButton(
+              onPressed: () => context.go('/login'),
+              child: Text('Ingresar',
+                style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.charcoal, letterSpacing: 0.1),
               ),
             ),
-          ),
-        if (auth.isLoggedIn)
-          PopupMenuButton<String>(
-            icon: _UserAvatar(fotoUrl: auth.user?.fotoPerfilUrl),
-            onSelected: (v) {
-              if (v == 'perfil') context.go('/perfil');
-              if (v == 'logout') context.read<AuthProvider>().logout();
-            },
-            itemBuilder: (_) => [
-              PopupMenuItem(
-                value: 'perfil',
-                child: Text(auth.user?.nombre ?? 'Perfil',
-                  style: GoogleFonts.dmMono(fontSize: 12),
+          if (auth.isLoggedIn)
+            PopupMenuButton<String>(
+              icon: _UserAvatar(fotoUrl: auth.user?.fotoPerfilUrl),
+              onSelected: (v) {
+                if (v == 'perfil') context.go('/perfil');
+                if (v == 'logout') context.read<AuthProvider>().logout();
+              },
+              itemBuilder: (_) => [
+                PopupMenuItem(
+                  value: 'perfil',
+                  child: Text(auth.user?.nombre ?? 'Perfil', style: GoogleFonts.dmMono(fontSize: 12)),
                 ),
-              ),
-              PopupMenuItem(
-                value: 'logout',
-                child: Text('Cerrar sesión',
-                  style: GoogleFonts.dmMono(fontSize: 12),
+                PopupMenuItem(
+                  value: 'logout',
+                  child: Text('Cerrar sesión', style: GoogleFonts.dmMono(fontSize: 12)),
                 ),
-              ),
-            ],
+              ],
+            ),
+        ],
+        // Mobile: hamburger
+        if (isMobile)
+          IconButton(
+            onPressed: () => _openMobileMenu(context),
+            icon: const Icon(Icons.menu, color: AppColors.charcoal),
           ),
         const SizedBox(width: 8),
       ],
+    );
+  }
+}
+
+// ─── MOBILE MENU PANEL ─────────────────────────────────────
+class _MobileMenuPanel extends StatelessWidget {
+  final AuthProvider auth;
+  const _MobileMenuPanel({required this.auth});
+
+  void _go(BuildContext context, String route) {
+    Navigator.of(context).pop();
+    context.go(route);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: AppColors.cream,
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header del panel
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 16, 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (auth.isLoggedIn)
+                    Flexible(
+                      child: Row(
+                        children: [
+                          _UserAvatar(fotoUrl: auth.user?.fotoPerfilUrl),
+                          const SizedBox(width: 12),
+                          Flexible(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(auth.user?.nombre ?? '',
+                                  style: GoogleFonts.syne(
+                                    fontSize: 15, fontWeight: FontWeight.w700,
+                                    color: AppColors.ink,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                Text(auth.user?.email ?? '',
+                                  style: GoogleFonts.dmMono(
+                                    fontSize: 10, color: AppColors.stone,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                    Text('638',
+                      style: GoogleFonts.syne(
+                        fontSize: 22, fontWeight: FontWeight.w800,
+                        color: AppColors.ink, letterSpacing: -0.5,
+                      ),
+                    ),
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.close, color: AppColors.charcoal, size: 20),
+                  ),
+                ],
+              ),
+            ),
+            Container(height: 1, color: AppColors.sand),
+            const SizedBox(height: 8),
+
+            // Links de navegación
+            _MenuItem(label: 'Colección',  onTap: () => _go(context, '/catalogo')),
+            _MenuItem(label: 'Drops',      onTap: () => _go(context, '/drops')),
+            _MenuItem(label: 'Acerca de nosotros', onTap: () => _go(context, '/acerca-de')),
+            _MenuItem(label: 'Contacto',           onTap: () => _go(context, '/contacto')),
+
+            if (auth.isLoggedIn && (auth.user?.isAdmin ?? false)) ...[
+              Container(height: 1, color: AppColors.sand, margin: const EdgeInsets.symmetric(vertical: 8)),
+              _MenuItem(label: 'Panel Admin', onTap: () => _go(context, '/admin')),
+            ],
+
+            Container(height: 1, color: AppColors.sand, margin: const EdgeInsets.symmetric(vertical: 8)),
+
+            // Auth
+            if (auth.isLoggedIn) ...[
+              _MenuItem(
+                label: auth.user?.nombre ?? 'Mi perfil',
+                icon: Icons.person_outline,
+                onTap: () => _go(context, '/perfil'),
+              ),
+              _MenuItem(
+                label: 'Cerrar sesión',
+                icon: Icons.logout,
+                onTap: () {
+                  Navigator.of(context).pop();
+                  context.read<AuthProvider>().logout();
+                },
+              ),
+            ] else
+              _MenuItem(
+                label: 'Ingresar',
+                icon: Icons.login,
+                onTap: () => _go(context, '/login'),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MenuItem extends StatelessWidget {
+  final String label;
+  final IconData? icon;
+  final VoidCallback onTap;
+  const _MenuItem({required this.label, required this.onTap, this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+        child: Row(
+          children: [
+            if (icon != null) ...[
+              Icon(icon, size: 18, color: AppColors.charcoal),
+              const SizedBox(width: 12),
+            ],
+            Text(label,
+              style: GoogleFonts.dmMono(
+                fontSize: 13, color: AppColors.ink, letterSpacing: 0.1,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
