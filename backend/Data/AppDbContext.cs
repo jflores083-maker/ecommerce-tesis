@@ -18,83 +18,72 @@ namespace backend.Data
         public DbSet<ItemCarrito> ItemsCarrito { get; set; } = null!;
         public DbSet<Orden> Ordenes { get; set; } = null!;
         public DbSet<ItemOrden> ItemsOrden { get; set; } = null!;
+        public DbSet<Drop> Drops { get; set; } = null!;
+        public DbSet<DropProducto> DropProductos { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // =========================
-            // Relaciones existentes
-            // =========================
-
             // Usuario (vendedor) -> Productos (1:N)
             modelBuilder.Entity<Producto>()
                 .HasOne(p => p.Vendedor)
-                .WithMany() // si más adelante agregás nav inversa en Usuario, cámbialo por .WithMany(u => u.Productos)
+                .WithMany()
                 .HasForeignKey(p => p.VendedorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Producto -> ImagenProducto (1:N)
             modelBuilder.Entity<ImagenProducto>()
                 .HasOne(i => i.Producto)
-                .WithMany(p => p.Imagenes) // <-- respeta tu propiedad "Imagenes" en Producto
+                .WithMany(p => p.Imagenes)
                 .HasForeignKey(i => i.ProductoId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // =========================
-            // Carrito e ItemCarrito
-            // =========================
-            
+            // Carrito
             modelBuilder.Entity<Carrito>().ToTable("Carritos");
             modelBuilder.Entity<ItemCarrito>().ToTable("ItemsCarrito");
 
-            // Carrito 1:1 con Usuario (un carrito por usuario)
             modelBuilder.Entity<Carrito>()
                 .HasIndex(c => c.UsuarioId)
                 .IsUnique();
 
             modelBuilder.Entity<Carrito>()
                 .HasOne(c => c.Usuario)
-                .WithOne() // si en Usuario agregás "public Carrito Carrito {get;set;}" podés cambiar a .WithOne(u => u.Carrito)
+                .WithOne()
                 .HasForeignKey<Carrito>(c => c.UsuarioId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // ItemCarrito N:1 Carrito
             modelBuilder.Entity<ItemCarrito>()
                 .HasOne(i => i.Carrito)
                 .WithMany(c => c.Items)
                 .HasForeignKey(i => i.CarritoId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // ItemCarrito N:1 Producto
             modelBuilder.Entity<ItemCarrito>()
                 .HasOne(i => i.Producto)
-                .WithMany() // no navegación inversa en Producto por ahora
+                .WithMany()
                 .HasForeignKey(i => i.ProductoId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Evitar duplicados (mismo Producto + Talle) dentro del mismo Carrito
             modelBuilder.Entity<ItemCarrito>()
                 .HasIndex(i => new { i.CarritoId, i.ProductoId, i.Talle })
                 .IsUnique();
 
-            // Precisión decimal coherente con precios (MySQL DECIMAL(10,2))
             modelBuilder.Entity<ItemCarrito>()
                 .Property(p => p.PrecioUnitarioSnapshot)
                 .HasPrecision(10, 2);
 
-            // Si no lo tenías ya en Producto, asegurate también de la precisión:
             modelBuilder.Entity<Producto>()
                 .Property(p => p.Precio)
                 .HasPrecision(10, 2);
-            
-            // ===== Órdenes e Items de Orden =====
+
+            // Ordenes
             modelBuilder.Entity<Orden>().ToTable("Ordenes");
             modelBuilder.Entity<ItemOrden>().ToTable("ItemsOrden");
 
             modelBuilder.Entity<Orden>()
                 .HasOne(o => o.Comprador)
-                .WithMany() // si luego agregas nav inversa en Usuario, cámbialo
+                .WithMany()
                 .HasForeignKey(o => o.CompradorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
@@ -110,30 +99,42 @@ namespace backend.Data
                 .HasForeignKey(i => i.ProductoId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Índices útiles
             modelBuilder.Entity<Orden>()
                 .HasIndex(o => new { o.CompradorId, o.FechaCreacion });
 
             modelBuilder.Entity<ItemOrden>()
                 .HasIndex(i => i.ProductoId);
 
-            // Precisión decimal coherente con MySQL
             modelBuilder.Entity<Orden>()
-                .Property(p => p.Subtotal)
-                .HasPrecision(10, 2);
+                .Property(p => p.Subtotal).HasPrecision(10, 2);
             modelBuilder.Entity<Orden>()
-                .Property(p => p.CostoEnvio)
-                .HasPrecision(10, 2);
+                .Property(p => p.CostoEnvio).HasPrecision(10, 2);
             modelBuilder.Entity<Orden>()
-                .Property(p => p.Total)
-                .HasPrecision(10, 2);
+                .Property(p => p.Total).HasPrecision(10, 2);
 
             modelBuilder.Entity<ItemOrden>()
-                .Property(p => p.PrecioUnitario)
-                .HasPrecision(10, 2);
+                .Property(p => p.PrecioUnitario).HasPrecision(10, 2);
             modelBuilder.Entity<ItemOrden>()
-                .Property(p => p.Subtotal)
-                .HasPrecision(10, 2);
+                .Property(p => p.Subtotal).HasPrecision(10, 2);
+
+            // Drops
+            modelBuilder.Entity<Drop>().ToTable("Drops");
+            modelBuilder.Entity<DropProducto>().ToTable("DropProductos");
+
+            modelBuilder.Entity<DropProducto>()
+                .HasKey(dp => new { dp.DropId, dp.ProductoId });
+
+            modelBuilder.Entity<DropProducto>()
+                .HasOne(dp => dp.Drop)
+                .WithMany(d => d.DropProductos)
+                .HasForeignKey(dp => dp.DropId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<DropProducto>()
+                .HasOne(dp => dp.Producto)
+                .WithMany()
+                .HasForeignKey(dp => dp.ProductoId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

@@ -4,6 +4,7 @@ import 'providers/auth_provider.dart';
 import 'providers/admin_provider.dart';
 import 'providers/carrito_provider.dart';
 import 'providers/config_provider.dart';
+import 'providers/drops_provider.dart';
 import 'providers/productos_provider.dart';
 import 'services/api_service.dart';
 import 'router.dart';
@@ -37,6 +38,9 @@ class App638 extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => ConfigProvider(apiService),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => DropsProvider(apiService),
         ),
       ],
       child: const _AppContent(),

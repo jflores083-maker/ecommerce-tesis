@@ -62,6 +62,7 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
         // Links de navegación (solo desktop/tablet)
         if (MediaQuery.of(context).size.width > 768) ...[
           _NavLink('Colección', () => context.go('/catalogo')),
+          _NavLink('Drops', () => context.go('/drops')),
           _NavLink('Acerca de', () => context.go('/acerca-de')),
           const SizedBox(width: 12),
         ],

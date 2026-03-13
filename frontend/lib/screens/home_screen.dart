@@ -459,7 +459,7 @@ class _Banner extends StatelessWidget {
                   width: double.infinity,
                   child: PrimaryButton(
                     label: 'Ver últimos drops →',
-                    onPressed: () {},
+                    onPressed: () => context.go('/drops'),
                   ),
                 ),
               ],
@@ -470,7 +470,7 @@ class _Banner extends StatelessWidget {
                 _bannerText(),
                 PrimaryButton(
                   label: 'Ver últimos drops →',
-                  onPressed: () {},
+                  onPressed: () => context.go('/drops'),
                 ),
               ],
             ),

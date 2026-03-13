@@ -61,6 +61,13 @@ class AdminScreen extends StatelessWidget {
                   description: 'Imagen del inicio y tema de colores',
                   onTap: () => context.go('/admin/personalizacion'),
                 ),
+                const SizedBox(height: 16),
+                _AdminMenuBtn(
+                  icon: Icons.bolt_outlined,
+                  label: 'Drops',
+                  description: 'Gestionar lanzamientos exclusivos',
+                  onTap: () => context.go('/admin/drops'),
+                ),
               ],
             ),
           ),
