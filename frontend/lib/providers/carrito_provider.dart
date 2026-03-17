@@ -73,11 +73,11 @@ class CarritoProvider extends ChangeNotifier {
     }
   }
 
-  // Eliminar item por itemId
+  // Eliminar item por itemId — actualiza localmente sin recargar todo el carrito
   Future<void> eliminar(int itemId) async {
     try {
       await _api.eliminarItem(itemId);
-      _carrito = await _api.getCarrito();
+      _carrito?.items.removeWhere((i) => i.id == itemId);
       notifyListeners();
     } on ApiException catch (e) {
       _error = e.message;

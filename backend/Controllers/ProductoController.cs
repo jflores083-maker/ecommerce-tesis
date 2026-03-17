@@ -133,10 +133,8 @@ namespace backend.Controllers
                 Activo = true
             };
 
-            _context.Productos.Add(producto);
-            await _context.SaveChangesAsync();
-
-            // Guardar imagen si se adjuntó
+            // Guardar imagen si se adjuntó (se agrega al producto antes del SaveChanges
+            // para persistir producto + imagen en un solo roundtrip a la BD)
             string? imagenUrl = null;
             if (dto.Imagen != null && dto.Imagen.Length > 0)
             {
@@ -152,15 +150,16 @@ namespace backend.Controllers
 
                 imagenUrl = $"/uploads/productos/{fileName}";
 
-                _context.ImagenesProducto.Add(new ImagenProducto
+                producto.Imagenes.Add(new ImagenProducto
                 {
-                    ProductoId = producto.Id,
                     Url = imagenUrl,
                     Orden = 0,
                     FechaSubida = DateTime.Now
                 });
-                await _context.SaveChangesAsync();
             }
+
+            _context.Productos.Add(producto);
+            await _context.SaveChangesAsync();
 
             var response = new ProductoResponseDto
             {
