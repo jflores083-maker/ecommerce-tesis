@@ -58,6 +58,7 @@ void main() {
 
   group('eliminarDrop', () {
     setUp(() {
+      // Precarga un drop en la lista
       when(() => api.getDrops()).thenAnswer((_) async => [
         {
           'id': 1,
@@ -158,7 +159,9 @@ void main() {
 
   group('sincronizarProductoConDrops', () {
     test('agrega drops nuevos y quita los que ya no están seleccionados', () async {
+      // Producto 10 está actualmente en drops [1, 2]
       when(() => api.getDropsPorProducto(10)).thenAnswer((_) async => [1, 2]);
+      // Queremos que quede en drops [2, 3]  →  agregar 3, quitar 1
       when(() => api.agregarProductoADrop(3, 10)).thenAnswer((_) async {});
       when(() => api.quitarProductoDeDrop(1, 10)).thenAnswer((_) async {});
       when(() => api.getDrops()).thenAnswer((_) async => []);
