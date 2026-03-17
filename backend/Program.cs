@@ -59,8 +59,11 @@ builder.Services.AddScoped<PasswordHelper>();
 // ----------------------------------------------------------------------
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+if (builder.Environment.EnvironmentName != "Testing")
+{
+    builder.Services.AddDbContext<AppDbContext>(options =>
+        options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+}
 
 // ----------------------------------------------------------------------
 // CONTROLLERS
@@ -142,3 +145,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+public partial class Program {}
