@@ -1,10 +1,13 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import '../app_constants.dart';
 import '../models/models.dart';
 import '../providers/auth_provider.dart';
 import '../providers/carrito_provider.dart';
+import '../providers/productos_provider.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 
@@ -17,6 +20,8 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
 
   void _openMobileMenu(BuildContext context) {
     final auth = context.read<AuthProvider>();
+    final location = GoRouterState.of(context).matchedLocation;
+    final productosProvider = context.read<ProductosProvider>();
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
@@ -35,7 +40,11 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
                   begin: const Offset(1, 0),
                   end: Offset.zero,
                 ).animate(CurvedAnimation(parent: anim, curve: Curves.easeOut)),
-                child: _MobileMenuPanel(auth: auth),
+                child: _MobileMenuPanel(
+                  auth: auth,
+                  isOnCatalog: location == '/catalogo',
+                  productosProvider: productosProvider,
+                ),
               ),
             ),
           ],
@@ -93,7 +102,7 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         // Links de navegación (solo desktop)
         if (!isMobile) ...[
-          _NavLink('Colección', () => context.go('/catalogo')),
+          _ColeccionDropdown(),
           _NavLink('Drops', () => context.go('/drops')),
           _NavLink('Acerca de', () => context.go('/acerca-de')),
           _NavLink('Contacto', () => context.go('/contacto')),
@@ -151,7 +160,13 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
 // ─── MOBILE MENU PANEL ─────────────────────────────────────
 class _MobileMenuPanel extends StatelessWidget {
   final AuthProvider auth;
-  const _MobileMenuPanel({required this.auth});
+  final bool isOnCatalog;
+  final ProductosProvider productosProvider;
+  const _MobileMenuPanel({
+    required this.auth,
+    required this.isOnCatalog,
+    required this.productosProvider,
+  });
 
   void _go(BuildContext context, String route) {
     Navigator.of(context).pop();
@@ -219,7 +234,16 @@ class _MobileMenuPanel extends StatelessWidget {
             const SizedBox(height: 8),
 
             // Links de navegación
-            _MenuItem(label: 'Colección',  onTap: () => _go(context, '/catalogo')),
+            _MenuColeccion(
+              onSelectCategoria: (cat) {
+                if (isOnCatalog) {
+                  productosProvider.cargarProductos(categoria: cat);
+                  Navigator.of(context).pop();
+                } else {
+                  _go(context, cat == null ? '/catalogo' : '/catalogo?categoria=$cat');
+                }
+              },
+            ),
             _MenuItem(label: 'Drops',      onTap: () => _go(context, '/drops')),
             _MenuItem(label: 'Acerca de nosotros', onTap: () => _go(context, '/acerca-de')),
             _MenuItem(label: 'Contacto',           onTap: () => _go(context, '/contacto')),
@@ -259,6 +283,71 @@ class _MobileMenuPanel extends StatelessWidget {
   }
 }
 
+// ─── COLECCIÓN EXPANDIBLE (mobile menu) ────────────────────
+class _MenuColeccion extends StatefulWidget {
+  final void Function(String? categoria) onSelectCategoria;
+  const _MenuColeccion({required this.onSelectCategoria});
+
+  @override
+  State<_MenuColeccion> createState() => _MenuColeccionState();
+}
+
+class _MenuColeccionState extends State<_MenuColeccion> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        InkWell(
+          onTap: () => setState(() => _expanded = !_expanded),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Colección',
+                  style: GoogleFonts.dmMono(
+                    fontSize: 13, color: AppColors.ink, letterSpacing: 0.1,
+                  ),
+                ),
+                AnimatedRotation(
+                  turns: _expanded ? 0.5 : 0,
+                  duration: const Duration(milliseconds: 180),
+                  child: const Icon(Icons.keyboard_arrow_down,
+                      size: 16, color: AppColors.charcoal),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (_expanded) ...[
+          InkWell(
+            onTap: () => widget.onSelectCategoria(null),
+            child: Padding(
+              padding: const EdgeInsets.only(left: 40, right: 24, top: 10, bottom: 10),
+              child: Text('Todos',
+                style: GoogleFonts.dmMono(fontSize: 12, color: AppColors.charcoal),
+              ),
+            ),
+          ),
+          ...AppCategorias.todas.map((cat) => InkWell(
+            onTap: () => widget.onSelectCategoria(cat),
+            child: Padding(
+              padding: const EdgeInsets.only(left: 40, right: 24, top: 10, bottom: 10),
+              child: Text(cat,
+                style: GoogleFonts.dmMono(fontSize: 12, color: AppColors.charcoal),
+              ),
+            ),
+          )),
+          const SizedBox(height: 4),
+        ],
+      ],
+    );
+  }
+}
+
 class _MenuItem extends StatelessWidget {
   final String label;
   final IconData? icon;
@@ -283,6 +372,203 @@ class _MenuItem extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── COLECCIÓN DROPDOWN (desktop hover) ────────────────────
+class _ColeccionDropdown extends StatefulWidget {
+  @override
+  State<_ColeccionDropdown> createState() => _ColeccionDropdownState();
+}
+
+class _ColeccionDropdownState extends State<_ColeccionDropdown> {
+  bool _open = false;
+  final _linkKey = GlobalKey();
+  OverlayEntry? _overlay;
+  Timer? _hideTimer;
+
+  void _show() {
+    _hideTimer?.cancel();
+    if (_open) return;
+    final box = _linkKey.currentContext?.findRenderObject() as RenderBox?;
+    if (box == null) return;
+    final pos = box.localToGlobal(Offset.zero);
+    final location = GoRouterState.of(context).matchedLocation;
+    final productosProvider = context.read<ProductosProvider>();
+
+    _overlay = OverlayEntry(
+      builder: (_) => _DropdownMenu(
+        top: pos.dy + box.size.height,
+        left: pos.dx,
+        onClose: _scheduleHide,
+        onCancelClose: _cancelHide,
+        onSelectCategoria: (String? cat) {
+          _hide();
+          final ctx = _linkKey.currentContext;
+          if (ctx == null || !ctx.mounted) return;
+          if (location == '/catalogo') {
+            productosProvider.cargarProductos(categoria: cat);
+          } else {
+            ctx.go(cat == null ? '/catalogo' : '/catalogo?categoria=$cat');
+          }
+        },
+      ),
+    );
+
+    Overlay.of(context).insert(_overlay!);
+    setState(() => _open = true);
+  }
+
+  void _scheduleHide() {
+    _hideTimer = Timer(const Duration(milliseconds: 120), _hide);
+  }
+
+  void _cancelHide() {
+    _hideTimer?.cancel();
+  }
+
+  void _hide() {
+    _hideTimer?.cancel();
+    _overlay?.remove();
+    _overlay = null;
+    if (mounted) setState(() => _open = false);
+  }
+
+  void _removeOverlaySilently() {
+    _hideTimer?.cancel();
+    _overlay?.remove();
+    _overlay = null;
+  }
+
+  @override
+  void dispose() {
+    _removeOverlaySilently();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => _show(),
+      onExit:  (_) => _scheduleHide(),
+      child: TextButton(
+        key: _linkKey,
+        onPressed: () => context.go('/catalogo'),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('COLECCIÓN',
+              style: GoogleFonts.dmMono(
+                fontSize: 11, color: AppColors.gray, letterSpacing: 0.12,
+              ),
+            ),
+            const SizedBox(width: 3),
+            AnimatedRotation(
+              turns: _open ? 0.5 : 0,
+              duration: const Duration(milliseconds: 180),
+              child: const Icon(Icons.keyboard_arrow_down,
+                  size: 14, color: AppColors.gray),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DropdownMenu extends StatelessWidget {
+  final double top;
+  final double left;
+  final VoidCallback onClose;
+  final VoidCallback onCancelClose;
+  final void Function(String? cat) onSelectCategoria;
+
+  const _DropdownMenu({
+    required this.top,
+    required this.left,
+    required this.onClose,
+    required this.onCancelClose,
+    required this.onSelectCategoria,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      top: top,
+      left: left,
+      child: MouseRegion(
+        onEnter: (_) => onCancelClose(),
+        onExit:  (_) => onClose(),
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            width: 180,
+            decoration: BoxDecoration(
+              color: AppColors.cream,
+              border: Border.all(color: AppColors.sand),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.06),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _DropdownItem(
+                  label: 'Todos',
+                  onTap: () => onSelectCategoria(null),
+                ),
+                Container(height: 1, color: AppColors.sand),
+                ...AppCategorias.todas.map((cat) => _DropdownItem(
+                  label: cat,
+                  onTap: () => onSelectCategoria(cat),
+                )),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DropdownItem extends StatefulWidget {
+  final String label;
+  final VoidCallback onTap;
+  const _DropdownItem({required this.label, required this.onTap});
+
+  @override
+  State<_DropdownItem> createState() => _DropdownItemState();
+}
+
+class _DropdownItemState extends State<_DropdownItem> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit:  (_) => setState(() => _hovered = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 120),
+          color: _hovered ? AppColors.beige : AppColors.cream,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Text(widget.label,
+            style: GoogleFonts.dmMono(
+              fontSize: 11,
+              color: _hovered ? AppColors.ink : AppColors.charcoal,
+              letterSpacing: 0.1,
+            ),
+          ),
         ),
       ),
     );
