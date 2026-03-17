@@ -117,6 +117,19 @@ namespace backend.Data
             modelBuilder.Entity<ItemOrden>()
                 .Property(p => p.Subtotal).HasPrecision(10, 2);
 
+            // Índices de rendimiento
+            modelBuilder.Entity<Producto>()
+                .HasIndex(p => p.VendedorId);
+
+            modelBuilder.Entity<Producto>()
+                .HasIndex(p => new { p.Activo, p.Categoria });
+
+            modelBuilder.Entity<ImagenProducto>()
+                .HasIndex(i => new { i.ProductoId, i.Orden });
+
+            modelBuilder.Entity<DropProducto>()
+                .HasIndex(dp => dp.ProductoId);
+
             // Drops
             modelBuilder.Entity<Drop>().ToTable("Drops");
             modelBuilder.Entity<DropProducto>().ToTable("DropProductos");

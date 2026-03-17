@@ -80,7 +80,12 @@ class AdminProvider extends ChangeNotifier {
     notifyListeners();
     try {
       await _api.actualizarProducto(id, campos);
-      await cargarMisProductos();
+      // Recarga solo el producto modificado en lugar de toda la lista
+      final actualizado = await _api.getProducto(id);
+      final idx = _misProductos.indexWhere((p) => p.id == id);
+      if (idx != -1) {
+        _misProductos[idx] = actualizado;
+      }
       _loading = false;
       notifyListeners();
       return true;

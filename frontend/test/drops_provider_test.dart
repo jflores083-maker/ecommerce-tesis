@@ -43,13 +43,14 @@ void main() {
       expect(provider.cargando, false);
     });
 
-    test('cuando la API lanza excepción, drops queda vacío y cargando es false', () async {
+    test('cuando la API lanza excepción, guarda el error y cargando es false', () async {
       when(() => api.getDrops()).thenThrow(Exception('Error de red'));
 
       await provider.cargarDrops();
 
       expect(provider.drops, isEmpty);
       expect(provider.cargando, false);
+      expect(provider.error, isNotNull);
     });
   });
 
@@ -120,7 +121,7 @@ void main() {
       expect(provider.drops.first.nombre, 'Nuevo Drop');
     });
 
-    test('cuando la API falla, retorna false', () async {
+    test('cuando la API falla, retorna false y guarda el error', () async {
       when(() => api.crearDrop(
         nombre: any(named: 'nombre'),
         productoIds: any(named: 'productoIds'),
@@ -130,6 +131,7 @@ void main() {
       final result = await provider.crearDrop(nombre: 'Drop', productoIds: []);
 
       expect(result, false);
+      expect(provider.error, isNotNull);
     });
   });
 

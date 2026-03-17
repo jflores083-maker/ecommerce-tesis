@@ -96,6 +96,24 @@ void main() {
     });
   });
 
+  // ── eliminar ──────────────────────────────────────────────────────────────
+
+  group('eliminar', () {
+    test('elimina item localmente sin recargar el carrito', () async {
+      when(() => api.getCarrito()).thenAnswer((_) async => carritoConItem());
+      await provider.cargarCarrito();
+      expect(provider.totalItems, 1);
+
+      when(() => api.eliminarItem(10)).thenAnswer((_) async {});
+
+      await provider.eliminar(10);
+
+      expect(provider.items, isEmpty);
+      // Verificar que NO se llamó getCarrito de nuevo
+      verify(() => api.getCarrito()).called(1);
+    });
+  });
+
   // ── limpiarLocal ──────────────────────────────────────────────────────────
 
   test('limpiarLocal deja el carrito en null', () async {

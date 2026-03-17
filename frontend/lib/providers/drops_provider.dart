@@ -8,28 +8,47 @@ class DropsProvider extends ChangeNotifier {
 
   List<Drop> _drops = [];
   bool _cargando = false;
+  String? _error;
 
   DropsProvider(this._api);
 
   List<Drop> get drops => _drops;
   bool get cargando => _cargando;
+  String? get error => _error;
+
+  void clearError() {
+    _error = null;
+    notifyListeners();
+  }
 
   Future<void> cargarDrops() async {
     _cargando = true;
+    _error = null;
     notifyListeners();
     try {
       final data = await _api.getDrops();
       _drops = data.map((j) => Drop.fromJson(j)).toList();
-    } catch (_) {}
-    _cargando = false;
-    notifyListeners();
+    } on ApiException catch (e) {
+      _error = e.message;
+    } catch (_) {
+      _error = 'Error al cargar los drops.';
+    } finally {
+      _cargando = false;
+      notifyListeners();
+    }
   }
 
   Future<DropDetalle?> getDetalle(int id) async {
     try {
       final data = await _api.getDrop(id);
       return DropDetalle.fromJson(data);
+    } on ApiException catch (e) {
+      _error = e.message;
+      notifyListeners();
+      return null;
     } catch (_) {
+      _error = 'Error al cargar el drop.';
+      notifyListeners();
       return null;
     }
   }
@@ -39,11 +58,18 @@ class DropsProvider extends ChangeNotifier {
     required List<int> productoIds,
     XFile? imagen,
   }) async {
+    _error = null;
     try {
       await _api.crearDrop(nombre: nombre, productoIds: productoIds, imagen: imagen);
       await cargarDrops();
       return true;
+    } on ApiException catch (e) {
+      _error = e.message;
+      notifyListeners();
+      return false;
     } catch (_) {
+      _error = 'Error al crear el drop.';
+      notifyListeners();
       return false;
     }
   }
@@ -54,11 +80,18 @@ class DropsProvider extends ChangeNotifier {
     required List<int> productoIds,
     XFile? imagen,
   }) async {
+    _error = null;
     try {
       await _api.actualizarDrop(id: id, nombre: nombre, productoIds: productoIds, imagen: imagen);
       await cargarDrops();
       return true;
+    } on ApiException catch (e) {
+      _error = e.message;
+      notifyListeners();
+      return false;
     } catch (_) {
+      _error = 'Error al actualizar el drop.';
+      notifyListeners();
       return false;
     }
   }
@@ -81,12 +114,19 @@ class DropsProvider extends ChangeNotifier {
   }
 
   Future<bool> eliminarDrop(int id) async {
+    _error = null;
     try {
       await _api.eliminarDrop(id);
       _drops.removeWhere((d) => d.id == id);
       notifyListeners();
       return true;
+    } on ApiException catch (e) {
+      _error = e.message;
+      notifyListeners();
+      return false;
     } catch (_) {
+      _error = 'Error al eliminar el drop.';
+      notifyListeners();
       return false;
     }
   }

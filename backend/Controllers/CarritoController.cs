@@ -81,15 +81,10 @@ namespace backend.Controllers
 
             if (carrito == null)
             {
+                // Carrito nuevo: Items ya inicializado como lista vacía, no hace falta recargar
                 carrito = new Carrito { UsuarioId = userId };
                 _db.Carritos.Add(carrito);
                 await _db.SaveChangesAsync();
-
-                carrito = await _db.Carritos
-                    .Include(c => c.Items)
-                        .ThenInclude(i => i.Producto)
-                            .ThenInclude(p => p.Imagenes)
-                    .FirstAsync(c => c.UsuarioId == userId);
             }
 
             return Ok(MapCarritoDto(carrito));
