@@ -873,6 +873,7 @@ class _QuickAddState extends State<_QuickAdd> {
     if (!mounted) return;
     setState(() => _loading = false);
 
+    messenger.clearSnackBars();
     if (ok) {
       messenger.showSnackBar(SnackBar(
         content: Text('✓ ${widget.producto.titulo} agregado',

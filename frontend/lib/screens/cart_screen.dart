@@ -42,7 +42,7 @@ class _EmptyCart extends StatelessWidget {
           const SizedBox(height: 24),
           Text('Tu bolsa está vacía',
             style: GoogleFonts.cormorantGaramond(
-              fontSize: 32, fontWeight: FontWeight.w300, color: AppColors.ink,
+              fontSize: 32, fontWeight: FontWeight.w600, color: AppColors.ink,
             ),
           ),
           const SizedBox(height: 12),
@@ -142,7 +142,7 @@ class _CartItemsList extends StatelessWidget {
           children: [
             Text('Mi Bolsa',
               style: GoogleFonts.cormorantGaramond(
-                fontSize: 40, fontWeight: FontWeight.w300, color: AppColors.ink,
+                fontSize: 40, fontWeight: FontWeight.w600, color: AppColors.ink,
               ),
             ),
             TextButton(
@@ -333,7 +333,7 @@ class _OrderSummaryState extends State<_OrderSummary> {
         backgroundColor: AppColors.cream,
         title: Text('Datos de envío',
           style: GoogleFonts.cormorantGaramond(
-            fontSize: 24, fontWeight: FontWeight.w300, color: AppColors.ink,
+            fontSize: 24, fontWeight: FontWeight.w600, color: AppColors.ink,
           ),
         ),
         content: SingleChildScrollView(
@@ -386,26 +386,29 @@ class _OrderSummaryState extends State<_OrderSummary> {
       return;
     }
 
-    final carrito = context.read<CarritoProvider>();
-    final result = await carrito.confirmarCompra(
-      direccionEnvio: dir,
-      ciudad: ciudad,
-      codigoPostal: cp,
-    );
-
     if (!mounted) return;
+    final carrito = context.read<CarritoProvider>();
 
-    if (result != null) {
-      final ordenId = result['ordenId'];
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('✓ Orden #$ordenId confirmada',
-          style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.cream)),
-        backgroundColor: AppColors.ink,
-        duration: const Duration(seconds: 3),
-        behavior: SnackBarBehavior.floating,
-      ));
-      context.go('/');
-    }
+    // Paso 2: selección de medio de pago
+    final metodo = await showDialog<String>(
+      context: context,
+      builder: (_) => _MetodoPagoDialog(subtotal: carrito.subtotal),
+    );
+    if (metodo == null || !mounted) return;
+
+    // Paso 3: procesamiento
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => _PagoDialog(
+        carrito: carrito,
+        direccionEnvio: dir,
+        ciudad: ciudad,
+        codigoPostal: cp,
+        metodo: metodo,
+        onDone: () => context.go('/'),
+      ),
+    );
   }
 
   @override
@@ -423,7 +426,7 @@ class _OrderSummaryState extends State<_OrderSummary> {
       children: [
         Text('Resumen',
           style: GoogleFonts.cormorantGaramond(
-            fontSize: 28, fontWeight: FontWeight.w300, color: AppColors.ink,
+            fontSize: 28, fontWeight: FontWeight.w600, color: AppColors.ink,
           ),
         ),
         const Divider(color: AppColors.sand, height: 36, thickness: 1),
@@ -576,4 +579,369 @@ class _ItemThumbnail extends StatelessWidget {
               size: 32, color: AppColors.stone.withOpacity(0.3)),
         ),
       );
+}
+
+// ─── SELECCIÓN MEDIO DE PAGO ───────────────────────────────
+class _MetodoPagoDialog extends StatefulWidget {
+  final double subtotal;
+  const _MetodoPagoDialog({required this.subtotal});
+
+  @override
+  State<_MetodoPagoDialog> createState() => _MetodoPagoDialogState();
+}
+
+class _MetodoPagoDialogState extends State<_MetodoPagoDialog> {
+  String? _seleccionado;
+
+  static const _metodos = [
+    _Metodo('tarjeta',      'Tarjeta de crédito o débito', Icons.credit_card_outlined,    'HASTA 6 CUOTAS SIN INTERÉS'),
+    _Metodo('transferencia','Transferencia',                Icons.account_balance_outlined, null),
+    _Metodo('efectivo',     'Efectivo',                     Icons.payments_outlined,        null),
+    _Metodo('mercadopago',  'Mercado Pago',                 Icons.open_in_new_outlined,    'HASTA 6 CUOTAS SIN INTERÉS'),
+    _Metodo('cuotas_mp',   'Cuotas sin Tarjeta de Mercado Pago', Icons.open_in_new_outlined, null),
+  ];
+
+  String _badgeTransferencia() {
+    final precio = (widget.subtotal * 0.9).toStringAsFixed(0);
+    final parts = <String>[];
+    int n = int.tryParse(precio) ?? 0;
+    String s = n.toString();
+    for (int i = 0; i < s.length; i++) {
+      if (i > 0 && (s.length - i) % 3 == 0) parts.add('.');
+      parts.add(s[i]);
+    }
+    return 'PAGÁS \$${parts.join()}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: AppColors.cream,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 540),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(28, 32, 28, 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Medio de pago',
+                style: GoogleFonts.cormorantGaramond(
+                  fontSize: 26, fontWeight: FontWeight.w600, color: AppColors.ink,
+                ),
+              ),
+              const SizedBox(height: 20),
+              ..._metodos.map((m) {
+                final badge = m.id == 'transferencia' ? _badgeTransferencia() : m.badge;
+                final isMp  = m.id == 'mercadopago';
+                return _MetodoRow(
+                  metodo: m,
+                  badge: badge,
+                  isMercadoPago: isMp,
+                  seleccionado: _seleccionado == m.id,
+                  onTap: () => setState(() => _seleccionado = m.id),
+                );
+              }),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _seleccionado == null
+                      ? null
+                      : () => Navigator.of(context).pop(_seleccionado),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.ink,
+                    disabledBackgroundColor: AppColors.sand,
+                    foregroundColor: AppColors.cream,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                  ),
+                  child: Text('REALIZAR PEDIDO',
+                    style: GoogleFonts.dmMono(fontSize: 11, letterSpacing: 0.15),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _Metodo {
+  final String id;
+  final String label;
+  final IconData icon;
+  final String? badge;
+  const _Metodo(this.id, this.label, this.icon, this.badge);
+}
+
+class _MetodoRow extends StatelessWidget {
+  final _Metodo metodo;
+  final String? badge;
+  final bool isMercadoPago;
+  final bool seleccionado;
+  final VoidCallback onTap;
+  const _MetodoRow({
+    required this.metodo,
+    required this.badge,
+    required this.isMercadoPago,
+    required this.seleccionado,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        decoration: BoxDecoration(
+          color: AppColors.cream,
+          border: Border.all(
+            color: seleccionado ? AppColors.ink : AppColors.sand,
+            width: seleccionado ? 1.5 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 40, height: 40,
+              decoration: BoxDecoration(
+                border: Border.all(color: AppColors.sand),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Icon(metodo.icon, size: 18, color: AppColors.charcoal),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (isMercadoPago)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFE600),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text('mercado pago',
+                        style: GoogleFonts.dmMono(
+                          fontSize: 11, fontWeight: FontWeight.w700,
+                          color: const Color(0xFF009EE3),
+                        ),
+                      ),
+                    )
+                  else
+                    Text(metodo.label,
+                      style: GoogleFonts.syne(
+                        fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.ink,
+                      ),
+                    ),
+                  if (badge != null) ...[
+                    const SizedBox(height: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: AppColors.charcoal,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(badge!,
+                        style: GoogleFonts.dmMono(
+                          fontSize: 9, color: AppColors.cream, letterSpacing: 0.1,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, size: 20, color: AppColors.stone),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── MODAL PROCESANDO PAGO ─────────────────────────────────
+class _PagoDialog extends StatefulWidget {
+  final CarritoProvider carrito;
+  final String direccionEnvio;
+  final String ciudad;
+  final String codigoPostal;
+  final String metodo;
+  final VoidCallback onDone;
+
+  const _PagoDialog({
+    required this.carrito,
+    required this.direccionEnvio,
+    required this.ciudad,
+    required this.codigoPostal,
+    required this.metodo,
+    required this.onDone,
+  });
+
+  @override
+  State<_PagoDialog> createState() => _PagoDialogState();
+}
+
+class _PagoDialogState extends State<_PagoDialog>
+    with SingleTickerProviderStateMixin {
+  bool _exitoso = false;
+  String? _error;
+  int? _ordenId;
+  late AnimationController _tickCtrl;
+  late Animation<double> _tickAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _tickCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    _tickAnim = CurvedAnimation(parent: _tickCtrl, curve: Curves.easeOutBack);
+    _procesarPago();
+  }
+
+  Future<void> _procesarPago() async {
+    final result = await widget.carrito.confirmarCompra(
+      direccionEnvio: widget.direccionEnvio,
+      ciudad: widget.ciudad,
+      codigoPostal: widget.codigoPostal,
+    );
+    if (!mounted) return;
+    if (result != null) {
+      setState(() {
+        _exitoso = true;
+        _ordenId = result['ordenId'];
+      });
+      _tickCtrl.forward();
+    } else {
+      setState(() => _error = widget.carrito.error ?? 'Ocurrió un error');
+    }
+  }
+
+  @override
+  void dispose() {
+    _tickCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: AppColors.cream,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 48),
+        child: SizedBox(
+          width: 320,
+          child: _error != null ? _buildError() : _exitoso ? _buildExito() : _buildProcesando(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProcesando() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const SizedBox(
+          width: 48, height: 48,
+          child: CircularProgressIndicator(
+            strokeWidth: 2, color: AppColors.ink,
+          ),
+        ),
+        const SizedBox(height: 32),
+        Text('Procesando pago...',
+          style: GoogleFonts.cormorantGaramond(
+            fontSize: 22, fontWeight: FontWeight.w600, color: AppColors.ink,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text('No cierres esta ventana.',
+          style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.stone),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildExito() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ScaleTransition(
+          scale: _tickAnim,
+          child: Container(
+            width: 72, height: 72,
+            decoration: const BoxDecoration(
+              color: AppColors.ink,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.check, color: AppColors.cream, size: 36),
+          ),
+        ),
+        const SizedBox(height: 28),
+        Text('¡Orden confirmada!',
+          style: GoogleFonts.cormorantGaramond(
+            fontSize: 26, fontWeight: FontWeight.w600, color: AppColors.ink,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text('Orden #$_ordenId generada con éxito.',
+          style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.stone),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 32),
+        PrimaryButton(
+          label: 'Continuar',
+          fullWidth: true,
+          onPressed: () {
+            Navigator.of(context).pop();
+            widget.onDone();
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildError() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 72, height: 72,
+          decoration: BoxDecoration(
+            color: Colors.red[50],
+            shape: BoxShape.circle,
+          ),
+          child: Icon(Icons.error_outline, color: Colors.red[700], size: 36),
+        ),
+        const SizedBox(height: 28),
+        Text('No se pudo procesar',
+          style: GoogleFonts.cormorantGaramond(
+            fontSize: 22, fontWeight: FontWeight.w600, color: AppColors.ink,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(_error!,
+          style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.stone),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 32),
+        OutlineBtn(
+          label: 'Cerrar',
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ],
+    );
+  }
 }

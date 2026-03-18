@@ -32,10 +32,13 @@ class _DetailScreenState extends State<DetailScreen> {
 
   Future<void> _agregarAlCarrito(Producto p) async {
     if (_talleSeleccionado == null) {
+      ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Seleccioná un talle',
             style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.cream)),
         backgroundColor: AppColors.charcoal,
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
       ));
       return;
     }
@@ -56,6 +59,7 @@ class _DetailScreenState extends State<DetailScreen> {
     setState(() => _agregando = false);
 
     if (ok && mounted) {
+      ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('✓ ${p.titulo} agregado al carrito',
             style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.cream)),
