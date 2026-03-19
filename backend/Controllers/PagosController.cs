@@ -3,6 +3,7 @@ using backend.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using backend.Services;
 
 namespace backend.Controllers
 {
@@ -12,11 +13,16 @@ namespace backend.Controllers
     public class PagosController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly MercadoPagoService _mercadoPagoService;
 
-        public PagosController(AppDbContext context)
+        public PagosController(
+            AppDbContext context,
+            MercadoPagoService mercadoPagoService)
         {
             _context = context;
+            _mercadoPagoService = mercadoPagoService;
         }
+
 
         [HttpPost("iniciar")]
         public async Task<IActionResult> IniciarPago([FromBody] int ordenId)
@@ -36,6 +42,13 @@ namespace backend.Controllers
             if (yaTienePago)
                 return BadRequest("La orden ya tiene un pago iniciado");
 
+            var initPoint = await _mercadoPagoService.CrearPreferenciaAsync(
+                orden.Id,
+                orden.Total,
+                $"Orden #{orden.Id}"
+            );
+
+            // persistimos el pago en la DB
             var pago = new Pago
             {
                 OrdenId = orden.Id,
@@ -49,9 +62,8 @@ namespace backend.Controllers
 
             return Ok(new
             {
-                pago.Id,
-                pago.Estado,
-                pago.Monto
+                pagoId = pago.Id,
+                initPoint
             });
         }
     }

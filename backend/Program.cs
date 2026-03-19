@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using backend.Options;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,6 +55,9 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<JwtHelper>();
 builder.Services.AddScoped<PasswordHelper>();
+builder.Services.AddScoped<MercadoPagoService>();
+builder.Services.Configure<MercadoPagoOptions>(
+    builder.Configuration.GetSection("MercadoPago"));
 
 // ----------------------------------------------------------------------
 // BASE DE DATOS
