@@ -68,6 +68,17 @@ namespace backend.Services
             return doc.RootElement
                 .GetProperty("init_point")
                 .GetString()!;
+                }
+                public async Task<JsonElement> ObtenerPagoAsync(string paymentId)
+        {
+            var response = await _httpClient.GetAsync($"v1/payments/{paymentId}");
+            response.EnsureSuccessStatusCode();
+
+            var responseJson = await response.Content.ReadAsStringAsync();
+            using var doc = JsonDocument.Parse(responseJson);
+
+            return doc.RootElement.Clone();
         }
     }
+    
 }
