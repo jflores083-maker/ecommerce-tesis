@@ -134,12 +134,30 @@ namespace backend.Controllers
                 return Ok();
 
             if (estado == "approved")
-            {
-                pago.Estado = "aprobado";
-                pago.TransaccionId = dataId;
-                pago.FechaPago = DateTime.UtcNow;
-                pago.Orden.Estado = "pagada";
-            }
+                {
+                    pago.Estado = "aprobado";
+                    pago.TransaccionId = dataId;
+                    pago.FechaPago = DateTime.UtcNow;
+                    pago.Orden.Estado = "pagada";
+
+                    // Descontar stock por cada item de la orden
+                    var items = await _context.ItemsOrden
+                        .Include(i => i.Producto)
+                        .Where(i => i.OrdenId == ordenId)
+                        .ToListAsync();
+
+                    foreach (var item in items)
+                    {
+                        item.Producto.Stock -= item.Cantidad;
+
+                        // Si el stock llega a 0, marcamos el producto como agotado
+                        if (item.Producto.Stock <= 0)
+                        {
+                            item.Producto.Stock = 0;
+                            item.Producto.Estado = "agotado";
+                        }
+                    }
+                }
             else if (estado == "rejected" || estado == "cancelled")
             {
                 pago.Estado = "rechazado";
