@@ -4,5 +4,6 @@ namespace backend.Options
     {
         public string AccessToken { get; set; } = null!;
         public bool IsSandbox { get; set; }
+        public string WebhookSecret { get; set; } = null!;
     }
 }
