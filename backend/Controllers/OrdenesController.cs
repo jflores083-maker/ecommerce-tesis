@@ -191,6 +191,53 @@ namespace backend.Controllers
             return Ok(dto);
         }
 
+        // GET /api/ordenes/todas  -> todas las órdenes (Admin)
+        [HttpGet("todas")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<IEnumerable<OrdenAdminDto>>> TodasLasOrdenes(
+            [FromQuery] string? estado = null)
+        {
+            var query = _db.Ordenes
+                .Include(o => o.Comprador)
+                .Include(o => o.Items)
+                    .ThenInclude(i => i.Producto)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(estado))
+                query = query.Where(o => o.Estado == estado.ToLowerInvariant());
+
+            var ordenes = await query
+                .OrderByDescending(o => o.FechaCreacion)
+                .Select(o => new OrdenAdminDto
+                {
+                    OrdenId = o.Id,
+                    Estado = o.Estado,
+                    NumeroSeguimiento = o.NumeroSeguimiento,
+                    CompradorId = o.CompradorId,
+                    CompradorNombre = o.Comprador.Nombre,
+                    CompradorEmail = o.Comprador.Email,
+                    DireccionEnvio = o.DireccionEnvio,
+                    Ciudad = o.Ciudad,
+                    CodigoPostal = o.CodigoPostal,
+                    Subtotal = o.Subtotal,
+                    CostoEnvio = o.CostoEnvio,
+                    Total = o.Total,
+                    Fecha = o.FechaCreacion,
+                    Items = o.Items.Select(i => new ItemOrdenDto
+                    {
+                        ProductoId = i.ProductoId,
+                        Titulo = i.Producto.Titulo,
+                        Talle = i.Talle,
+                        Cantidad = i.Cantidad,
+                        PrecioUnitario = i.PrecioUnitario,
+                        Subtotal = i.Subtotal
+                    }).ToList()
+                })
+                .ToListAsync();
+
+            return Ok(ordenes);
+        }
+
         // PATCH /api/ordenes/{id}/estado  -> enviado/entregado/cancelado (rol vendedor)
         [HttpPatch("{id:int}/estado")]
         [Authorize] // opcional: [Authorize(Roles = "Vendedor")]
