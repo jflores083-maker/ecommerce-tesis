@@ -324,6 +324,10 @@ class _OrderSummaryState extends State<_OrderSummary> {
   Map<String, dynamic>? _promoAplicada;
   bool _promoLoading = false;
 
+  String _formatPrecio(double valor) {
+    return '\$${valor.toStringAsFixed(0).replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (m) => '.')}';
+  }
+
   Future<void> _aplicarPromo() async {
     final codigo = _promoCtrl.text.trim();
     if (codigo.isEmpty) return;
@@ -525,7 +529,7 @@ class _OrderSummaryState extends State<_OrderSummary> {
                     style: GoogleFonts.dmMono(fontSize: 11, color: Colors.green)),
                 ],
               ),
-              Text('− \$${(_promoAplicada!['descuento'] as num).toStringAsFixed(0)}',
+              Text('− ${_formatPrecio((_promoAplicada!['descuento'] as num).toDouble())}',
                 style: GoogleFonts.dmMono(fontSize: 11, color: Colors.green)),
             ],
           ),
@@ -548,7 +552,7 @@ class _OrderSummaryState extends State<_OrderSummary> {
               ),
               Text(
                 _promoAplicada != null
-                    ? '\$${(_promoAplicada!['totalFinal'] as num).toStringAsFixed(0)}'
+                    ? _formatPrecio((_promoAplicada!['totalFinal'] as num).toDouble())
                     : c.subtotalFormateado,
                 style: GoogleFonts.syne(
                   fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.ink,

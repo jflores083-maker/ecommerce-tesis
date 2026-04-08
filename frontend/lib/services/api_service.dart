@@ -477,6 +477,13 @@ class ApiService {
     _checkStatus(res);
   }
 
+  Future<List<int>> getProductosDelDrop(int dropId) async {
+    final uri = Uri.parse('$_baseUrl/drops/$dropId/productos');
+    final res = await http.get(uri, headers: await _headers(auth: true));
+    _checkStatus(res);
+    return (jsonDecode(res.body) as List).cast<int>();
+  }
+
   Future<List<int>> getDropsPorProducto(int productoId) async {
     final uri = Uri.parse('$_baseUrl/drops/por-producto/$productoId');
     final res = await http.get(uri, headers: await _headers());
@@ -500,6 +507,21 @@ class ApiService {
     final uri = Uri.parse('$_baseUrl/drops/$id');
     final res = await http.delete(uri, headers: await _headers(auth: true));
     _checkStatus(res);
+  }
+
+  // ── Ajuste de precios ─────────────────────────────────────
+
+  Future<Map<String, dynamic>> ajustarPrecios({
+    required List<int> productoIds,
+    required double porcentaje,
+  }) async {
+    final uri = Uri.parse('$_baseUrl/productos/ajustar-precios');
+    final res = await http.patch(uri,
+      headers: await _headers(auth: true),
+      body: jsonEncode({'productoIds': productoIds, 'porcentaje': porcentaje}),
+    );
+    _checkStatus(res);
+    return jsonDecode(res.body) as Map<String, dynamic>;
   }
 
   // ── Códigos de promoción ──────────────────────────────────

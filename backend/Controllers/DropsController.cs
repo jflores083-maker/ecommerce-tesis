@@ -183,6 +183,19 @@ namespace backend.Controllers
             return Ok(new { drop.Id, drop.Nombre, drop.ImagenUrl, drop.FechaCreacion });
         }
 
+        // GET /api/drops/{id}/productos  — IDs de productos en el drop
+        [HttpGet("{id}/productos")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetProductosDelDrop(int id)
+        {
+            var ids = await _db.DropProductos
+                .Where(dp => dp.DropId == id)
+                .Select(dp => dp.ProductoId)
+                .ToListAsync();
+
+            return Ok(ids);
+        }
+
         // POST /api/drops/{id}/productos/{productoId}
         [HttpPost("{id}/productos/{productoId}")]
         [Authorize(Roles = "Admin")]

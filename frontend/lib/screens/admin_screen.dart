@@ -75,6 +75,13 @@ class AdminScreen extends StatelessWidget {
                   description: 'Crear y gestionar descuentos para clientes',
                   onTap: () => context.go('/admin/codigos'),
                 ),
+                const SizedBox(height: 16),
+                _AdminMenuBtn(
+                  icon: Icons.trending_up_outlined,
+                  label: 'Ajuste de precios',
+                  description: 'Subir o bajar precios por porcentaje',
+                  onTap: () => context.go('/admin/precios'),
+                ),
               ],
             ),
           ),
