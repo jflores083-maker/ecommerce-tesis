@@ -264,6 +264,29 @@ namespace backend.Controllers
             return Ok("Producto eliminado correctamente");
         }
 
+        // PATCH: api/productos/ajustar-precios  — ajuste masivo por porcentaje (solo admin)
+        [HttpPatch("ajustar-precios")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AjustarPrecios([FromBody] AjustarPreciosDto dto)
+        {
+            if (!ModelState.IsValid) return ValidationProblem(ModelState);
+            if (!dto.ProductoIds.Any()) return BadRequest("Seleccioná al menos un producto.");
+
+            var productos = await _context.Productos
+                .Where(p => dto.ProductoIds.Contains(p.Id) && p.Activo)
+                .ToListAsync();
+
+            if (!productos.Any()) return NotFound("No se encontraron productos válidos.");
+
+            var factor = 1 + dto.Porcentaje / 100m;
+            foreach (var p in productos)
+                p.Precio = Math.Round(p.Precio * factor, 2);
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { actualizados = productos.Count });
+        }
+
         // GET: api/productos/mis-productos
         [HttpGet("mis-productos")]
         [Authorize]
