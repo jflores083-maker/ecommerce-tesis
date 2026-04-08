@@ -21,6 +21,7 @@ import '../screens/drop_detalle_screen.dart';
 import '../screens/admin_drops_screen.dart';
 import '../screens/admin_crear_drop_screen.dart';
 import '../screens/admin_editar_drop_screen.dart';
+import '../screens/admin_codigos_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -139,6 +140,10 @@ GoRouter createRouter(AuthProvider authProvider) {
           final id = int.parse(state.pathParameters['id']!);
           return AdminEditarDropScreen(dropId: id);
         },
+      ),
+      GoRoute(
+        path: '/admin/codigos',
+        builder: (ctx, state) => const AdminCodigosScreen(),
       ),
     ],
   );

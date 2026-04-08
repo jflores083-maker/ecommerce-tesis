@@ -68,6 +68,13 @@ class AdminScreen extends StatelessWidget {
                   description: 'Gestionar lanzamientos exclusivos',
                   onTap: () => context.go('/admin/drops'),
                 ),
+                const SizedBox(height: 16),
+                _AdminMenuBtn(
+                  icon: Icons.local_offer_outlined,
+                  label: 'Códigos de promoción',
+                  description: 'Crear y gestionar descuentos para clientes',
+                  onTap: () => context.go('/admin/codigos'),
+                ),
               ],
             ),
           ),

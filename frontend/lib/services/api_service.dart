@@ -501,6 +501,56 @@ class ApiService {
     final res = await http.delete(uri, headers: await _headers(auth: true));
     _checkStatus(res);
   }
+
+  // ── Códigos de promoción ──────────────────────────────────
+
+  Future<List<dynamic>> getCodigosPromocion() async {
+    final uri = Uri.parse('$_baseUrl/promociones');
+    final res = await http.get(uri, headers: await _headers(auth: true));
+    _checkStatus(res);
+    return jsonDecode(res.body) as List;
+  }
+
+  Future<void> crearCodigoPromocion({
+    required String codigo,
+    required String tipo,
+    required double valor,
+    DateTime? fechaExpiracion,
+    int? usosMaximos,
+  }) async {
+    final uri = Uri.parse('$_baseUrl/promociones');
+    final body = <String, dynamic>{
+      'codigo': codigo,
+      'tipo': tipo,
+      'valor': valor,
+      if (fechaExpiracion != null) 'fechaExpiracion': fechaExpiracion.toIso8601String(),
+      if (usosMaximos != null) 'usosMaximos': usosMaximos,
+    };
+    final res = await http.post(uri,
+      headers: await _headers(auth: true),
+      body: jsonEncode(body),
+    );
+    _checkStatus(res);
+  }
+
+  Future<void> eliminarCodigoPromocion(int id) async {
+    final uri = Uri.parse('$_baseUrl/promociones/$id');
+    final res = await http.delete(uri, headers: await _headers(auth: true));
+    _checkStatus(res);
+  }
+
+  Future<Map<String, dynamic>> validarCodigoPromocion({
+    required String codigo,
+    required double subtotal,
+  }) async {
+    final uri = Uri.parse('$_baseUrl/promociones/validar');
+    final res = await http.post(uri,
+      headers: await _headers(auth: true),
+      body: jsonEncode({'codigo': codigo, 'subtotal': subtotal}),
+    );
+    _checkStatus(res);
+    return jsonDecode(res.body) as Map<String, dynamic>;
+  }
 }
 
 // ── Excepción custom ──────────────────────────────────────
