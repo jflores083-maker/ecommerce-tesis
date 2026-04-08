@@ -35,6 +35,13 @@ class AdminScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 48),
                 _AdminMenuBtn(
+                  icon: Icons.bar_chart_outlined,
+                  label: 'Dashboard',
+                  description: 'Estadísticas y métricas de la tienda',
+                  onTap: () => context.go('/admin/dashboard'),
+                ),
+                const SizedBox(height: 16),
+                _AdminMenuBtn(
                   icon: Icons.add_box_outlined,
                   label: 'Agregar producto',
                   description: 'Publicar un nuevo producto en la tienda',
