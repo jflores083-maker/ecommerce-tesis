@@ -509,6 +509,15 @@ class ApiService {
     _checkStatus(res);
   }
 
+  // ── Dashboard ─────────────────────────────────────────────
+
+  Future<Map<String, dynamic>> getDashboard() async {
+    final uri = Uri.parse('$_baseUrl/dashboard');
+    final res = await http.get(uri, headers: await _headers(auth: true));
+    _checkStatus(res);
+    return jsonDecode(res.body) as Map<String, dynamic>;
+  }
+
   // ── Ajuste de precios ─────────────────────────────────────
 
   Future<Map<String, dynamic>> ajustarPrecios({

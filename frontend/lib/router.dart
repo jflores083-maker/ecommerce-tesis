@@ -23,6 +23,7 @@ import '../screens/admin_crear_drop_screen.dart';
 import '../screens/admin_editar_drop_screen.dart';
 import '../screens/admin_codigos_screen.dart';
 import '../screens/admin_precios_screen.dart';
+import '../screens/admin_dashboard_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -149,6 +150,10 @@ GoRouter createRouter(AuthProvider authProvider) {
       GoRoute(
         path: '/admin/precios',
         builder: (ctx, state) => const AdminPreciosScreen(),
+      ),
+      GoRoute(
+        path: '/admin/dashboard',
+        builder: (ctx, state) => const AdminDashboardScreen(),
       ),
     ],
   );
