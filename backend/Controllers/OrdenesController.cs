@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+using backend.Services;
 
 namespace backend.Controllers
 {
@@ -14,10 +15,11 @@ namespace backend.Controllers
     public class OrdenesController : ControllerBase
     {
         private readonly AppDbContext _db;
-
-        public OrdenesController(AppDbContext db)
+        private readonly EmailService _emailService;
+        public OrdenesController(AppDbContext db, EmailService emailService)
         {
             _db = db;
+            _emailService = emailService;
         }
 
         private int GetUserId()
@@ -260,14 +262,29 @@ namespace backend.Controllers
             //     .AnyAsync(i => i.OrdenId == id && i.Producto.VendedorId == vendedorId);
             // if (!esVendedorDeEstaOrden) return Forbid();
 
-            orden.Estado = estado;
-            if (!string.IsNullOrWhiteSpace(dto.NumeroSeguimiento))
-                orden.NumeroSeguimiento = dto.NumeroSeguimiento;
+           orden.Estado = estado;
+if (!string.IsNullOrWhiteSpace(dto.NumeroSeguimiento))
+    orden.NumeroSeguimiento = dto.NumeroSeguimiento;
 
-            orden.FechaActualizacion = DateTime.UtcNow;
-            await _db.SaveChangesAsync();
+orden.FechaActualizacion = DateTime.UtcNow;
+await _db.SaveChangesAsync();
 
-            return NoContent();
+// Enviar email si la orden fue enviada
+if (estado == "enviado")
+{
+    var comprador = await _db.Usuarios.FindAsync(orden.CompradorId);
+    if (comprador != null)
+    {
+        var cuerpo = _emailService.TemplateOrdenEnviada(id, orden.NumeroSeguimiento);
+        await _emailService.EnviarEmailAsync(
+            comprador.Email,
+            $"📦 Tu orden #{id} fue enviada - Urbal",
+            cuerpo
+        );
+    }
+}
+
+return NoContent();
         }
     }
 }

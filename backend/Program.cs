@@ -15,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 // SWAGGER
 // ----------------------------------------------------------------------
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddScoped<EmailService>();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo

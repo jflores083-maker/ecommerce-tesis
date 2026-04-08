@@ -18,14 +18,17 @@ namespace backend.Controllers
         private readonly AppDbContext _context;
         private readonly MercadoPagoService _mercadoPagoService;
         private readonly MercadoPagoOptions _options;
+        private readonly EmailService _emailService;
         public PagosController(
             AppDbContext context,
             MercadoPagoService mercadoPagoService,
-            IOptions<MercadoPagoOptions> options)
+            IOptions<MercadoPagoOptions> options,
+            EmailService emailService)
         {
             _context = context;
             _mercadoPagoService = mercadoPagoService;
             _options = options.Value;
+            _emailService = emailService;
         }
 
 
@@ -156,6 +159,20 @@ namespace backend.Controllers
                             item.Producto.Stock = 0;
                             item.Producto.Estado = "agotado";
                         }
+                    }
+
+                    // Enviar email de confirmación al comprador
+                    var comprador = await _context.Usuarios
+                        .FirstOrDefaultAsync(u => u.Id == pago.Orden.CompradorId);
+
+                    if (comprador != null)
+                    {
+                        var cuerpo = _emailService.TemplateOrdenConfirmada(ordenId, pago.Monto);
+                        await _emailService.EnviarEmailAsync(
+                            comprador.Email,
+                            $"✅ Orden #{ordenId} confirmada - Urbal",
+                            cuerpo
+                        );
                     }
                 }
             else if (estado == "rejected" || estado == "cancelled")
