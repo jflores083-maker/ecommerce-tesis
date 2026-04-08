@@ -89,6 +89,13 @@ class AdminScreen extends StatelessWidget {
                   description: 'Subir o bajar precios por porcentaje',
                   onTap: () => context.go('/admin/precios'),
                 ),
+                const SizedBox(height: 16),
+                _AdminMenuBtn(
+                  icon: Icons.receipt_long_outlined,
+                  label: 'Órdenes',
+                  description: 'Ver y gestionar todos los pedidos',
+                  onTap: () => context.go('/admin/ordenes'),
+                ),
               ],
             ),
           ),

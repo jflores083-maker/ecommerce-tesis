@@ -582,6 +582,27 @@ class ApiService {
     _checkStatus(res);
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
+
+  // ── Órdenes admin ─────────────────────────────────────────
+
+  Future<List<dynamic>> getTodasOrdenes({String? estado}) async {
+    final params = estado != null ? '?estado=$estado' : '';
+    final uri = Uri.parse('$_baseUrl/ordenes/todas$params');
+    final res = await http.get(uri, headers: await _headers(auth: true));
+    _checkStatus(res);
+    return jsonDecode(res.body) as List;
+  }
+
+  Future<void> actualizarEstadoOrden(int id, String estado, {String? numeroSeguimiento}) async {
+    final uri = Uri.parse('$_baseUrl/ordenes/$id/estado');
+    final body = <String, dynamic>{'estado': estado};
+    if (numeroSeguimiento != null) body['numeroSeguimiento'] = numeroSeguimiento;
+    final res = await http.patch(uri,
+      headers: await _headers(auth: true),
+      body: jsonEncode(body),
+    );
+    _checkStatus(res);
+  }
 }
 
 // ── Excepción custom ──────────────────────────────────────
