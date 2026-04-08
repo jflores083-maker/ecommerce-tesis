@@ -10,6 +10,13 @@ namespace backend.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            // Crear el índice compuesto ANTES de borrar el simple,
+            // así MySQL tiene cobertura para la FK durante el drop.
+            migrationBuilder.CreateIndex(
+                name: "IX_ImagenesProducto_ProductoId_Orden",
+                table: "ImagenesProducto",
+                columns: new[] { "ProductoId", "Orden" });
+
             migrationBuilder.DropIndex(
                 name: "IX_ImagenesProducto_ProductoId",
                 table: "ImagenesProducto");
@@ -18,11 +25,6 @@ namespace backend.Migrations
                 name: "IX_Productos_Activo_Categoria",
                 table: "Productos",
                 columns: new[] { "Activo", "Categoria" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ImagenesProducto_ProductoId_Orden",
-                table: "ImagenesProducto",
-                columns: new[] { "ProductoId", "Orden" });
         }
 
         /// <inheritdoc />

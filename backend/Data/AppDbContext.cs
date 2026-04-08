@@ -21,6 +21,7 @@ namespace backend.Data
         public DbSet<Drop> Drops { get; set; } = null!;
         public DbSet<DropProducto> DropProductos { get; set; } = null!;
         public DbSet<Pago> Pagos { get; set; } = null!;
+        public DbSet<CodigoPromocion> CodigosPromocion { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

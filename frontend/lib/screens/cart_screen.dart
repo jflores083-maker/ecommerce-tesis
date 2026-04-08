@@ -321,6 +321,31 @@ class _OrderSummary extends StatefulWidget {
 
 class _OrderSummaryState extends State<_OrderSummary> {
   final _promoCtrl = TextEditingController();
+  Map<String, dynamic>? _promoAplicada;
+  bool _promoLoading = false;
+
+  Future<void> _aplicarPromo() async {
+    final codigo = _promoCtrl.text.trim();
+    if (codigo.isEmpty) return;
+    setState(() { _promoLoading = true; _promoAplicada = null; });
+    try {
+      final resultado = await context.read<ApiService>().validarCodigoPromocion(
+        codigo: codigo,
+        subtotal: widget.carrito.subtotal,
+      );
+      setState(() { _promoAplicada = resultado; _promoLoading = false; });
+    } on ApiException catch (e) {
+      setState(() => _promoLoading = false);
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e.message,
+          style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.cream)),
+        backgroundColor: AppColors.charcoal,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 2),
+      ));
+    }
+  }
 
   Future<void> _checkout() async {
     final direccionCtrl  = TextEditingController();
@@ -468,28 +493,50 @@ class _OrderSummaryState extends State<_OrderSummary> {
                 ),
               ),
               GestureDetector(
-                onTap: () {},
+                onTap: _promoLoading ? null : _aplicarPromo,
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   color: AppColors.charcoal,
-                  child: Text('APLICAR',
-                    style: GoogleFonts.dmMono(
-                      fontSize: 10, color: AppColors.cream, letterSpacing: 0.12,
-                    ),
-                  ),
+                  child: _promoLoading
+                      ? const SizedBox(width: 14, height: 14,
+                          child: CircularProgressIndicator(strokeWidth: 1.5, color: AppColors.cream))
+                      : Text('APLICAR',
+                          style: GoogleFonts.dmMono(
+                            fontSize: 10, color: AppColors.cream, letterSpacing: 0.12,
+                          ),
+                        ),
                 ),
               ),
             ],
           ),
         ),
 
+        // Descuento aplicado
+        if (_promoAplicada != null) ...[
+          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.check_circle_outline, size: 13, color: Colors.green),
+                  const SizedBox(width: 4),
+                  Text(_promoAplicada!['codigo'],
+                    style: GoogleFonts.dmMono(fontSize: 11, color: Colors.green)),
+                ],
+              ),
+              Text('− \$${(_promoAplicada!['descuento'] as num).toStringAsFixed(0)}',
+                style: GoogleFonts.dmMono(fontSize: 11, color: Colors.green)),
+            ],
+          ),
+          const SizedBox(height: 4),
+        ],
+
         // Total
         Container(
           padding: const EdgeInsets.symmetric(vertical: 20),
           decoration: const BoxDecoration(
-            border: Border(
-              top: BorderSide(color: AppColors.stone),
-            ),
+            border: Border(top: BorderSide(color: AppColors.stone)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -499,7 +546,10 @@ class _OrderSummaryState extends State<_OrderSummary> {
                   fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.ink,
                 ),
               ),
-              Text(c.subtotalFormateado,
+              Text(
+                _promoAplicada != null
+                    ? '\$${(_promoAplicada!['totalFinal'] as num).toStringAsFixed(0)}'
+                    : c.subtotalFormateado,
                 style: GoogleFonts.syne(
                   fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.ink,
                 ),
