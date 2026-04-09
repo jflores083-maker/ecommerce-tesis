@@ -68,13 +68,13 @@ class _AdminDropsScreenState extends State<AdminDropsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Drops',
-                  style: GoogleFonts.cormorantGaramond(
-                    fontSize: 40, fontWeight: FontWeight.w500, color: AppColors.ink,
+                  style: GoogleFonts.syne(
+                    fontSize: 32, fontWeight: FontWeight.w700, color: AppColors.ink,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text('Lanzamientos exclusivos de la tienda.',
-                  style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.stone),
+                  style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.charcoal),
                 ),
                 const SizedBox(height: 32),
                 SizedBox(

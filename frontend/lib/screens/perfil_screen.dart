@@ -178,13 +178,12 @@ class _PerfilScreenState extends State<PerfilScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Mi perfil',
-                          style: GoogleFonts.cormorantGaramond(
-                            fontSize: 40, fontWeight: FontWeight.w300,
-                            color: AppColors.ink,
+                          style: GoogleFonts.syne(
+                            fontSize: 32, fontWeight: FontWeight.w700, color: AppColors.ink,
                           ),
                         ),
                         Text('${user?.nombre ?? ''} ${user?.apellido ?? ''}',
-                          style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.stone),
+                          style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.charcoal),
                         ),
                       ],
                     ),

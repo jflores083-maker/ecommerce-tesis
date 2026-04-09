@@ -100,12 +100,12 @@ class _AdminCodigosScreenState extends State<AdminCodigosScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Códigos de promoción',
-                          style: GoogleFonts.cormorantGaramond(
-                            fontSize: 36, fontWeight: FontWeight.w600, color: AppColors.ink,
+                          style: GoogleFonts.syne(
+                            fontSize: 32, fontWeight: FontWeight.w700, color: AppColors.ink,
                           ),
                         ),
                         Text('Creá y gestioná descuentos para tus clientes.',
-                          style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.stone),
+                          style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.charcoal),
                         ),
                       ],
                     ),

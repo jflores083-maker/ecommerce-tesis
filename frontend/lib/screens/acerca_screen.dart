@@ -127,11 +127,8 @@ class _HeroContent extends StatelessWidget {
         ),
         const SizedBox(height: 20),
         Text(config.acercaTitulo,
-          style: GoogleFonts.cormorantGaramond(
-            fontSize: MediaQuery.of(context).size.width < 768 ? 48 : 64,
-            fontWeight: FontWeight.w300,
-            color: AppColors.ink,
-            height: 1.1,
+          style: GoogleFonts.syne(
+            fontSize: 32, fontWeight: FontWeight.w700, color: AppColors.ink,
           ),
         ),
         const SizedBox(height: 24),
@@ -139,7 +136,7 @@ class _HeroContent extends StatelessWidget {
         const SizedBox(height: 24),
         Text('Ropa urbana de Buenos Aires para el mundo.',
           style: GoogleFonts.dmMono(
-            fontSize: 13, color: AppColors.gray, height: 1.8,
+            fontSize: 13, color: AppColors.charcoal, height: 1.8,
           ),
         ),
         if (config.acercaDescripcion.isNotEmpty) ...[
@@ -173,7 +170,7 @@ class _ValorItem extends StatelessWidget {
         const SizedBox(height: 8),
         Text(descripcion,
           style: GoogleFonts.dmMono(
-            fontSize: 11, color: AppColors.stone, height: 1.8,
+            fontSize: 11, color: AppColors.charcoal, height: 1.8,
           ),
         ),
       ],

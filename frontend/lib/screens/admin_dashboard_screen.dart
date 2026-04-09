@@ -86,12 +86,12 @@ class _DashboardBody extends StatelessWidget {
       children: [
         // Encabezado
         Text('Dashboard',
-          style: GoogleFonts.cormorantGaramond(
-            fontSize: 40, fontWeight: FontWeight.w600, color: AppColors.ink,
+          style: GoogleFonts.syne(
+            fontSize: 32, fontWeight: FontWeight.w700, color: AppColors.ink,
           ),
         ),
         Text('Resumen general de tu tienda.',
-          style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.stone)),
+          style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.charcoal)),
         const SizedBox(height: 36),
 
         // ── Tarjetas resumen ──────────────────────────────────

@@ -47,10 +47,8 @@ class _CatalogScreenState extends State<CatalogScreen> {
               textBaseline: TextBaseline.alphabetic,
               children: [
                 Text('Colección',
-                  style: GoogleFonts.cormorantGaramond(
-                    fontSize: isMobile ? 36 : 48,
-                    fontWeight: FontWeight.w300,
-                    color: AppColors.ink,
+                  style: GoogleFonts.syne(
+                    fontSize: 32, fontWeight: FontWeight.w700, color: AppColors.ink,
                   ),
                 ),
                 Text('${provider.productos.length} productos',

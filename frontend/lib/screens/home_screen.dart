@@ -262,8 +262,8 @@ class _FeaturedSection extends StatelessWidget {
             textBaseline: TextBaseline.alphabetic,
             children: [
               Text('Destacados',
-                style: GoogleFonts.cormorantGaramond(
-                  fontSize: isMobile ? 30 : 40, fontWeight: FontWeight.w500,
+                style: GoogleFonts.syne(
+                  fontSize: 24, fontWeight: FontWeight.w700,
                   color: AppColors.ink,
                 ),
               ),
@@ -356,8 +356,8 @@ class _CategoriesSection extends StatelessWidget {
             textBaseline: TextBaseline.alphabetic,
             children: [
               Text('Categorías',
-                style: GoogleFonts.cormorantGaramond(
-                  fontSize: isMobile ? 30 : 40, fontWeight: FontWeight.w500,
+                style: GoogleFonts.syne(
+                  fontSize: 24, fontWeight: FontWeight.w700,
                   color: AppColors.ink,
                 ),
               ),
@@ -425,8 +425,8 @@ class _CategoryItem extends StatelessWidget {
           Positioned(
             left: 20, right: 20, bottom: 20,
             child: Text(label,
-              style: GoogleFonts.cormorantGaramond(
-                fontSize: 28, fontWeight: FontWeight.w300,
+              style: GoogleFonts.syne(
+                fontSize: 18, fontWeight: FontWeight.w700,
                 color: imagenUrl != null ? AppColors.cream : AppColors.ink,
               ),
             ),

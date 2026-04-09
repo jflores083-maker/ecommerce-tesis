@@ -47,7 +47,7 @@ class _EmptyCart extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text('Explorá la colección y encontrá algo que te guste.',
-            style: GoogleFonts.dmMono(fontSize: 12, color: AppColors.stone),
+            style: GoogleFonts.dmMono(fontSize: 12, color: AppColors.charcoal),
           ),
           const SizedBox(height: 40),
           PrimaryButton(
@@ -141,8 +141,8 @@ class _CartItemsList extends StatelessWidget {
           textBaseline: TextBaseline.alphabetic,
           children: [
             Text('Mi Bolsa',
-              style: GoogleFonts.cormorantGaramond(
-                fontSize: 40, fontWeight: FontWeight.w600, color: AppColors.ink,
+              style: GoogleFonts.syne(
+                fontSize: 32, fontWeight: FontWeight.w700, color: AppColors.ink,
               ),
             ),
             TextButton(
@@ -454,8 +454,8 @@ class _OrderSummaryState extends State<_OrderSummary> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Resumen',
-          style: GoogleFonts.cormorantGaramond(
-            fontSize: 28, fontWeight: FontWeight.w600, color: AppColors.ink,
+          style: GoogleFonts.syne(
+            fontSize: 24, fontWeight: FontWeight.w700, color: AppColors.ink,
           ),
         ),
         const Divider(color: AppColors.sand, height: 36, thickness: 1),

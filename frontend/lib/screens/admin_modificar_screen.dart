@@ -68,13 +68,13 @@ class _ListaProductos extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Modificar producto',
-          style: GoogleFonts.cormorantGaramond(
-            fontSize: 40, fontWeight: FontWeight.w300, color: AppColors.ink,
+          style: GoogleFonts.syne(
+            fontSize: 32, fontWeight: FontWeight.w700, color: AppColors.ink,
           ),
         ),
         const SizedBox(height: 4),
         Text('Seleccioná el producto que querés editar.',
-          style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.stone),
+          style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.charcoal),
         ),
         const SizedBox(height: 40),
         if (admin.loading)

@@ -54,13 +54,13 @@ class _LoginScreenState extends State<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Ingresar',
-                  style: GoogleFonts.cormorantGaramond(
-                    fontSize: 48, fontWeight: FontWeight.w300, color: AppColors.ink,
+                  style: GoogleFonts.syne(
+                    fontSize: 32, fontWeight: FontWeight.w700, color: AppColors.ink,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text('Accedé a tu cuenta 638.',
-                  style: GoogleFonts.dmMono(fontSize: 12, color: AppColors.stone),
+                  style: GoogleFonts.dmMono(fontSize: 12, color: AppColors.charcoal),
                 ),
                 const SizedBox(height: 40),
                 if (auth.error != null) ...[
