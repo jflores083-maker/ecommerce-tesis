@@ -123,6 +123,17 @@ namespace backend.Controllers
             var talles = ParseTalles(producto.Talles);
             if (talles.Any() && !talles.Contains(dto.Talle, StringComparer.OrdinalIgnoreCase))
                 return BadRequest("Talle inválido para este producto.");
+            
+            // Validar stock disponible
+            var cantidadEnCarrito = carrito.Items
+                .Where(i => i.ProductoId == dto.ProductoId)
+                .Sum(i => i.Cantidad);
+
+            if (producto.Stock <= 0)
+                return BadRequest("El producto está sin stock.");
+
+            if (cantidadEnCarrito + dto.Cantidad > producto.Stock)
+                return BadRequest($"Stock insuficiente. Stock disponible: {producto.Stock - cantidadEnCarrito}.");
 
             // Unificar por (ProductoId + Talle)
             var existente = carrito.Items.FirstOrDefault(i =>
