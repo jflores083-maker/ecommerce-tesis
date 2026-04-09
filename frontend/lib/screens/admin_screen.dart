@@ -25,13 +25,13 @@ class AdminScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Panel Admin',
-                  style: GoogleFonts.cormorantGaramond(
-                    fontSize: 40, fontWeight: FontWeight.w300, color: AppColors.ink,
+                  style: GoogleFonts.syne(
+                    fontSize: 32, fontWeight: FontWeight.w700, color: AppColors.ink,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text('Gestión de productos 638.',
-                  style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.stone),
+                  style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.charcoal),
                 ),
                 const SizedBox(height: 48),
                 _AdminMenuBtn(
@@ -146,7 +146,7 @@ class _AdminMenuBtn extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(description,
                     style: GoogleFonts.dmMono(
-                      fontSize: 11, color: AppColors.stone,
+                      fontSize: 11, color: AppColors.charcoal,
                     ),
                   ),
                 ],

@@ -197,12 +197,12 @@ class _AdminPreciosScreenState extends State<AdminPreciosScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('Ajuste de precios',
-                              style: GoogleFonts.cormorantGaramond(
-                                fontSize: 36, fontWeight: FontWeight.w600, color: AppColors.ink,
+                              style: GoogleFonts.syne(
+                                fontSize: 32, fontWeight: FontWeight.w700, color: AppColors.ink,
                               ),
                             ),
                             Text('Seleccioná los productos y aplicá un porcentaje de ajuste.',
-                              style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.stone)),
+                              style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.charcoal)),
                             const SizedBox(height: 32),
 
                             // ── Barra de acciones ──────────────────────

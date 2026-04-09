@@ -144,13 +144,13 @@ class _AdminAgregarScreenState extends State<AdminAgregarScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Agregar producto',
-                  style: GoogleFonts.cormorantGaramond(
-                    fontSize: 40, fontWeight: FontWeight.w300, color: AppColors.ink,
+                  style: GoogleFonts.syne(
+                    fontSize: 32, fontWeight: FontWeight.w700, color: AppColors.ink,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text('Completá los datos del nuevo producto.',
-                  style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.stone),
+                  style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.charcoal),
                 ),
                 const SizedBox(height: 40),
 

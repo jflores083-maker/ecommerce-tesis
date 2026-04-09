@@ -45,16 +45,13 @@ class ContactoScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Contacto',
-                    style: GoogleFonts.cormorantGaramond(
-                      fontSize: isMobile ? 48 : 72,
-                      fontWeight: FontWeight.w300,
-                      color: AppColors.ink,
-                      height: 1,
+                    style: GoogleFonts.syne(
+                      fontSize: 32, fontWeight: FontWeight.w700, color: AppColors.ink,
                     ),
                   ),
                   const SizedBox(height: 12),
                   Text('Estamos para ayudarte.',
-                    style: GoogleFonts.dmMono(fontSize: 12, color: AppColors.stone),
+                    style: GoogleFonts.dmMono(fontSize: 12, color: AppColors.charcoal),
                   ),
                 ],
               ),

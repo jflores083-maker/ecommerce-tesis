@@ -462,7 +462,7 @@ class _AccordionState extends State<_Accordion> {
               widget.content,
               style: GoogleFonts.dmMono(
                 fontSize: 12,
-                color: AppColors.gray,
+                color: AppColors.charcoal,
                 height: 1.8,
               ),
             ),
