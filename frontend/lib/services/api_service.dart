@@ -11,13 +11,15 @@ class ApiService {
   // Emulador Android    → 10.0.2.2 (alias del host en el emulador)
   static String get _baseUrl {
     if (kIsWeb) return 'http://localhost:5005/api';
-    if (defaultTargetPlatform == TargetPlatform.android) return 'http://10.0.2.2:5005/api';
+    if (defaultTargetPlatform == TargetPlatform.android)
+      return 'http://10.0.2.2:5005/api';
     return 'http://localhost:5005/api'; // iOS, macOS, etc.
   }
 
   static String get serverUrl {
     if (kIsWeb) return 'http://localhost:5005';
-    if (defaultTargetPlatform == TargetPlatform.android) return 'http://10.0.2.2:5005';
+    if (defaultTargetPlatform == TargetPlatform.android)
+      return 'http://10.0.2.2:5005';
     return 'http://localhost:5005';
   }
   // ─────────────────────────────────────────────────────────
@@ -142,7 +144,7 @@ class ApiService {
     };
     if (passwordNueva != null && passwordNueva.isNotEmpty) {
       body['passwordActual'] = passwordActual;
-      body['passwordNueva']  = passwordNueva;
+      body['passwordNueva'] = passwordNueva;
     }
     final res = await http.put(
       uri,
@@ -163,8 +165,9 @@ class ApiService {
     String? estado,
   }) async {
     final params = <String, String>{};
-    if (categoria != null && categoria.isNotEmpty)
+    if (categoria != null && categoria.isNotEmpty) {
       params['categoria'] = categoria;
+    }
     if (estado != null && estado.isNotEmpty) params['estado'] = estado;
 
     final uri = Uri.parse('$_baseUrl/productos')
@@ -193,7 +196,7 @@ class ApiService {
     required String descripcion,
     required double precio,
     required int stock,
-    required String talles,     // JSON string: '["S","M","L"]'
+    required String talles, // JSON string: '["S","M","L"]'
     required String categoria,
     required String estado,
     String? color,
@@ -205,19 +208,20 @@ class ApiService {
     final request = http.MultipartRequest('POST', uri);
     if (token != null) request.headers['Authorization'] = 'Bearer $token';
 
-    request.fields['titulo']      = titulo;
+    request.fields['titulo'] = titulo;
     request.fields['descripcion'] = descripcion;
-    request.fields['precio']      = precio.toString();
-    request.fields['stock']       = stock.toString();
-    request.fields['talles']      = talles;
-    request.fields['categoria']   = categoria;
-    request.fields['estado']      = estado;
+    request.fields['precio'] = precio.toString();
+    request.fields['stock'] = stock.toString();
+    request.fields['talles'] = talles;
+    request.fields['categoria'] = categoria;
+    request.fields['estado'] = estado;
     if (color != null && color.isNotEmpty) request.fields['color'] = color;
 
     if (imagen != null) {
       final bytes = await imagen.readAsBytes();
       request.files.add(http.MultipartFile.fromBytes(
-        'imagen', bytes,
+        'imagen',
+        bytes,
         filename: imagen.name,
       ));
     }
@@ -253,7 +257,8 @@ class ApiService {
     final request = http.MultipartRequest('POST', uri);
     if (token != null) request.headers['Authorization'] = 'Bearer $token';
     final bytes = await imagen.readAsBytes();
-    request.files.add(http.MultipartFile.fromBytes('imagen', bytes, filename: imagen.name));
+    request.files.add(
+        http.MultipartFile.fromBytes('imagen', bytes, filename: imagen.name));
     final streamed = await request.send();
     final res = await http.Response.fromStream(streamed);
     _checkStatus(res);
@@ -267,7 +272,8 @@ class ApiService {
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
 
-  Future<void> guardarAcercaDe({required String titulo, required String descripcion}) async {
+  Future<void> guardarAcercaDe(
+      {required String titulo, required String descripcion}) async {
     final uri = Uri.parse('$_baseUrl/configuracion/acerca');
     final res = await http.put(
       uri,
@@ -287,7 +293,12 @@ class ApiService {
     final res = await http.put(
       uri,
       headers: await _headers(auth: true),
-      body: jsonEncode({'email': email, 'telefono': telefono, 'direccion': direccion, 'horario': horario}),
+      body: jsonEncode({
+        'email': email,
+        'telefono': telefono,
+        'direccion': direccion,
+        'horario': horario
+      }),
     );
     _checkStatus(res);
   }
@@ -298,7 +309,8 @@ class ApiService {
     final request = http.MultipartRequest('POST', uri);
     if (token != null) request.headers['Authorization'] = 'Bearer $token';
     final bytes = await imagen.readAsBytes();
-    request.files.add(http.MultipartFile.fromBytes('imagen', bytes, filename: imagen.name));
+    request.files.add(
+        http.MultipartFile.fromBytes('imagen', bytes, filename: imagen.name));
     final streamed = await request.send();
     final res = await http.Response.fromStream(streamed);
     _checkStatus(res);
@@ -411,6 +423,18 @@ class ApiService {
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
 
+  // POST /api/pagos/iniciar → { pagoId, initPoint }
+  Future<Map<String, dynamic>> iniciarPago(int ordenId) async {
+    final uri = Uri.parse('$_baseUrl/pagos/iniciar');
+    final res = await http.post(
+      uri,
+      headers: await _headers(auth: true),
+      body: jsonEncode(ordenId),
+    );
+    _checkStatus(res);
+    return jsonDecode(res.body) as Map<String, dynamic>;
+  }
+
   // ── DROPS ─────────────────────────────────────────────────
 
   Future<List<Map<String, dynamic>>> getDrops() async {
@@ -443,7 +467,8 @@ class ApiService {
     }
     if (imagen != null) {
       final bytes = await imagen.readAsBytes();
-      request.files.add(http.MultipartFile.fromBytes('imagen', bytes, filename: imagen.name));
+      request.files.add(
+          http.MultipartFile.fromBytes('imagen', bytes, filename: imagen.name));
     }
 
     final streamed = await request.send();
@@ -469,19 +494,13 @@ class ApiService {
     }
     if (imagen != null) {
       final bytes = await imagen.readAsBytes();
-      request.files.add(http.MultipartFile.fromBytes('imagen', bytes, filename: imagen.name));
+      request.files.add(
+          http.MultipartFile.fromBytes('imagen', bytes, filename: imagen.name));
     }
 
     final streamed = await request.send();
     final res = await http.Response.fromStream(streamed);
     _checkStatus(res);
-  }
-
-  Future<List<int>> getProductosDelDrop(int dropId) async {
-    final uri = Uri.parse('$_baseUrl/drops/$dropId/productos');
-    final res = await http.get(uri, headers: await _headers(auth: true));
-    _checkStatus(res);
-    return (jsonDecode(res.body) as List).cast<int>();
   }
 
   Future<List<int>> getDropsPorProducto(int productoId) async {
@@ -506,101 +525,6 @@ class ApiService {
   Future<void> eliminarDrop(int id) async {
     final uri = Uri.parse('$_baseUrl/drops/$id');
     final res = await http.delete(uri, headers: await _headers(auth: true));
-    _checkStatus(res);
-  }
-
-  // ── Dashboard ─────────────────────────────────────────────
-
-  Future<Map<String, dynamic>> getDashboard() async {
-    final uri = Uri.parse('$_baseUrl/dashboard');
-    final res = await http.get(uri, headers: await _headers(auth: true));
-    _checkStatus(res);
-    return jsonDecode(res.body) as Map<String, dynamic>;
-  }
-
-  // ── Ajuste de precios ─────────────────────────────────────
-
-  Future<Map<String, dynamic>> ajustarPrecios({
-    required List<int> productoIds,
-    required double porcentaje,
-  }) async {
-    final uri = Uri.parse('$_baseUrl/productos/ajustar-precios');
-    final res = await http.patch(uri,
-      headers: await _headers(auth: true),
-      body: jsonEncode({'productoIds': productoIds, 'porcentaje': porcentaje}),
-    );
-    _checkStatus(res);
-    return jsonDecode(res.body) as Map<String, dynamic>;
-  }
-
-  // ── Códigos de promoción ──────────────────────────────────
-
-  Future<List<dynamic>> getCodigosPromocion() async {
-    final uri = Uri.parse('$_baseUrl/promociones');
-    final res = await http.get(uri, headers: await _headers(auth: true));
-    _checkStatus(res);
-    return jsonDecode(res.body) as List;
-  }
-
-  Future<void> crearCodigoPromocion({
-    required String codigo,
-    required String tipo,
-    required double valor,
-    DateTime? fechaExpiracion,
-    int? usosMaximos,
-  }) async {
-    final uri = Uri.parse('$_baseUrl/promociones');
-    final body = <String, dynamic>{
-      'codigo': codigo,
-      'tipo': tipo,
-      'valor': valor,
-      if (fechaExpiracion != null) 'fechaExpiracion': fechaExpiracion.toIso8601String(),
-      if (usosMaximos != null) 'usosMaximos': usosMaximos,
-    };
-    final res = await http.post(uri,
-      headers: await _headers(auth: true),
-      body: jsonEncode(body),
-    );
-    _checkStatus(res);
-  }
-
-  Future<void> eliminarCodigoPromocion(int id) async {
-    final uri = Uri.parse('$_baseUrl/promociones/$id');
-    final res = await http.delete(uri, headers: await _headers(auth: true));
-    _checkStatus(res);
-  }
-
-  Future<Map<String, dynamic>> validarCodigoPromocion({
-    required String codigo,
-    required double subtotal,
-  }) async {
-    final uri = Uri.parse('$_baseUrl/promociones/validar');
-    final res = await http.post(uri,
-      headers: await _headers(auth: true),
-      body: jsonEncode({'codigo': codigo, 'subtotal': subtotal}),
-    );
-    _checkStatus(res);
-    return jsonDecode(res.body) as Map<String, dynamic>;
-  }
-
-  // ── Órdenes admin ─────────────────────────────────────────
-
-  Future<List<dynamic>> getTodasOrdenes({String? estado}) async {
-    final params = estado != null ? '?estado=$estado' : '';
-    final uri = Uri.parse('$_baseUrl/ordenes/todas$params');
-    final res = await http.get(uri, headers: await _headers(auth: true));
-    _checkStatus(res);
-    return jsonDecode(res.body) as List;
-  }
-
-  Future<void> actualizarEstadoOrden(int id, String estado, {String? numeroSeguimiento}) async {
-    final uri = Uri.parse('$_baseUrl/ordenes/$id/estado');
-    final body = <String, dynamic>{'estado': estado};
-    if (numeroSeguimiento != null) body['numeroSeguimiento'] = numeroSeguimiento;
-    final res = await http.patch(uri,
-      headers: await _headers(auth: true),
-      body: jsonEncode(body),
-    );
     _checkStatus(res);
   }
 }
