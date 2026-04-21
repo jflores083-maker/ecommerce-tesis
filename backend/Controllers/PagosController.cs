@@ -141,7 +141,7 @@ namespace backend.Controllers
                     pago.Estado = "aprobado";
                     pago.TransaccionId = dataId;
                     pago.FechaPago = DateTime.UtcNow;
-                    pago.Orden.Estado = "pagada";
+                    pago.Orden.Estado = "pagado";
 
                     // Descontar stock por cada item de la orden
                     var items = await _context.ItemsOrden
@@ -178,7 +178,7 @@ namespace backend.Controllers
             else if (estado == "rejected" || estado == "cancelled")
             {
                 pago.Estado = "rechazado";
-                pago.Orden.Estado = "cancelada";
+                pago.Orden.Estado = "cancelado";
             }
 
             await _context.SaveChangesAsync();

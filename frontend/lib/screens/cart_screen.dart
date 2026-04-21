@@ -7,6 +7,8 @@ import '../models/models.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/widgets.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class CartScreen extends StatelessWidget {
@@ -919,16 +921,25 @@ class _PagoDialogState extends State<_PagoDialog>
         if (!mounted) return;
         Navigator.of(context).pop(); // cerrar este dialog
 
-        // Abrir WebView de MercadoPago
-        await Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => _MercadoPagoWebView(
-              initPoint: initPoint,
-              ordenId: ordenId,
+        if (kIsWeb) {
+          // En web, abrir en nueva pestaña
+          await launchUrl(
+            Uri.parse(initPoint),
+            webOnlyWindowName: '_blank',
+          );
+          widget.onDone();
+        } else {
+          // En móvil, abrir WebView interno
+          await Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => _MercadoPagoWebView(
+                initPoint: initPoint,
+                ordenId: ordenId,
+              ),
             ),
-          ),
-        );
-        widget.onDone();
+          );
+          widget.onDone();
+        }
       } catch (e) {
         setState(() => _error = 'Error al iniciar el pago con MercadoPago');
       }

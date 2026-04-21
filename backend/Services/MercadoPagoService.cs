@@ -65,8 +65,9 @@ namespace backend.Services
             var responseJson = await response.Content.ReadAsStringAsync();
             using var doc = JsonDocument.Parse(responseJson);
 
+            var property = _options.IsSandbox ? "sandbox_init_point" : "init_point";
             return doc.RootElement
-                .GetProperty("init_point")
+                .GetProperty(property)
                 .GetString()!;
                 }
                 public async Task<JsonElement> ObtenerPagoAsync(string paymentId)
