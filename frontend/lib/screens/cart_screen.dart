@@ -941,6 +941,7 @@ class _PagoDialogState extends State<_PagoDialog>
           widget.onDone();
         }
       } catch (e) {
+        if (!mounted) return;
         setState(() => _error = 'Error al iniciar el pago con MercadoPago');
       }
       return;
