@@ -25,6 +25,7 @@ import '../screens/admin_codigos_screen.dart';
 import '../screens/admin_precios_screen.dart';
 import '../screens/admin_dashboard_screen.dart';
 import '../screens/admin_ordenes_screen.dart';
+import '../screens/mis_ordenes_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -40,7 +41,8 @@ GoRouter createRouter(AuthProvider authProvider) {
 
       // Rutas que requieren login
       if ((state.matchedLocation == '/carrito' ||
-           state.matchedLocation == '/perfil') && !isLoggedIn) {
+           state.matchedLocation == '/perfil' ||
+           state.matchedLocation == '/mis-ordenes') && !isLoggedIn) {
         return '/login';
       }
 
@@ -159,6 +161,10 @@ GoRouter createRouter(AuthProvider authProvider) {
       GoRoute(
         path: '/admin/ordenes',
         builder: (ctx, state) => const AdminOrdenesScreen(),
+      ),
+      GoRoute(
+        path: '/mis-ordenes',
+        builder: (ctx, state) => const MisOrdenesScreen(),
       ),
     ],
   );
