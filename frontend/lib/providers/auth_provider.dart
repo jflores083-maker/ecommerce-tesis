@@ -59,7 +59,8 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> register({
+  // Retorna el email si el registro fue exitoso, null si hubo error
+  Future<String?> register({
     required String nombre,
     required String apellido,
     required String email,
@@ -71,15 +72,34 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _api.register(
+      final emailRet = await _api.register(
         nombre: nombre,
         apellido: apellido,
         email: email,
         telefono: telefono,
         password: password,
       );
-      // Después de registrar, hacer login automático
-      await _api.login(email: email, password: password);
+      _loading = false;
+      notifyListeners();
+      return emailRet;
+    } on ApiException catch (e) {
+      _error = e.message;
+      _loading = false;
+      notifyListeners();
+      return null;
+    }
+  }
+
+  Future<bool> verificarEmail({
+    required String email,
+    required String codigo,
+  }) async {
+    _loading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _api.verificarEmail(email: email, codigo: codigo);
       _user = await _api.getMiPerfil();
       _status = AuthStatus.authenticated;
       _loading = false;

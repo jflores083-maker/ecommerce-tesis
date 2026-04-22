@@ -170,7 +170,7 @@ namespace backend.Controllers
                         var cuerpo = _emailService.TemplateOrdenConfirmada(ordenId, pago.Monto);
                         await _emailService.EnviarEmailAsync(
                             comprador.Email,
-                            $"✅ Orden #{ordenId} confirmada - Urbal",
+                            $"✅ Orden #{ordenId} confirmada - 638",
                             cuerpo
                         );
                     }
@@ -179,6 +179,19 @@ namespace backend.Controllers
             {
                 pago.Estado = "rechazado";
                 pago.Orden.Estado = "cancelado";
+
+                var comprador = await _context.Usuarios
+                    .FirstOrDefaultAsync(u => u.Id == pago.Orden.CompradorId);
+
+                if (comprador != null)
+                {
+                    var cuerpo = _emailService.TemplateOrdenCancelada(ordenId);
+                    await _emailService.EnviarEmailAsync(
+                        comprador.Email,
+                        $"Tu orden #{ordenId} fue cancelada - 638",
+                        cuerpo
+                    );
+                }
             }
 
             await _context.SaveChangesAsync();

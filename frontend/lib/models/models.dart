@@ -229,6 +229,7 @@ class AppUser {
   final String rol;
   final String? token;
   final String? fotoPerfilUrl;
+  final bool emailConfirmado;
 
   const AppUser({
     required this.id,
@@ -239,6 +240,7 @@ class AppUser {
     required this.rol,
     this.token,
     this.fotoPerfilUrl,
+    this.emailConfirmado = false,
   });
 
   factory AppUser.fromToken(String token) => AppUser(
@@ -248,14 +250,15 @@ class AppUser {
 
   factory AppUser.fromJson(Map<String, dynamic> json, {String? token}) {
     return AppUser(
-      id:            (json['id'] as num? ?? 0).toInt(),
-      nombre:        json['nombre'] ?? '',
-      apellido:      json['apellido'] ?? '',
-      email:         json['email'] ?? '',
-      telefono:      json['telefono'] ?? '',
-      rol:           json['rol'] ?? 'Cliente',
-      token:         token,
-      fotoPerfilUrl: json['fotoPerfilUrl'],
+      id:              (json['id'] as num? ?? 0).toInt(),
+      nombre:          json['nombre'] ?? '',
+      apellido:        json['apellido'] ?? '',
+      email:           json['email'] ?? '',
+      telefono:        json['telefono'] ?? '',
+      rol:             json['rol'] ?? 'Cliente',
+      token:           token,
+      fotoPerfilUrl:   json['fotoPerfilUrl'],
+      emailConfirmado: json['emailConfirmado'] as bool? ?? false,
     );
   }
 

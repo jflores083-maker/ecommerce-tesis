@@ -75,7 +75,7 @@ class ApiService {
     return token;
   }
 
-  Future<void> register(
+  Future<String> register(
       {required String nombre,
       required String apellido,
       required String email,
@@ -91,6 +91,28 @@ class ApiService {
           'telefono': telefono,
           'password': password
         }));
+    _checkStatus(res);
+    final data = jsonDecode(res.body) as Map<String, dynamic>;
+    return data['email'] as String;
+  }
+
+  Future<void> verificarEmail(
+      {required String email, required String codigo}) async {
+    final uri = Uri.parse('$_baseUrl/auth/verificar');
+    final res = await http.post(uri,
+        headers: await _headers(),
+        body: jsonEncode({'email': email, 'codigo': codigo}));
+    _checkStatus(res);
+    final data = jsonDecode(res.body) as Map<String, dynamic>;
+    final token = data['token'] as String;
+    await _saveToken(token);
+  }
+
+  Future<void> reenviarCodigo({required String email}) async {
+    final uri = Uri.parse('$_baseUrl/auth/reenviar-codigo');
+    final res = await http.post(uri,
+        headers: await _headers(),
+        body: jsonEncode({'email': email}));
     _checkStatus(res);
   }
 

@@ -9,5 +9,6 @@ namespace backend.Dtos.Usuarios
         public string Telefono { get; set; } = string.Empty;
         public string Rol { get; set; } = string.Empty;
         public string? FotoPerfilUrl { get; set; }
+        public bool EmailConfirmado { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -34,14 +35,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _register() async {
     final auth = context.read<AuthProvider>();
     auth.clearError();
-    final ok = await auth.register(
+    final email = await auth.register(
       nombre:   _nombreCtrl.text.trim(),
       apellido: _apellidoCtrl.text.trim(),
       email:    _emailCtrl.text.trim(),
-      telefono: _telefonoCtrl.text.trim(),
+      telefono: '+54${_telefonoCtrl.text.trim()}',
       password: _passwordCtrl.text,
     );
-    if (ok && mounted) context.go('/');
+    if (email != null && mounted) {
+      context.go('/verificar-email', extra: email);
+    }
   }
 
   @override
@@ -84,10 +87,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   keyboardType: TextInputType.emailAddress),
                 const SizedBox(height: 12),
                 AuthField(
-                  label: 'TELÉFONO (ej: +5435112345678)',
+                  label: 'TELÉFONO',
                   controller: _telefonoCtrl,
                   keyboardType: TextInputType.phone,
-                  hint: '+54...',
+                  hint: '3511234567',
+                  prefix: Text('+54 ',
+                    style: GoogleFonts.dmMono(fontSize: 13, color: AppColors.charcoal),
+                  ),
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 ),
                 const SizedBox(height: 12),
                 AuthField(

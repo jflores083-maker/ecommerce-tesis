@@ -9,5 +9,8 @@ namespace backend.Models
         public string Telefono { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public string Rol { get; set; } = "Cliente";
+        public bool EmailConfirmado { get; set; } = false;
+        public string? CodigoVerificacion { get; set; }
+        public DateTime? CodigoExpiracion { get; set; }
     }
 }

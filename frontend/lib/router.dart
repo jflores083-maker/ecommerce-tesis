@@ -26,6 +26,7 @@ import '../screens/admin_precios_screen.dart';
 import '../screens/admin_dashboard_screen.dart';
 import '../screens/admin_ordenes_screen.dart';
 import '../screens/mis_ordenes_screen.dart';
+import '../screens/verificar_email_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -165,6 +166,13 @@ GoRouter createRouter(AuthProvider authProvider) {
       GoRoute(
         path: '/mis-ordenes',
         builder: (ctx, state) => const MisOrdenesScreen(),
+      ),
+      GoRoute(
+        path: '/verificar-email',
+        builder: (ctx, state) {
+          final email = state.extra as String? ?? '';
+          return VerificarEmailScreen(email: email);
+        },
       ),
     ],
   );

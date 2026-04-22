@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 import '../providers/carrito_provider.dart';
 import '../models/models.dart';
 import '../services/api_service.dart';
@@ -564,12 +565,72 @@ class _OrderSummaryState extends State<_OrderSummary> {
         ),
 
         const SizedBox(height: 8),
-        PrimaryButton(
-          label: 'Finalizar compra',
-          fullWidth: true,
-          loading: widget.carrito.loading,
-          onPressed: _checkout,
-        ),
+        Builder(builder: (ctx) {
+          final user = ctx.watch<AuthProvider>().user;
+          final confirmado = user?.emailConfirmado ?? false;
+          if (!confirmado) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: AppColors.sand),
+                    color: AppColors.beige,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(Icons.mail_outline,
+                          size: 16, color: AppColors.stone),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Confirmá tu email para comprar',
+                              style: GoogleFonts.syne(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.ink),
+                            ),
+                            const SizedBox(height: 4),
+                            GestureDetector(
+                              onTap: () => ctx.go('/verificar-email',
+                                  extra: user?.email ?? ''),
+                              child: Text(
+                                'Ir a verificar →',
+                                style: GoogleFonts.dmMono(
+                                  fontSize: 11,
+                                  color: AppColors.charcoal,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                PrimaryButton(
+                  label: 'Finalizar compra',
+                  fullWidth: true,
+                  loading: false,
+                  onPressed: null,
+                ),
+              ],
+            );
+          }
+          return PrimaryButton(
+            label: 'Finalizar compra',
+            fullWidth: true,
+            loading: widget.carrito.loading,
+            onPressed: _checkout,
+          );
+        }),
         const SizedBox(height: 12),
         Center(
           child: Text(

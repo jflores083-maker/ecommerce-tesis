@@ -66,13 +66,14 @@ namespace backend.Controllers
 
             return Ok(new UsuarioResponseDto
             {
-                Id           = usuario.Id,
-                Nombre       = usuario.Nombre,
-                Apellido     = usuario.Apellido,
-                Email        = usuario.Email,
-                Telefono     = usuario.Telefono,
-                Rol          = usuario.Rol,
-                FotoPerfilUrl = GetFotoUrl(usuario.Id)
+                Id            = usuario.Id,
+                Nombre        = usuario.Nombre,
+                Apellido      = usuario.Apellido,
+                Email         = usuario.Email,
+                Telefono      = usuario.Telefono,
+                Rol           = usuario.Rol,
+                FotoPerfilUrl = GetFotoUrl(usuario.Id),
+                EmailConfirmado = usuario.EmailConfirmado
             });
         }
 
