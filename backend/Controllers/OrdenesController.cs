@@ -163,6 +163,7 @@ namespace backend.Controllers
             var orden = await _db.Ordenes
                 .Include(o => o.Items)
                     .ThenInclude(i => i.Producto)
+                        .ThenInclude(p => p.Imagenes)
                 .FirstOrDefaultAsync(o => o.Id == id);
 
             if (orden == null || orden.CompradorId != userId)
@@ -172,6 +173,7 @@ namespace backend.Controllers
             {
                 OrdenId = orden.Id,
                 Estado = orden.Estado,
+                NumeroSeguimiento = orden.NumeroSeguimiento,
                 DireccionEnvio = orden.DireccionEnvio,
                 Ciudad = orden.Ciudad,
                 CodigoPostal = orden.CodigoPostal,
@@ -186,7 +188,11 @@ namespace backend.Controllers
                     Talle = i.Talle,
                     Cantidad = i.Cantidad,
                     PrecioUnitario = i.PrecioUnitario,
-                    Subtotal = i.Subtotal
+                    Subtotal = i.Subtotal,
+                    ImagenUrl = i.Producto.Imagenes
+                        .OrderBy(img => img.Orden)
+                        .Select(img => img.Url)
+                        .FirstOrDefault()
                 }).ToList()
             };
 

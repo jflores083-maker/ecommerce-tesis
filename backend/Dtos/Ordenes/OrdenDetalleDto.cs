@@ -7,6 +7,7 @@ namespace backend.Dtos.Ordenes
     {
         public int OrdenId { get; set; }
         public string Estado { get; set; } = null!;
+        public string? NumeroSeguimiento { get; set; }
         public string DireccionEnvio { get; set; } = null!;
         public string Ciudad { get; set; } = null!;
         public string CodigoPostal { get; set; } = null!;

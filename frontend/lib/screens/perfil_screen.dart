@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -269,6 +270,39 @@ class _PerfilScreenState extends State<PerfilScreen> {
                   ),
                 ],
                 const SizedBox(height: 48),
+
+                // ── Mis órdenes ───────────────────────────────
+                Text('MIS COMPRAS',
+                  style: GoogleFonts.dmMono(
+                    fontSize: 10, color: AppColors.gray, letterSpacing: 0.15,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                GestureDetector(
+                  onTap: () => context.go('/mis-ordenes'),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: AppColors.sand),
+                      color: AppColors.beige,
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.receipt_long_outlined,
+                            size: 16, color: AppColors.stone),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text('Ver historial de órdenes',
+                              style: GoogleFonts.dmMono(
+                                  fontSize: 12, color: AppColors.charcoal)),
+                        ),
+                        const Icon(Icons.chevron_right,
+                            size: 18, color: AppColors.stone),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 40),
 
                 // ── Guardar ───────────────────────────────────
                 SizedBox(

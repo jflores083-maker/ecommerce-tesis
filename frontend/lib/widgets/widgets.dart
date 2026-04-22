@@ -131,12 +131,17 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
               icon: _UserAvatar(fotoUrl: auth.user?.fotoPerfilUrl),
               onSelected: (v) {
                 if (v == 'perfil') context.go('/perfil');
+                if (v == 'ordenes') context.go('/mis-ordenes');
                 if (v == 'logout') context.read<AuthProvider>().logout();
               },
               itemBuilder: (_) => [
                 PopupMenuItem(
                   value: 'perfil',
                   child: Text(auth.user?.nombre ?? 'Perfil', style: GoogleFonts.dmMono(fontSize: 12)),
+                ),
+                PopupMenuItem(
+                  value: 'ordenes',
+                  child: Text('Mis órdenes', style: GoogleFonts.dmMono(fontSize: 12)),
                 ),
                 PopupMenuItem(
                   value: 'logout',
@@ -261,6 +266,11 @@ class _MobileMenuPanel extends StatelessWidget {
                 label: auth.user?.nombre ?? 'Mi perfil',
                 icon: Icons.person_outline,
                 onTap: () => _go(context, '/perfil'),
+              ),
+              _MenuItem(
+                label: 'Mis órdenes',
+                icon: Icons.receipt_long_outlined,
+                onTap: () => _go(context, '/mis-ordenes'),
               ),
               _MenuItem(
                 label: 'Cerrar sesión',

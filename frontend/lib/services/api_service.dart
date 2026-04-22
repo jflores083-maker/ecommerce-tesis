@@ -347,6 +347,20 @@ class ApiService {
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
 
+  Future<List<dynamic>> getHistorialOrdenes() async {
+    final uri = Uri.parse('$_baseUrl/ordenes');
+    final res = await http.get(uri, headers: await _headers(auth: true));
+    _checkStatus(res);
+    return jsonDecode(res.body) as List;
+  }
+
+  Future<Map<String, dynamic>> getDetalleOrden(int id) async {
+    final uri = Uri.parse('$_baseUrl/ordenes/$id');
+    final res = await http.get(uri, headers: await _headers(auth: true));
+    _checkStatus(res);
+    return jsonDecode(res.body) as Map<String, dynamic>;
+  }
+
   Future<List<dynamic>> getTodasOrdenes({String? estado}) async {
     final params = estado != null ? '?estado=$estado' : '';
     final uri = Uri.parse('$_baseUrl/ordenes/todas$params');
