@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -1009,8 +1010,10 @@ class AuthField extends StatelessWidget {
   final bool obscureText;
   final TextInputType keyboardType;
   final Widget? suffix;
+  final Widget? prefix;
   final VoidCallback? onSubmit;
   final String? hint;
+  final List<TextInputFormatter>? inputFormatters;
 
   const AuthField({
     super.key,
@@ -1019,8 +1022,10 @@ class AuthField extends StatelessWidget {
     this.obscureText = false,
     this.keyboardType = TextInputType.text,
     this.suffix,
+    this.prefix,
     this.onSubmit,
     this.hint,
+    this.inputFormatters,
   });
 
   @override
@@ -1038,10 +1043,12 @@ class AuthField extends StatelessWidget {
           controller: controller,
           obscureText: obscureText,
           keyboardType: keyboardType,
+          inputFormatters: inputFormatters,
           onSubmitted: onSubmit != null ? (_) => onSubmit!() : null,
           style: GoogleFonts.dmMono(fontSize: 13, color: AppColors.charcoal),
           decoration: InputDecoration(
             hintText: hint,
+            prefix: prefix,
             suffixIcon: suffix != null
                 ? Padding(padding: const EdgeInsets.only(right: 12), child: suffix)
                 : null,

@@ -29,7 +29,7 @@ namespace backend.Services
 
             var mail = new MailMessage
             {
-                From = new MailAddress(from, "Urbal Indumentaria"),
+                From = new MailAddress(from, "638 Indumentaria"),
                 Subject = asunto,
                 Body = cuerpoHtml,
                 IsBodyHtml = true
@@ -38,6 +38,21 @@ namespace backend.Services
             mail.To.Add(destinatario);
 
             await smtpClient.SendMailAsync(mail);
+        }
+
+        public string TemplateVerificacionEmail(string nombre, string codigo)
+        {
+            return $@"
+                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
+                    <h2 style='color: #1a1a1a;'>Verificá tu email</h2>
+                    <p>Hola {nombre}, gracias por registrarte en <strong>638</strong>.</p>
+                    <p>Tu código de verificación es:</p>
+                    <div style='background: #f5f5f5; padding: 32px; text-align: center; margin: 24px 0;'>
+                        <span style='font-size: 40px; font-weight: bold; letter-spacing: 12px; color: #1a1a1a;'>{codigo}</span>
+                    </div>
+                    <p style='color: #666;'>Este código expira en <strong>15 minutos</strong>.</p>
+                    <p style='color: #666;'>Si no creaste una cuenta en 638, ignorá este email.</p>
+                </div>";
         }
 
         public string TemplateOrdenConfirmada(int ordenId, decimal total)
@@ -51,7 +66,7 @@ namespace backend.Services
                         <p><strong>Total pagado:</strong> ${total:N2}</p>
                     </div>
                     <p>En breve recibirás información sobre el envío.</p>
-                    <p>Gracias por comprar en <strong>Urbal Indumentaria Urbana</strong> 🛍️</p>
+                    <p>Gracias por comprar en <strong>638</strong> 🛍️</p>
                 </div>";
         }
 
@@ -69,7 +84,33 @@ namespace backend.Services
                         <p><strong>Número de orden:</strong> #{ordenId}</p>
                         <p><strong>Número de seguimiento:</strong> {seguimiento}</p>
                     </div>
-                    <p>Gracias por comprar en <strong>Urbal Indumentaria Urbana</strong> 🛍️</p>
+                    <p>Gracias por comprar en <strong>638</strong> 🛍️</p>
+                </div>";
+        }
+
+        public string TemplateOrdenEntregada(int ordenId)
+        {
+            return $@"
+                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
+                    <h2 style='color: #333;'>¡Tu orden fue entregada! ✅</h2>
+                    <p>Esperamos que estés disfrutando tu compra.</p>
+                    <div style='background: #f5f5f5; padding: 20px; border-radius: 8px;'>
+                        <p><strong>Número de orden:</strong> #{ordenId}</p>
+                    </div>
+                    <p>Gracias por comprar en <strong>638</strong> 🛍️</p>
+                </div>";
+        }
+
+        public string TemplateOrdenCancelada(int ordenId)
+        {
+            return $@"
+                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
+                    <h2 style='color: #c0392b;'>Tu orden fue cancelada</h2>
+                    <p>Tu pago no pudo procesarse o la orden fue cancelada.</p>
+                    <div style='background: #f5f5f5; padding: 20px; border-radius: 8px;'>
+                        <p><strong>Número de orden:</strong> #{ordenId}</p>
+                    </div>
+                    <p>Si tenés dudas, contactanos. <strong>638</strong></p>
                 </div>";
         }
     }

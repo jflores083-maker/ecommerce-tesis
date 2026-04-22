@@ -268,29 +268,37 @@ namespace backend.Controllers
             //     .AnyAsync(i => i.OrdenId == id && i.Producto.VendedorId == vendedorId);
             // if (!esVendedorDeEstaOrden) return Forbid();
 
-           orden.Estado = estado;
-if (!string.IsNullOrWhiteSpace(dto.NumeroSeguimiento))
-    orden.NumeroSeguimiento = dto.NumeroSeguimiento;
+            orden.Estado = estado;
+            if (!string.IsNullOrWhiteSpace(dto.NumeroSeguimiento))
+                orden.NumeroSeguimiento = dto.NumeroSeguimiento;
 
-orden.FechaActualizacion = DateTime.UtcNow;
-await _db.SaveChangesAsync();
+            orden.FechaActualizacion = DateTime.UtcNow;
+            await _db.SaveChangesAsync();
 
-// Enviar email si la orden fue enviada
-if (estado == "enviado")
-{
-    var comprador = await _db.Usuarios.FindAsync(orden.CompradorId);
-    if (comprador != null)
-    {
-        var cuerpo = _emailService.TemplateOrdenEnviada(id, orden.NumeroSeguimiento);
-        await _emailService.EnviarEmailAsync(
-            comprador.Email,
-            $"📦 Tu orden #{id} fue enviada - Urbal",
-            cuerpo
-        );
-    }
-}
+            var comprador = await _db.Usuarios.FindAsync(orden.CompradorId);
+            if (comprador != null)
+            {
+                string? cuerpo = estado switch
+                {
+                    "enviado"    => _emailService.TemplateOrdenEnviada(id, orden.NumeroSeguimiento),
+                    "entregado"  => _emailService.TemplateOrdenEntregada(id),
+                    "cancelado"  => _emailService.TemplateOrdenCancelada(id),
+                    _            => null
+                };
 
-return NoContent();
+                string? asunto = estado switch
+                {
+                    "enviado"    => $"📦 Tu orden #{id} fue enviada - 638",
+                    "entregado"  => $"✅ Tu orden #{id} fue entregada - 638",
+                    "cancelado"  => $"Tu orden #{id} fue cancelada - 638",
+                    _            => null
+                };
+
+                if (cuerpo != null && asunto != null)
+                    await _emailService.EnviarEmailAsync(comprador.Email, asunto, cuerpo);
+            }
+
+            return NoContent();
         }
     }
 }
