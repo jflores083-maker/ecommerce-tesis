@@ -8,7 +8,6 @@ import '../models/models.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/widgets.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -615,7 +614,7 @@ class _OrderSummaryState extends State<_OrderSummary> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                PrimaryButton(
+                const PrimaryButton(
                   label: 'Finalizar compra',
                   fullWidth: true,
                   loading: false,
@@ -981,33 +980,22 @@ class _PagoDialogState extends State<_PagoDialog>
 
         if (!mounted) return;
         Navigator.of(context).pop(); // cerrar este dialog
-
-        if (kIsWeb) {
-          // En web, abrir en nueva pestaña
-          await launchUrl(
-            Uri.parse(initPoint),
-            webOnlyWindowName: '_blank',
-          );
-          widget.onDone();
-        } else {
-          // En móvil, abrir WebView interno
-          await Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => _MercadoPagoWebView(
-                initPoint: initPoint,
-                ordenId: ordenId,
-              ),
+// Usar WebView interno siempre (sandbox o producción)
+        await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => _MercadoPagoWebView(
+              initPoint: initPoint,
+              ordenId: ordenId,
             ),
-          );
-          widget.onDone();
-        }
+          ),
+        );
+        widget.onDone();
       } catch (e) {
         if (!mounted) return;
         setState(() => _error = 'Error al iniciar el pago con MercadoPago');
       }
       return;
     }
-
     // Paso 3: otros métodos → mostrar confirmación directa
     setState(() => _exitoso = true);
     _tickCtrl.forward();
@@ -1172,10 +1160,28 @@ class _MercadoPagoWebViewState extends State<_MercadoPagoWebView> {
       ..setNavigationDelegate(NavigationDelegate(
         onPageStarted: (_) => setState(() => _loading = true),
         onPageFinished: (_) => setState(() => _loading = false),
-        onNavigationRequest: (request) {
+        /*onNavigationRequest: (request) {
           // Detectar cuando MP redirige de vuelta (success/failure/pending)
           final url = request.url;
           if (url.contains('congrats') || url.contains('back_urls')) {
+            Navigator.of(context).pop();
+            return NavigationDecision.prevent;
+          }
+          return NavigationDecision.navigate;
+        },*/
+        onNavigationRequest: (request) {
+          final url = request.url;
+          // Bloquear deep links de MP (no hay app instalada en emulador)
+          if (url.startsWith('mercadopago://') || url.startsWith('intent://')) {
+            return NavigationDecision.prevent;
+          }
+          // MP redirige a estas URLs al terminar el pago
+          if (url.contains('/congrats') ||
+              url.contains('back_urls') ||
+              url.contains('status=approved') ||
+              url.contains('status=rejected') ||
+              url.contains('status=pending') ||
+              url.contains('collection_status')) {
             Navigator.of(context).pop();
             return NavigationDecision.prevent;
           }

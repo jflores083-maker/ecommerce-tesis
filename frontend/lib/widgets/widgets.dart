@@ -34,7 +34,9 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
         return Stack(
           children: [
             Positioned(
-              top: 0, bottom: 0, right: 0,
+              top: 0,
+              bottom: 0,
+              right: 0,
               width: 280,
               child: SlideTransition(
                 position: Tween<Offset>(
@@ -56,11 +58,11 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final carrito  = context.watch<CarritoProvider>();
-    final auth     = context.watch<AuthProvider>();
+    final carrito = context.watch<CarritoProvider>();
+    final auth = context.watch<AuthProvider>();
     final isMobile = MediaQuery.of(context).size.width <= 768;
 
-    final location  = GoRouterState.of(context).matchedLocation;
+    final location = GoRouterState.of(context).matchedLocation;
     final canGoBack = location != '/';
 
     return AppBar(
@@ -83,7 +85,8 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
                   context.go('/');
                 }
               },
-              icon: const Icon(Icons.arrow_back, size: 18, color: AppColors.charcoal),
+              icon: const Icon(Icons.arrow_back,
+                  size: 18, color: AppColors.charcoal),
               splashRadius: 20,
             )
           : null,
@@ -93,10 +96,13 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       title: GestureDetector(
         onTap: () => context.go('/'),
-        child: Text('638',
+        child: Text(
+          '638',
           style: GoogleFonts.syne(
-            fontSize: 22, fontWeight: FontWeight.w800,
-            color: AppColors.ink, letterSpacing: -0.5,
+            fontSize: 22,
+            fontWeight: FontWeight.w800,
+            color: AppColors.ink,
+            letterSpacing: -0.5,
           ),
         ),
       ),
@@ -116,15 +122,23 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
           if (auth.isLoggedIn && (auth.user?.isAdmin ?? false))
             TextButton(
               onPressed: () => context.go('/admin'),
-              child: Text('Panel de Administración',
-                style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.charcoal, letterSpacing: 0.1),
+              child: Text(
+                'Panel de Administración',
+                style: GoogleFonts.dmMono(
+                    fontSize: 11,
+                    color: AppColors.charcoal,
+                    letterSpacing: 0.1),
               ),
             ),
           if (!auth.isLoggedIn)
             TextButton(
               onPressed: () => context.go('/login'),
-              child: Text('Ingresar',
-                style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.charcoal, letterSpacing: 0.1),
+              child: Text(
+                'Ingresar',
+                style: GoogleFonts.dmMono(
+                    fontSize: 11,
+                    color: AppColors.charcoal,
+                    letterSpacing: 0.1),
               ),
             ),
           if (auth.isLoggedIn)
@@ -132,21 +146,18 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
               icon: _UserAvatar(fotoUrl: auth.user?.fotoPerfilUrl),
               onSelected: (v) {
                 if (v == 'perfil') context.go('/perfil');
-                if (v == 'ordenes') context.go('/mis-ordenes');
                 if (v == 'logout') context.read<AuthProvider>().logout();
               },
               itemBuilder: (_) => [
                 PopupMenuItem(
                   value: 'perfil',
-                  child: Text(auth.user?.nombre ?? 'Perfil', style: GoogleFonts.dmMono(fontSize: 12)),
-                ),
-                PopupMenuItem(
-                  value: 'ordenes',
-                  child: Text('Mis órdenes', style: GoogleFonts.dmMono(fontSize: 12)),
+                  child: Text(auth.user?.nombre ?? 'Perfil',
+                      style: GoogleFonts.dmMono(fontSize: 12)),
                 ),
                 PopupMenuItem(
                   value: 'logout',
-                  child: Text('Cerrar sesión', style: GoogleFonts.dmMono(fontSize: 12)),
+                  child: Text('Cerrar sesión',
+                      style: GoogleFonts.dmMono(fontSize: 12)),
                 ),
               ],
             ),
@@ -203,16 +214,20 @@ class _MobileMenuPanel extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(auth.user?.nombre ?? '',
+                                Text(
+                                  auth.user?.nombre ?? '',
                                   style: GoogleFonts.syne(
-                                    fontSize: 15, fontWeight: FontWeight.w700,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700,
                                     color: AppColors.ink,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                                Text(auth.user?.email ?? '',
+                                Text(
+                                  auth.user?.email ?? '',
                                   style: GoogleFonts.dmMono(
-                                    fontSize: 10, color: AppColors.stone,
+                                    fontSize: 10,
+                                    color: AppColors.stone,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -223,15 +238,19 @@ class _MobileMenuPanel extends StatelessWidget {
                       ),
                     )
                   else
-                    Text('638',
+                    Text(
+                      '638',
                       style: GoogleFonts.syne(
-                        fontSize: 22, fontWeight: FontWeight.w800,
-                        color: AppColors.ink, letterSpacing: -0.5,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.ink,
+                        letterSpacing: -0.5,
                       ),
                     ),
                   IconButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.close, color: AppColors.charcoal, size: 20),
+                    icon: const Icon(Icons.close,
+                        color: AppColors.charcoal, size: 20),
                   ),
                 ],
               ),
@@ -246,20 +265,31 @@ class _MobileMenuPanel extends StatelessWidget {
                   productosProvider.cargarProductos(categoria: cat);
                   Navigator.of(context).pop();
                 } else {
-                  _go(context, cat == null ? '/catalogo' : '/catalogo?categoria=$cat');
+                  _go(context,
+                      cat == null ? '/catalogo' : '/catalogo?categoria=$cat');
                 }
               },
             ),
-            _MenuItem(label: 'Drops',      onTap: () => _go(context, '/drops')),
-            _MenuItem(label: 'Acerca de nosotros', onTap: () => _go(context, '/acerca-de')),
-            _MenuItem(label: 'Contacto',           onTap: () => _go(context, '/contacto')),
+            _MenuItem(label: 'Drops', onTap: () => _go(context, '/drops')),
+            _MenuItem(
+                label: 'Acerca de nosotros',
+                onTap: () => _go(context, '/acerca-de')),
+            _MenuItem(
+                label: 'Contacto', onTap: () => _go(context, '/contacto')),
 
             if (auth.isLoggedIn && (auth.user?.isAdmin ?? false)) ...[
-              Container(height: 1, color: AppColors.sand, margin: const EdgeInsets.symmetric(vertical: 8)),
-              _MenuItem(label: 'Panel Admin', onTap: () => _go(context, '/admin')),
+              Container(
+                  height: 1,
+                  color: AppColors.sand,
+                  margin: const EdgeInsets.symmetric(vertical: 8)),
+              _MenuItem(
+                  label: 'Panel Admin', onTap: () => _go(context, '/admin')),
             ],
 
-            Container(height: 1, color: AppColors.sand, margin: const EdgeInsets.symmetric(vertical: 8)),
+            Container(
+                height: 1,
+                color: AppColors.sand,
+                margin: const EdgeInsets.symmetric(vertical: 8)),
 
             // Auth
             if (auth.isLoggedIn) ...[
@@ -267,11 +297,6 @@ class _MobileMenuPanel extends StatelessWidget {
                 label: auth.user?.nombre ?? 'Mi perfil',
                 icon: Icons.person_outline,
                 onTap: () => _go(context, '/perfil'),
-              ),
-              _MenuItem(
-                label: 'Mis órdenes',
-                icon: Icons.receipt_long_outlined,
-                onTap: () => _go(context, '/mis-ordenes'),
               ),
               _MenuItem(
                 label: 'Cerrar sesión',
@@ -318,9 +343,12 @@ class _MenuColeccionState extends State<_MenuColeccion> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Colección',
+                Text(
+                  'Colección',
                   style: GoogleFonts.dmMono(
-                    fontSize: 13, color: AppColors.ink, letterSpacing: 0.1,
+                    fontSize: 13,
+                    color: AppColors.ink,
+                    letterSpacing: 0.1,
                   ),
                 ),
                 AnimatedRotation(
@@ -337,21 +365,27 @@ class _MenuColeccionState extends State<_MenuColeccion> {
           InkWell(
             onTap: () => widget.onSelectCategoria(null),
             child: Padding(
-              padding: const EdgeInsets.only(left: 40, right: 24, top: 10, bottom: 10),
-              child: Text('Todos',
-                style: GoogleFonts.dmMono(fontSize: 12, color: AppColors.charcoal),
+              padding: const EdgeInsets.only(
+                  left: 40, right: 24, top: 10, bottom: 10),
+              child: Text(
+                'Todos',
+                style:
+                    GoogleFonts.dmMono(fontSize: 12, color: AppColors.charcoal),
               ),
             ),
           ),
           ...AppCategorias.todas.map((cat) => InkWell(
-            onTap: () => widget.onSelectCategoria(cat),
-            child: Padding(
-              padding: const EdgeInsets.only(left: 40, right: 24, top: 10, bottom: 10),
-              child: Text(cat,
-                style: GoogleFonts.dmMono(fontSize: 12, color: AppColors.charcoal),
-              ),
-            ),
-          )),
+                onTap: () => widget.onSelectCategoria(cat),
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                      left: 40, right: 24, top: 10, bottom: 10),
+                  child: Text(
+                    cat,
+                    style: GoogleFonts.dmMono(
+                        fontSize: 12, color: AppColors.charcoal),
+                  ),
+                ),
+              )),
           const SizedBox(height: 4),
         ],
       ],
@@ -377,9 +411,12 @@ class _MenuItem extends StatelessWidget {
               Icon(icon, size: 18, color: AppColors.charcoal),
               const SizedBox(width: 12),
             ],
-            Text(label,
+            Text(
+              label,
               style: GoogleFonts.dmMono(
-                fontSize: 13, color: AppColors.ink, letterSpacing: 0.1,
+                fontSize: 13,
+                color: AppColors.ink,
+                letterSpacing: 0.1,
               ),
             ),
           ],
@@ -464,16 +501,19 @@ class _ColeccionDropdownState extends State<_ColeccionDropdown> {
   Widget build(BuildContext context) {
     return MouseRegion(
       onEnter: (_) => _show(),
-      onExit:  (_) => _scheduleHide(),
+      onExit: (_) => _scheduleHide(),
       child: TextButton(
         key: _linkKey,
         onPressed: () => context.go('/catalogo'),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('COLECCIÓN',
+            Text(
+              'COLECCIÓN',
               style: GoogleFonts.dmMono(
-                fontSize: 11, color: AppColors.gray, letterSpacing: 0.12,
+                fontSize: 11,
+                color: AppColors.gray,
+                letterSpacing: 0.12,
               ),
             ),
             const SizedBox(width: 3),
@@ -512,7 +552,7 @@ class _DropdownMenu extends StatelessWidget {
       left: left,
       child: MouseRegion(
         onEnter: (_) => onCancelClose(),
-        onExit:  (_) => onClose(),
+        onExit: (_) => onClose(),
         child: Material(
           color: Colors.transparent,
           child: Container(
@@ -538,9 +578,9 @@ class _DropdownMenu extends StatelessWidget {
                 ),
                 Container(height: 1, color: AppColors.sand),
                 ...AppCategorias.todas.map((cat) => _DropdownItem(
-                  label: cat,
-                  onTap: () => onSelectCategoria(cat),
-                )),
+                      label: cat,
+                      onTap: () => onSelectCategoria(cat),
+                    )),
               ],
             ),
           ),
@@ -566,14 +606,15 @@ class _DropdownItemState extends State<_DropdownItem> {
   Widget build(BuildContext context) {
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
-      onExit:  (_) => setState(() => _hovered = false),
+      onExit: (_) => setState(() => _hovered = false),
       child: GestureDetector(
         onTap: widget.onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 120),
           color: _hovered ? AppColors.beige : AppColors.cream,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Text(widget.label,
+          child: Text(
+            widget.label,
             style: GoogleFonts.dmMono(
               fontSize: 11,
               color: _hovered ? AppColors.ink : AppColors.charcoal,
@@ -600,23 +641,29 @@ class _CartButton extends StatelessWidget {
               size: 18, color: AppColors.charcoal),
           const SizedBox(width: 6),
           if (MediaQuery.of(context).size.width > 480)
-            Text('Bolsa',
+            Text(
+              'Bolsa',
               style: GoogleFonts.dmMono(
-                fontSize: 11, color: AppColors.charcoal,
+                fontSize: 11,
+                color: AppColors.charcoal,
                 letterSpacing: 0.1,
               ),
             ),
           if (carrito.totalItems > 0) ...[
             const SizedBox(width: 6),
             Container(
-              width: 18, height: 18,
+              width: 18,
+              height: 18,
               decoration: const BoxDecoration(
-                color: AppColors.ink, shape: BoxShape.circle,
+                color: AppColors.ink,
+                shape: BoxShape.circle,
               ),
               child: Center(
-                child: Text('${carrito.totalItems}',
+                child: Text(
+                  '${carrito.totalItems}',
                   style: const TextStyle(
-                    color: AppColors.cream, fontSize: 10,
+                    color: AppColors.cream,
+                    fontSize: 10,
                   ),
                 ),
               ),
@@ -637,9 +684,11 @@ class _NavLink extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton(
       onPressed: onTap,
-      child: Text(label.toUpperCase(),
+      child: Text(
+        label.toUpperCase(),
         style: GoogleFonts.dmMono(
-          fontSize: 11, color: AppColors.gray,
+          fontSize: 11,
+          color: AppColors.gray,
           letterSpacing: 0.12,
         ),
       ),
@@ -655,7 +704,8 @@ class _UserAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     if (fotoUrl != null) {
       return Container(
-        width: 28, height: 28,
+        width: 28,
+        height: 28,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(color: AppColors.sand),
@@ -664,13 +714,14 @@ class _UserAvatar extends StatelessWidget {
           child: Image.network(
             '${ApiService.serverUrl}$fotoUrl',
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) =>
-                const Icon(Icons.person_outline, size: 18, color: AppColors.charcoal),
+            errorBuilder: (_, __, ___) => const Icon(Icons.person_outline,
+                size: 18, color: AppColors.charcoal),
           ),
         ),
       );
     }
-    return const Icon(Icons.person_outline, size: 20, color: AppColors.charcoal);
+    return const Icon(Icons.person_outline,
+        size: 20, color: AppColors.charcoal);
   }
 }
 
@@ -694,7 +745,7 @@ class _ProductCardState extends State<ProductCard> {
       onTap: () => context.go('/producto/${p.id}'),
       child: MouseRegion(
         onEnter: (_) => setState(() => _hovered = true),
-        onExit:  (_) => setState(() => _hovered = false),
+        onExit: (_) => setState(() => _hovered = false),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -712,15 +763,18 @@ class _ProductCardState extends State<ProductCard> {
                   ),
                   // Badge SIN STOCK
                   if (!p.disponible)
-                    Positioned(
-                      top: 12, right: 12,
+                    const Positioned(
+                      top: 12,
+                      right: 12,
                       child: _Badge(label: 'SIN STOCK', dark: true),
                     ),
                   // Quick add (visible en hover desktop)
                   // Offstage mantiene el widget montado para que el async
                   // no pierda el context cuando el mouse sale durante la espera
                   Positioned(
-                    bottom: 0, left: 0, right: 0,
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
                     child: Offstage(
                       offstage: !_hovered || !p.disponible,
                       child: _QuickAdd(producto: p),
@@ -735,9 +789,11 @@ class _ProductCardState extends State<ProductCard> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  child: Text(p.titulo,
+                  child: Text(
+                    p.titulo,
                     style: GoogleFonts.syne(
-                      fontSize: 13, fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
                       color: AppColors.ink,
                     ),
                     maxLines: 1,
@@ -745,9 +801,11 @@ class _ProductCardState extends State<ProductCard> {
                   ),
                 ),
                 Flexible(
-                  child: Text(p.precioFormateado,
+                  child: Text(
+                    p.precioFormateado,
                     style: GoogleFonts.dmMono(
-                      fontSize: 12, color: AppColors.gray,
+                      fontSize: 12,
+                      color: AppColors.gray,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -755,17 +813,21 @@ class _ProductCardState extends State<ProductCard> {
               ],
             ),
             const SizedBox(height: 2),
-            Text('${p.precioTransferenciaFormateado} con Transferencia',
+            Text(
+              '${p.precioTransferenciaFormateado} con Transferencia',
               style: GoogleFonts.dmMono(
-                fontSize: 10, color: AppColors.accent,
+                fontSize: 10,
+                color: AppColors.accent,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.05,
               ),
             ),
             const SizedBox(height: 4),
-            Text(p.categoria.toUpperCase(),
+            Text(
+              p.categoria.toUpperCase(),
               style: GoogleFonts.dmMono(
-                fontSize: 10, color: AppColors.stone,
+                fontSize: 10,
+                color: AppColors.stone,
                 letterSpacing: 0.12,
               ),
             ),
@@ -818,9 +880,12 @@ class _Badge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       color: dark ? AppColors.ink : AppColors.stone,
-      child: Text(label.toUpperCase(),
+      child: Text(
+        label.toUpperCase(),
         style: GoogleFonts.dmMono(
-          fontSize: 9, color: AppColors.cream, letterSpacing: 0.15,
+          fontSize: 9,
+          color: AppColors.cream,
+          letterSpacing: 0.15,
         ),
       ),
     );
@@ -844,7 +909,8 @@ class _QuickAddState extends State<_QuickAdd> {
     // Producto no disponible → mostrar error inmediatamente
     if (!widget.producto.disponible) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Producto no disponible',
+        content: Text(
+          'Producto no disponible',
           style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.cream),
         ),
         backgroundColor: AppColors.charcoal,
@@ -887,7 +953,8 @@ class _QuickAddState extends State<_QuickAdd> {
     messenger.clearSnackBars();
     if (ok) {
       messenger.showSnackBar(SnackBar(
-        content: Text('✓ ${widget.producto.titulo} agregado',
+        content: Text(
+          '✓ ${widget.producto.titulo} agregado',
           style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.cream),
         ),
         backgroundColor: AppColors.ink,
@@ -897,7 +964,8 @@ class _QuickAddState extends State<_QuickAdd> {
     } else {
       final error = carritoProvider.error ?? 'No se pudo agregar';
       messenger.showSnackBar(SnackBar(
-        content: Text(error,
+        content: Text(
+          error,
           style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.cream),
         ),
         backgroundColor: AppColors.charcoal,
@@ -917,15 +985,21 @@ class _QuickAddState extends State<_QuickAdd> {
         child: Center(
           child: _loading
               ? const SizedBox(
-                  width: 12, height: 12,
+                  width: 12,
+                  height: 12,
                   child: CircularProgressIndicator(
-                    strokeWidth: 1.5, color: AppColors.cream,
+                    strokeWidth: 1.5,
+                    color: AppColors.cream,
                   ),
                 )
               : Text(
-                  widget.producto.disponible ? '+ AGREGAR AL CARRITO' : 'AGOTADO',
+                  widget.producto.disponible
+                      ? '+ AGREGAR AL CARRITO'
+                      : 'AGOTADO',
                   style: GoogleFonts.dmMono(
-                    fontSize: 10, color: AppColors.cream, letterSpacing: 0.15,
+                    fontSize: 10,
+                    color: AppColors.cream,
+                    letterSpacing: 0.15,
                   ),
                 ),
         ),
@@ -963,14 +1037,18 @@ class PrimaryButton extends StatelessWidget {
       ),
       child: loading
           ? const SizedBox(
-              width: 16, height: 16,
+              width: 16,
+              height: 16,
               child: CircularProgressIndicator(
-                strokeWidth: 1.5, color: AppColors.cream,
+                strokeWidth: 1.5,
+                color: AppColors.cream,
               ),
             )
-          : Text(label.toUpperCase(),
+          : Text(
+              label.toUpperCase(),
               style: GoogleFonts.dmMono(
-                fontSize: 11, letterSpacing: 0.18,
+                fontSize: 11,
+                letterSpacing: 0.18,
               ),
             ),
     );
@@ -994,9 +1072,12 @@ class OutlineBtn extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 15),
         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
       ),
-      child: Text(label.toUpperCase(),
+      child: Text(
+        label.toUpperCase(),
         style: GoogleFonts.dmMono(
-          fontSize: 11, color: AppColors.charcoal, letterSpacing: 0.15,
+          fontSize: 11,
+          color: AppColors.charcoal,
+          letterSpacing: 0.15,
         ),
       ),
     );
@@ -1004,16 +1085,17 @@ class OutlineBtn extends StatelessWidget {
 }
 
 // ─── AUTH FIELD ────────────────────────────────────────────
+// ─── AUTH FIELD ────────────────────────────────────────────
 class AuthField extends StatelessWidget {
   final String label;
   final TextEditingController controller;
   final bool obscureText;
   final TextInputType keyboardType;
   final Widget? suffix;
-  final Widget? prefix;
+  final Widget? prefix; // ← AGREGAR
+  final List<TextInputFormatter>? inputFormatters; // ← AGREGAR
   final VoidCallback? onSubmit;
   final String? hint;
-  final List<TextInputFormatter>? inputFormatters;
 
   const AuthField({
     super.key,
@@ -1022,10 +1104,10 @@ class AuthField extends StatelessWidget {
     this.obscureText = false,
     this.keyboardType = TextInputType.text,
     this.suffix,
-    this.prefix,
+    this.prefix, // ← AGREGAR
+    this.inputFormatters, // ← AGREGAR
     this.onSubmit,
     this.hint,
-    this.inputFormatters,
   });
 
   @override
@@ -1033,9 +1115,12 @@ class AuthField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
+        Text(
+          label,
           style: GoogleFonts.dmMono(
-            fontSize: 10, color: AppColors.gray, letterSpacing: 0.15,
+            fontSize: 10,
+            color: AppColors.gray,
+            letterSpacing: 0.15,
           ),
         ),
         const SizedBox(height: 8),
@@ -1043,17 +1128,27 @@ class AuthField extends StatelessWidget {
           controller: controller,
           obscureText: obscureText,
           keyboardType: keyboardType,
-          inputFormatters: inputFormatters,
+          inputFormatters: inputFormatters, // ← AGREGAR
           onSubmitted: onSubmit != null ? (_) => onSubmit!() : null,
           style: GoogleFonts.dmMono(fontSize: 13, color: AppColors.charcoal),
           decoration: InputDecoration(
             hintText: hint,
-            prefix: prefix,
-            suffixIcon: suffix != null
-                ? Padding(padding: const EdgeInsets.only(right: 12), child: suffix)
+            prefixIcon: prefix != null // ← AGREGAR ESTE BLOQUE COMPLETO
+                ? Padding(
+                    padding: const EdgeInsets.only(left: 12, right: 4),
+                    child: prefix,
+                  )
                 : null,
-            suffixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            prefixIconConstraints:
+                const BoxConstraints(minWidth: 0, minHeight: 0),
+            suffixIcon: suffix != null
+                ? Padding(
+                    padding: const EdgeInsets.only(right: 12), child: suffix)
+                : null,
+            suffixIconConstraints:
+                const BoxConstraints(minWidth: 0, minHeight: 0),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             border: const OutlineInputBorder(
               borderRadius: BorderRadius.zero,
               borderSide: BorderSide(color: AppColors.sand),
@@ -1083,7 +1178,8 @@ class ErrorMsg extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       color: const Color(0xFFFFF0F0),
-      child: Text(message,
+      child: Text(
+        message,
         style: GoogleFonts.dmMono(fontSize: 11, color: Colors.red[700]),
       ),
     );
