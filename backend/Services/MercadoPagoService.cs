@@ -44,11 +44,17 @@ namespace backend.Services
                 },
                 external_reference = ordenId.ToString(),
 
+                notification_url = "https://petrina-unprofited-darrin.ngrok-free.dev/api/pagos/webhook", //nuevo agregado
+
                 back_urls = new
                 {
-                    success = "https://www.mercadopago.com.ar",
-                    failure = "https://www.mercadopago.com.ar",
-                    pending = "https://www.mercadopago.com.ar"
+                    //success = "https://www.mercadopago.com.ar",
+                    //failure = "https://www.mercadopago.com.ar",
+                    //pending = "https://www.mercadopago.com.ar"
+
+                    success = "https://petrina-unprofited-darrin.ngrok-free.dev",
+                    failure = "https://petrina-unprofited-darrin.ngrok-free.dev",
+                    pending = "https://petrina-unprofited-darrin.ngrok-free.dev",
                 },
 
                 auto_return = "approved"

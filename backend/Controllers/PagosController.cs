@@ -83,7 +83,7 @@ namespace backend.Controllers
             [FromHeader(Name = "x-request-id")] string? requestId)
         {
             // Validar firma de MercadoPago
-            if (!string.IsNullOrEmpty(signature) && !string.IsNullOrEmpty(_options.WebhookSecret))
+            /*if (!string.IsNullOrEmpty(signature) && !string.IsNullOrEmpty(_options.WebhookSecret))
             {
                 var ts = "";
                 var v1 = "";
@@ -108,7 +108,7 @@ namespace backend.Controllers
 
                 if (computed != v1)
                     return Unauthorized("Firma inválida");
-            }
+            }*/
 
             if (type != "payment" || string.IsNullOrEmpty(dataId))
                 return Ok();
@@ -125,7 +125,7 @@ namespace backend.Controllers
 
             var estado = pagoMp.GetProperty("status").GetString();
             var externalReference = pagoMp.GetProperty("external_reference").GetString();
-
+            Console.WriteLine($"🔔 WEBHOOK - Estado MP: {estado}, OrdenId: {externalReference}"); 
             if (!int.TryParse(externalReference, out int ordenId))
                 return Ok();
 

@@ -6,17 +6,35 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/models.dart';
 
 class ApiService {
-  static String get _baseUrl {
+  /*static String get _baseUrl {
     if (kIsWeb) return 'http://localhost:5005/api';
-    if (defaultTargetPlatform == TargetPlatform.android)
+    if (defaultTargetPlatform == TargetPlatform.android) {
       return 'http://10.0.2.2:5005/api';
+    }
     return 'http://localhost:5005/api';
   }
 
   static String get serverUrl {
     if (kIsWeb) return 'http://localhost:5005';
-    if (defaultTargetPlatform == TargetPlatform.android)
+    if (defaultTargetPlatform == TargetPlatform.android) {
       return 'http://10.0.2.2:5005';
+    }
+    return 'http://localhost:5005';
+  }*/
+
+  static String get _baseUrl {
+    if (kIsWeb) return 'http://localhost:5005/api';
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      return 'https://petrina-unprofited-darrin.ngrok-free.dev/api';
+    }
+    return 'http://localhost:5005/api';
+  }
+
+  static String get serverUrl {
+    if (kIsWeb) return 'http://localhost:5005';
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      return 'https://petrina-unprofited-darrin.ngrok-free.dev';
+    }
     return 'http://localhost:5005';
   }
 
@@ -111,8 +129,7 @@ class ApiService {
   Future<void> reenviarCodigo({required String email}) async {
     final uri = Uri.parse('$_baseUrl/auth/reenviar-codigo');
     final res = await http.post(uri,
-        headers: await _headers(),
-        body: jsonEncode({'email': email}));
+        headers: await _headers(), body: jsonEncode({'email': email}));
     _checkStatus(res);
   }
 
@@ -157,8 +174,9 @@ class ApiService {
   Future<List<Producto>> getProductos(
       {String? categoria, String? estado}) async {
     final params = <String, String>{};
-    if (categoria != null && categoria.isNotEmpty)
+    if (categoria != null && categoria.isNotEmpty) {
       params['categoria'] = categoria;
+    }
     if (estado != null && estado.isNotEmpty) params['estado'] = estado;
     final uri = Uri.parse('$_baseUrl/productos')
         .replace(queryParameters: params.isNotEmpty ? params : null);
@@ -395,8 +413,9 @@ class ApiService {
       {String? numeroSeguimiento}) async {
     final uri = Uri.parse('$_baseUrl/ordenes/$id/estado');
     final body = <String, dynamic>{'estado': estado};
-    if (numeroSeguimiento != null)
+    if (numeroSeguimiento != null) {
       body['numeroSeguimiento'] = numeroSeguimiento;
+    }
     final res = await http.patch(uri,
         headers: await _headers(auth: true), body: jsonEncode(body));
     _checkStatus(res);
@@ -435,8 +454,9 @@ class ApiService {
     final request = http.MultipartRequest('POST', uri);
     if (token != null) request.headers['Authorization'] = 'Bearer $token';
     request.fields['nombre'] = nombre;
-    if (productoIds.isNotEmpty)
+    if (productoIds.isNotEmpty) {
       request.fields['productoIds'] = productoIds.join(',');
+    }
     if (imagen != null) {
       final bytes = await imagen.readAsBytes();
       request.files.add(
@@ -458,8 +478,9 @@ class ApiService {
     final request = http.MultipartRequest('PUT', uri);
     if (token != null) request.headers['Authorization'] = 'Bearer $token';
     request.fields['nombre'] = nombre;
-    if (productoIds.isNotEmpty)
+    if (productoIds.isNotEmpty) {
       request.fields['productoIds'] = productoIds.join(',');
+    }
     if (imagen != null) {
       final bytes = await imagen.readAsBytes();
       request.files.add(
@@ -530,8 +551,9 @@ class ApiService {
       'tipo': tipo,
       'valor': valor
     };
-    if (fechaExpiracion != null)
+    if (fechaExpiracion != null) {
       body['fechaExpiracion'] = fechaExpiracion.toIso8601String();
+    }
     if (usosMaximos != null) body['usosMaximos'] = usosMaximos;
     final res = await http.post(uri,
         headers: await _headers(auth: true), body: jsonEncode(body));
