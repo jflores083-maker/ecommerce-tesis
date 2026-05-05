@@ -24,14 +24,19 @@ class AdminScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Panel Admin',
+                Text(
+                  'Panel Admin',
                   style: GoogleFonts.syne(
-                    fontSize: 32, fontWeight: FontWeight.w700, color: AppColors.ink,
+                    fontSize: 32,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.ink,
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text('Gestión de productos 638.',
-                  style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.charcoal),
+                Text(
+                  'Gestión de productos Urbal.',
+                  style: GoogleFonts.dmMono(
+                      fontSize: 11, color: AppColors.charcoal),
                 ),
                 const SizedBox(height: 48),
                 _AdminMenuBtn(
@@ -137,22 +142,27 @@ class _AdminMenuBtn extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(label,
+                  Text(
+                    label,
                     style: GoogleFonts.syne(
-                      fontSize: 15, fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
                       color: AppColors.ink,
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(description,
+                  Text(
+                    description,
                     style: GoogleFonts.dmMono(
-                      fontSize: 11, color: AppColors.charcoal,
+                      fontSize: 11,
+                      color: AppColors.charcoal,
                     ),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.stone),
+            const Icon(Icons.arrow_forward_ios,
+                size: 14, color: AppColors.stone),
           ],
         ),
       ),

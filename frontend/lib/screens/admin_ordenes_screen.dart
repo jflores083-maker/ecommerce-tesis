@@ -35,11 +35,12 @@ class _AdminOrdenesScreenState extends State<AdminOrdenesScreen> {
     setState(() => _loading = true);
     try {
       final data = await _api.getTodasOrdenes(estado: _filtroEstado);
-      if (mounted)
+      if (mounted) {
         setState(() {
           _ordenes = data;
           _loading = false;
         });
+      }
     } catch (e) {
       if (mounted) {
         setState(() => _loading = false);

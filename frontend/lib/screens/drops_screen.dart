@@ -46,7 +46,8 @@ class _DropsScreenState extends State<DropsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('DROPS',
+                  Text(
+                    'DROPS',
                     style: GoogleFonts.syne(
                       fontSize: isMobile ? 52 : 80,
                       fontWeight: FontWeight.w800,
@@ -55,8 +56,10 @@ class _DropsScreenState extends State<DropsScreen> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Text('Lanzamientos exclusivos de 638.',
-                    style: GoogleFonts.dmMono(fontSize: 12, color: AppColors.stone),
+                  Text(
+                    'Lanzamientos exclusivos de Urbal.',
+                    style: GoogleFonts.dmMono(
+                        fontSize: 12, color: AppColors.stone),
                   ),
                 ],
               ),
@@ -69,24 +72,30 @@ class _DropsScreenState extends State<DropsScreen> {
                 vertical: 48,
               ),
               child: provider.cargando
-                  ? const Center(child: CircularProgressIndicator(color: AppColors.charcoal))
+                  ? const Center(
+                      child:
+                          CircularProgressIndicator(color: AppColors.charcoal))
                   : provider.drops.isEmpty
                       ? Center(
-                          child: Text('No hay drops todavía.',
-                            style: GoogleFonts.dmMono(fontSize: 13, color: AppColors.stone),
+                          child: Text(
+                            'No hay drops todavía.',
+                            style: GoogleFonts.dmMono(
+                                fontSize: 13, color: AppColors.stone),
                           ),
                         )
                       : GridView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: isMobile ? 1 : 3,
                             crossAxisSpacing: 24,
                             mainAxisSpacing: 24,
                             childAspectRatio: 0.75,
                           ),
                           itemCount: provider.drops.length,
-                          itemBuilder: (_, i) => _DropCard(drop: provider.drops[i]),
+                          itemBuilder: (_, i) =>
+                              _DropCard(drop: provider.drops[i]),
                         ),
             ),
           ],
@@ -115,7 +124,7 @@ class _DropCardState extends State<_DropCard> {
 
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
-      onExit:  (_) => setState(() => _hovered = false),
+      onExit: (_) => setState(() => _hovered = false),
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: () => context.go('/drops/${drop.id}'),
@@ -143,28 +152,38 @@ class _DropCardState extends State<_DropCard> {
                   ),
                   // Badge fecha
                   Positioned(
-                    top: 12, left: 12,
+                    top: 12,
+                    left: 12,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
                       color: AppColors.ink,
-                      child: Text('$mes $anio',
+                      child: Text(
+                        '$mes $anio',
                         style: GoogleFonts.dmMono(
-                          fontSize: 9, color: AppColors.cream,
-                          fontWeight: FontWeight.w700, letterSpacing: 0.15,
+                          fontSize: 9,
+                          color: AppColors.cream,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.15,
                         ),
                       ),
                     ),
                   ),
                   // Badge cantidad
                   Positioned(
-                    top: 12, right: 12,
+                    top: 12,
+                    right: 12,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
                       color: AppColors.accent,
-                      child: Text('${drop.totalProductos} PIEZAS',
+                      child: Text(
+                        '${drop.totalProductos} PIEZAS',
                         style: GoogleFonts.dmMono(
-                          fontSize: 9, color: AppColors.cream,
-                          fontWeight: FontWeight.w700, letterSpacing: 0.1,
+                          fontSize: 9,
+                          color: AppColors.cream,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.1,
                         ),
                       ),
                     ),
@@ -180,16 +199,19 @@ class _DropCardState extends State<_DropCard> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: Text(drop.nombre,
+                    child: Text(
+                      drop.nombre,
                       style: GoogleFonts.syne(
-                        fontSize: 15, fontWeight: FontWeight.w700,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
                         color: AppColors.ink,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  const Icon(Icons.arrow_forward, size: 16, color: AppColors.charcoal),
+                  const Icon(Icons.arrow_forward,
+                      size: 16, color: AppColors.charcoal),
                 ],
               ),
             ),
@@ -209,7 +231,20 @@ class _DropCardState extends State<_DropCard> {
   }
 
   String _mesAbreviado(int mes) {
-    const meses = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+    const meses = [
+      'ENE',
+      'FEB',
+      'MAR',
+      'ABR',
+      'MAY',
+      'JUN',
+      'JUL',
+      'AGO',
+      'SEP',
+      'OCT',
+      'NOV',
+      'DIC'
+    ];
     return meses[mes - 1];
   }
 }

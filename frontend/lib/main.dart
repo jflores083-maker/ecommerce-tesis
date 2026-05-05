@@ -81,7 +81,7 @@ class _AppContentState extends State<_AppContent> {
   Widget build(BuildContext context) {
     final paleta = context.watch<ConfigProvider>().paleta;
     return MaterialApp.router(
-      title: '638',
+      title: 'Urbal',
       theme: AppTheme.forPaleta(paleta),
       routerConfig: _router,
       debugShowCheckedModeBanner: false,

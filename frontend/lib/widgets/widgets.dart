@@ -97,7 +97,7 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
       title: GestureDetector(
         onTap: () => context.go('/'),
         child: Text(
-          '638',
+          'Urbal',
           style: GoogleFonts.syne(
             fontSize: 22,
             fontWeight: FontWeight.w800,
@@ -239,7 +239,7 @@ class _MobileMenuPanel extends StatelessWidget {
                     )
                   else
                     Text(
-                      '638',
+                      'Urbal',
                       style: GoogleFonts.syne(
                         fontSize: 22,
                         fontWeight: FontWeight.w800,

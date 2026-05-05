@@ -14,7 +14,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _emailCtrl    = TextEditingController();
+  final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   bool _showPass = false;
 
@@ -37,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final auth     = context.watch<AuthProvider>();
+    final auth = context.watch<AuthProvider>();
     final isMobile = MediaQuery.of(context).size.width < 768;
 
     return Scaffold(
@@ -46,29 +46,37 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Center(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(
-            horizontal: isMobile ? 20 : 0, vertical: 48,
+            horizontal: isMobile ? 20 : 0,
+            vertical: 48,
           ),
           child: SizedBox(
             width: 400,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Ingresar',
+                Text(
+                  'Ingresar',
                   style: GoogleFonts.syne(
-                    fontSize: 32, fontWeight: FontWeight.w700, color: AppColors.ink,
+                    fontSize: 32,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.ink,
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text('Accedé a tu cuenta 638.',
-                  style: GoogleFonts.dmMono(fontSize: 12, color: AppColors.charcoal),
+                Text(
+                  'Accedé a tu cuenta Urbal.',
+                  style: GoogleFonts.dmMono(
+                      fontSize: 12, color: AppColors.charcoal),
                 ),
                 const SizedBox(height: 40),
                 if (auth.error != null) ...[
                   ErrorMsg(auth.error!),
                   const SizedBox(height: 16),
                 ],
-                AuthField(label: 'EMAIL', controller: _emailCtrl,
-                  keyboardType: TextInputType.emailAddress),
+                AuthField(
+                    label: 'EMAIL',
+                    controller: _emailCtrl,
+                    keyboardType: TextInputType.emailAddress),
                 const SizedBox(height: 16),
                 AuthField(
                   label: 'CONTRASEÑA',
@@ -77,16 +85,21 @@ class _LoginScreenState extends State<LoginScreen> {
                   suffix: GestureDetector(
                     onTap: () => setState(() => _showPass = !_showPass),
                     child: Icon(
-                      _showPass ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                      size: 18, color: AppColors.stone,
+                      _showPass
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                      size: 18,
+                      color: AppColors.stone,
                     ),
                   ),
                   onSubmit: _login,
                 ),
                 const SizedBox(height: 32),
                 PrimaryButton(
-                  label: 'Ingresar', fullWidth: true,
-                  loading: auth.loading, onPressed: _login,
+                  label: 'Ingresar',
+                  fullWidth: true,
+                  loading: auth.loading,
+                  onPressed: _login,
                 ),
                 const SizedBox(height: 24),
                 Center(
@@ -94,12 +107,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text('¿No tenés cuenta? ',
-                        style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.stone)),
+                          style: GoogleFonts.dmMono(
+                              fontSize: 11, color: AppColors.stone)),
                       GestureDetector(
                         onTap: () => context.go('/register'),
-                        child: Text('Registrate',
+                        child: Text(
+                          'Registrate',
                           style: GoogleFonts.dmMono(
-                            fontSize: 11, color: AppColors.charcoal,
+                            fontSize: 11,
+                            color: AppColors.charcoal,
                             decoration: TextDecoration.underline,
                           ),
                         ),

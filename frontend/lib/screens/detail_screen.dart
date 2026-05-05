@@ -299,6 +299,33 @@ class _ProductInfo extends StatelessWidget {
             color: AppColors.charcoal,
           ),
         ),
+        const SizedBox(height: 8),
+        if (p.stock <= 0)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            color: AppColors.stone.withOpacity(0.15),
+            child: Text(
+              'AGOTADO',
+              style: GoogleFonts.dmMono(
+                fontSize: 10,
+                color: AppColors.stone,
+                letterSpacing: 0.15,
+              ),
+            ),
+          )
+        else if (p.stock <= 5)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            color: const Color(0xFFFFF3CD),
+            child: Text(
+              '⚠️ ÚLTIMAS ${p.stock} UNIDADES',
+              style: GoogleFonts.dmMono(
+                fontSize: 10,
+                color: const Color(0xFF856404),
+                letterSpacing: 0.15,
+              ),
+            ),
+          ),
         const Divider(color: AppColors.sand, height: 48, thickness: 1),
 
         // Talles
@@ -326,8 +353,8 @@ class _ProductInfo extends StatelessWidget {
 
         // Botones
         PrimaryButton(
-          label: 'Agregar al carrito',
-          onPressed: () => onAgregar(p),
+          label: p.stock <= 0 ? 'Sin stock' : 'Agregar al carrito',
+          onPressed: p.stock <= 0 ? null : () => onAgregar(p),
           loading: agregando,
           fullWidth: true,
         ),
@@ -341,8 +368,8 @@ class _ProductInfo extends StatelessWidget {
         // Acordeón
         _Accordion('Descripción',
             p.descripcion.isNotEmpty ? p.descripcion : 'Sin descripción.'),
-        _Accordion('Materiales', 'Consultar en el detalle del producto.'),
-        _Accordion('Envío & devoluciones',
+        const _Accordion('Materiales', 'Consultar en el detalle del producto.'),
+        const _Accordion('Envío & devoluciones',
             'Envío gratis en compras mayores a \$60.000. Entrega en 3-5 días hábiles.'),
       ],
     );
@@ -462,7 +489,7 @@ class _AccordionState extends State<_Accordion> {
               widget.content,
               style: GoogleFonts.dmMono(
                 fontSize: 12,
-                color: AppColors.charcoal,
+                color: AppColors.gray,
                 height: 1.8,
               ),
             ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -70,13 +69,17 @@ class _HeroDesktop extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(64, 64, 64, 80),
               child: Stack(
                 children: [
-                  // "638" gigante de fondo
+                  // "Urbal" gigante de fondo
                   Positioned(
-                    top: -20, left: -10,
-                    child: Text('638',
+                    top: -20,
+                    left: -10,
+                    child: Text(
+                      'Urbal',
                       style: GoogleFonts.syne(
-                        fontSize: 260, fontWeight: FontWeight.w800,
-                        color: AppColors.sand, height: 1,
+                        fontSize: 150,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.sand,
+                        height: 1,
                       ),
                     ),
                   ),
@@ -85,9 +88,11 @@ class _HeroDesktop extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('COLECCIÓN OTOÑO 2025',
+                      Text(
+                        'COLECCIÓN OTOÑO/INVIERNO 2026',
                         style: GoogleFonts.dmMono(
-                          fontSize: 10, color: AppColors.stone,
+                          fontSize: 10,
+                          color: AppColors.stone,
                           letterSpacing: 0.2,
                         ),
                       ),
@@ -95,12 +100,15 @@ class _HeroDesktop extends StatelessWidget {
                       RichText(
                         text: TextSpan(
                           style: GoogleFonts.cormorantGaramond(
-                            fontSize: 72, fontWeight: FontWeight.w300,
-                            color: AppColors.ink, height: 1.0,
+                            fontSize: 72,
+                            fontWeight: FontWeight.w300,
+                            color: AppColors.ink,
+                            height: 1.0,
                           ),
                           children: const [
                             TextSpan(text: 'Vestí\nlo que\n'),
-                            TextSpan(text: 'sos.',
+                            TextSpan(
+                              text: 'sos.',
                               style: TextStyle(
                                 fontStyle: FontStyle.italic,
                                 color: AppColors.stone,
@@ -113,7 +121,9 @@ class _HeroDesktop extends StatelessWidget {
                       Text(
                         'Ropa urbana diseñada para los que se mueven\nen su propio ritmo.',
                         style: GoogleFonts.dmMono(
-                          fontSize: 12, color: AppColors.gray, height: 1.8,
+                          fontSize: 12,
+                          color: AppColors.gray,
+                          height: 1.8,
                         ),
                       ),
                       const SizedBox(height: 48),
@@ -155,21 +165,27 @@ class _HeroMobile extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('COLECCIÓN OTOÑO 2025',
+              Text(
+                'COLECCIÓN OTOÑO/INVIERNO 2026',
                 style: GoogleFonts.dmMono(
-                  fontSize: 10, color: AppColors.stone, letterSpacing: 0.2,
+                  fontSize: 10,
+                  color: AppColors.stone,
+                  letterSpacing: 0.2,
                 ),
               ),
               const SizedBox(height: 16),
               RichText(
                 text: TextSpan(
                   style: GoogleFonts.cormorantGaramond(
-                    fontSize: 52, fontWeight: FontWeight.w300,
-                    color: AppColors.ink, height: 1.0,
+                    fontSize: 52,
+                    fontWeight: FontWeight.w300,
+                    color: AppColors.ink,
+                    height: 1.0,
                   ),
                   children: const [
                     TextSpan(text: 'Vestí lo que\n'),
-                    TextSpan(text: 'sos.',
+                    TextSpan(
+                      text: 'sos.',
                       style: TextStyle(
                         fontStyle: FontStyle.italic,
                         color: AppColors.stone,
@@ -179,9 +195,12 @@ class _HeroMobile extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              Text('Ropa urbana diseñada para los que se mueven en su propio ritmo.',
+              Text(
+                'Ropa urbana diseñada para los que se mueven en su propio ritmo.',
                 style: GoogleFonts.dmMono(
-                  fontSize: 12, color: AppColors.gray, height: 1.8,
+                  fontSize: 12,
+                  color: AppColors.gray,
+                  height: 1.8,
                 ),
               ),
               const SizedBox(height: 32),
@@ -226,11 +245,13 @@ class _HeroImage extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.shopping_bag_outlined,
-              size: 72, color: AppColors.stone.withOpacity(0.2)),
+                size: 72, color: AppColors.stone.withOpacity(0.2)),
             const SizedBox(height: 12),
-            Text('FOTO DE CAMPAÑA',
+            Text(
+              'FOTO DE CAMPAÑA',
               style: GoogleFonts.dmMono(
-                fontSize: 10, color: AppColors.stone,
+                fontSize: 10,
+                color: AppColors.stone,
                 letterSpacing: 0.18,
               ),
             ),
@@ -246,12 +267,13 @@ class _FeaturedSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final productos = context.watch<ProductosProvider>().productos;
-    final isMobile  = MediaQuery.of(context).size.width < 768;
-    final featured  = productos.take(4).toList();
+    final isMobile = MediaQuery.of(context).size.width < 768;
+    final featured = productos.take(4).toList();
 
     return Padding(
       padding: EdgeInsets.symmetric(
-        horizontal: isMobile ? 20 : 64, vertical: isMobile ? 52 : 96,
+        horizontal: isMobile ? 20 : 64,
+        vertical: isMobile ? 52 : 96,
       ),
       child: Column(
         children: [
@@ -261,24 +283,28 @@ class _FeaturedSection extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
-              Text('Destacados',
-                style: GoogleFonts.syne(
-                  fontSize: 24, fontWeight: FontWeight.w700,
+              Text(
+                'Destacados',
+                style: GoogleFonts.cormorantGaramond(
+                  fontSize: isMobile ? 30 : 40,
+                  fontWeight: FontWeight.w500,
                   color: AppColors.ink,
                 ),
               ),
               TextButton(
                 onPressed: () => context.go('/catalogo'),
-                child: Text('Ver todo →',
+                child: Text(
+                  'Ver todo →',
                   style: GoogleFonts.dmMono(
-                    fontSize: 10, color: AppColors.stone,
+                    fontSize: 10,
+                    color: AppColors.stone,
                     letterSpacing: 0.18,
                   ),
                 ),
               ),
             ],
           ),
-          Divider(color: AppColors.sand, height: 40, thickness: 1),
+          const Divider(color: AppColors.sand, height: 40, thickness: 1),
           const SizedBox(height: 16),
           if (featured.isEmpty)
             GridView.count(
@@ -329,7 +355,7 @@ class _PlaceholderCard extends StatelessWidget {
 class _CategoriesSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final isMobile  = MediaQuery.of(context).size.width < 768;
+    final isMobile = MediaQuery.of(context).size.width < 768;
     final productos = context.watch<ProductosProvider>().productos;
 
     // Para cada categoría, buscar el primer producto con imagen
@@ -355,15 +381,17 @@ class _CategoriesSection extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
-              Text('Categorías',
-                style: GoogleFonts.syne(
-                  fontSize: 24, fontWeight: FontWeight.w700,
+              Text(
+                'Categorías',
+                style: GoogleFonts.cormorantGaramond(
+                  fontSize: isMobile ? 30 : 40,
+                  fontWeight: FontWeight.w500,
                   color: AppColors.ink,
                 ),
               ),
             ],
           ),
-          Divider(color: AppColors.sand, height: 40, thickness: 1),
+          const Divider(color: AppColors.sand, height: 40, thickness: 1),
           const SizedBox(height: 16),
           GridView.count(
             crossAxisCount: isMobile ? 1 : 3,
@@ -372,11 +400,13 @@ class _CategoriesSection extends StatelessWidget {
             childAspectRatio: isMobile ? 16 / 7 : 4 / 3,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            children: AppCategorias.todas.map((cat) => _CategoryItem(
-              label: cat,
-              categoria: cat,
-              imagenUrl: imagenParaCategoria(cat),
-            )).toList(),
+            children: AppCategorias.todas
+                .map((cat) => _CategoryItem(
+                      label: cat,
+                      categoria: cat,
+                      imagenUrl: imagenParaCategoria(cat),
+                    ))
+                .toList(),
           ),
         ],
       ),
@@ -389,7 +419,9 @@ class _CategoryItem extends StatelessWidget {
   final String categoria;
   final String? imagenUrl;
   const _CategoryItem({
-    required this.label, required this.categoria, this.imagenUrl,
+    required this.label,
+    required this.categoria,
+    this.imagenUrl,
   });
 
   @override
@@ -423,10 +455,14 @@ class _CategoryItem extends StatelessWidget {
 
           // Nombre de la categoría
           Positioned(
-            left: 20, right: 20, bottom: 20,
-            child: Text(label,
-              style: GoogleFonts.syne(
-                fontSize: 18, fontWeight: FontWeight.w700,
+            left: 20,
+            right: 20,
+            bottom: 20,
+            child: Text(
+              label,
+              style: GoogleFonts.cormorantGaramond(
+                fontSize: 28,
+                fontWeight: FontWeight.w300,
                 color: imagenUrl != null ? AppColors.cream : AppColors.ink,
               ),
             ),
@@ -484,12 +520,15 @@ class _Banner extends StatelessWidget {
         RichText(
           text: TextSpan(
             style: GoogleFonts.cormorantGaramond(
-              fontSize: 48, fontWeight: FontWeight.w300,
-              color: AppColors.cream, height: 1.1,
+              fontSize: 48,
+              fontWeight: FontWeight.w300,
+              color: AppColors.cream,
+              height: 1.1,
             ),
             children: const [
               TextSpan(text: 'Nueva '),
-              TextSpan(text: 'drop',
+              TextSpan(
+                text: 'drop',
                 style: TextStyle(
                   fontStyle: FontStyle.italic,
                   color: AppColors.accent,
@@ -500,9 +539,12 @@ class _Banner extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        Text('Piezas limitadas que salen y no vuelven.',
+        Text(
+          'Piezas limitadas que salen y no vuelven.',
           style: GoogleFonts.dmMono(
-            fontSize: 12, color: AppColors.stone, height: 1.8,
+            fontSize: 12,
+            color: AppColors.stone,
+            height: 1.8,
           ),
         ),
       ],
@@ -524,8 +566,10 @@ class _Footer extends StatelessWidget {
           // ── Contenido principal ──────────────────────────
           Padding(
             padding: EdgeInsets.fromLTRB(
-              isMobile ? 24 : 64, isMobile ? 48 : 72,
-              isMobile ? 24 : 64, isMobile ? 40 : 64,
+              isMobile ? 24 : 64,
+              isMobile ? 48 : 72,
+              isMobile ? 24 : 64,
+              isMobile ? 40 : 64,
             ),
             child: isMobile
                 ? Column(
@@ -533,18 +577,19 @@ class _Footer extends StatelessWidget {
                     children: [
                       _FooterBrand(),
                       const SizedBox(height: 40),
-                      _FooterCol(
+                      const _FooterCol(
                         title: 'Tienda',
                         items: [
                           _FooterLink('Nueva colección', '/catalogo'),
                           _FooterLink('Remeras', '/catalogo?categoria=Remeras'),
-                          _FooterLink('Pantalones', '/catalogo?categoria=Pantalones'),
+                          _FooterLink(
+                              'Pantalones', '/catalogo?categoria=Pantalones'),
                           _FooterLink('Abrigos', '/catalogo?categoria=Abrigos'),
                           _FooterLink('Ver todo', '/catalogo'),
                         ],
                       ),
                       const SizedBox(height: 32),
-                      _FooterCol(
+                      const _FooterCol(
                         title: 'Nosotros',
                         items: [
                           _FooterLink('Acerca de', '/acerca-de'),
@@ -559,20 +604,23 @@ class _Footer extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(flex: 3, child: _FooterBrand()),
-                      Expanded(
+                      const Expanded(
                         flex: 2,
                         child: _FooterCol(
                           title: 'Tienda',
                           items: [
                             _FooterLink('Nueva colección', '/catalogo'),
-                            _FooterLink('Remeras', '/catalogo?categoria=Remeras'),
-                            _FooterLink('Pantalones', '/catalogo?categoria=Pantalones'),
-                            _FooterLink('Abrigos', '/catalogo?categoria=Abrigos'),
+                            _FooterLink(
+                                'Remeras', '/catalogo?categoria=Remeras'),
+                            _FooterLink(
+                                'Pantalones', '/catalogo?categoria=Pantalones'),
+                            _FooterLink(
+                                'Abrigos', '/catalogo?categoria=Abrigos'),
                             _FooterLink('Ver todo', '/catalogo'),
                           ],
                         ),
                       ),
-                      Expanded(
+                      const Expanded(
                         flex: 2,
                         child: _FooterCol(
                           title: 'Nosotros',
@@ -593,29 +641,38 @@ class _Footer extends StatelessWidget {
           // ── Bottom bar ───────────────────────────────────
           Padding(
             padding: EdgeInsets.symmetric(
-              horizontal: isMobile ? 24 : 64, vertical: 20,
+              horizontal: isMobile ? 24 : 64,
+              vertical: 20,
             ),
             child: isMobile
                 ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('© 2025 638. Todos los derechos reservados.',
-                        style: GoogleFonts.dmMono(fontSize: 10, color: AppColors.gray),
+                      Text(
+                        '© 2025 Urbal. Todos los derechos reservados.',
+                        style: GoogleFonts.dmMono(
+                            fontSize: 10, color: AppColors.gray),
                       ),
                       const SizedBox(height: 6),
-                      Text('Buenos Aires, Argentina',
-                        style: GoogleFonts.dmMono(fontSize: 10, color: AppColors.gray),
+                      Text(
+                        'Buenos Aires, Argentina',
+                        style: GoogleFonts.dmMono(
+                            fontSize: 10, color: AppColors.gray),
                       ),
                     ],
                   )
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('© 2025 638. Todos los derechos reservados.',
-                        style: GoogleFonts.dmMono(fontSize: 10, color: AppColors.gray),
+                      Text(
+                        '© 2025 Urbal. Todos los derechos reservados.',
+                        style: GoogleFonts.dmMono(
+                            fontSize: 10, color: AppColors.gray),
                       ),
-                      Text('Hecho con cuidado en Buenos Aires.',
-                        style: GoogleFonts.dmMono(fontSize: 10, color: AppColors.gray),
+                      Text(
+                        'Hecho con cuidado en Buenos Aires.',
+                        style: GoogleFonts.dmMono(
+                            fontSize: 10, color: AppColors.gray),
                       ),
                     ],
                   ),
@@ -632,26 +689,35 @@ class _FooterBrand extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('638',
+        Text(
+          'Urbal',
           style: GoogleFonts.syne(
-            fontSize: 48, fontWeight: FontWeight.w800,
-            color: AppColors.cream, letterSpacing: -1,
+            fontSize: 48,
+            fontWeight: FontWeight.w800,
+            color: AppColors.cream,
+            letterSpacing: -1,
             height: 1,
           ),
         ),
         const SizedBox(height: 16),
-        Text('Ropa urbana de Buenos Aires\npara el mundo.',
+        Text(
+          'Ropa urbana de Buenos Aires\npara el mundo.',
           style: GoogleFonts.dmMono(
-            fontSize: 12, color: AppColors.stone, height: 2.0,
+            fontSize: 12,
+            color: AppColors.stone,
+            height: 2.0,
           ),
         ),
         const SizedBox(height: 24),
         Container(height: 1, width: 40, color: AppColors.accent),
         const SizedBox(height: 24),
-        Text('Diseño propio. Producción local.\nEdiciones limitadas.',
+        Text(
+          'Diseño propio. Producción local.\nEdiciones limitadas.',
           style: GoogleFonts.cormorantGaramond(
-            fontSize: 18, fontWeight: FontWeight.w300,
-            color: Color(0xFF7A7570), height: 1.6,
+            fontSize: 18,
+            fontWeight: FontWeight.w300,
+            color: const Color(0xFF7A7570),
+            height: 1.6,
             fontStyle: FontStyle.italic,
           ),
         ),
@@ -676,27 +742,33 @@ class _FooterCol extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title.toUpperCase(),
+        Text(
+          title.toUpperCase(),
           style: GoogleFonts.dmMono(
-            fontSize: 10, color: AppColors.accent,
-            letterSpacing: 0.2, fontWeight: FontWeight.w700,
+            fontSize: 10,
+            color: AppColors.accent,
+            letterSpacing: 0.2,
+            fontWeight: FontWeight.w700,
           ),
         ),
         const SizedBox(height: 20),
         ...items.map((link) => Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: GestureDetector(
-            onTap: () => context.go(link.route),
-            child: MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: Text(link.label,
-                style: GoogleFonts.dmMono(
-                  fontSize: 13, color: AppColors.stone, height: 1.2,
+              padding: const EdgeInsets.only(bottom: 12),
+              child: GestureDetector(
+                onTap: () => context.go(link.route),
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Text(
+                    link.label,
+                    style: GoogleFonts.dmMono(
+                      fontSize: 13,
+                      color: AppColors.stone,
+                      height: 1.2,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-        )),
+            )),
       ],
     );
   }
@@ -706,35 +778,41 @@ class _FooterContact extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final config = context.watch<ConfigProvider>();
-    final telefono  = config.contactoTelefono;
-    final email     = config.contactoEmail;
+    final telefono = config.contactoTelefono;
+    final email = config.contactoEmail;
     final direccion = config.contactoDireccion;
-    final horario   = config.contactoHorario;
+    final horario = config.contactoHorario;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('CONTACTO',
+        Text(
+          'CONTACTO',
           style: GoogleFonts.dmMono(
-            fontSize: 10, color: AppColors.accent,
-            letterSpacing: 0.2, fontWeight: FontWeight.w700,
+            fontSize: 10,
+            color: AppColors.accent,
+            letterSpacing: 0.2,
+            fontWeight: FontWeight.w700,
           ),
         ),
         const SizedBox(height: 20),
         if (direccion.isNotEmpty) ...[
-          Text(direccion,
+          Text(
+            direccion,
             style: GoogleFonts.dmMono(fontSize: 13, color: AppColors.stone),
           ),
           const SizedBox(height: 12),
         ],
         if (email.isNotEmpty) ...[
-          Text(email,
+          Text(
+            email,
             style: GoogleFonts.dmMono(fontSize: 13, color: AppColors.stone),
           ),
           const SizedBox(height: 12),
         ],
         if (horario.isNotEmpty) ...[
-          Text(horario,
+          Text(
+            horario,
             style: GoogleFonts.dmMono(fontSize: 12, color: AppColors.gray),
           ),
           const SizedBox(height: 24),
@@ -742,9 +820,9 @@ class _FooterContact extends StatelessWidget {
           const SizedBox(height: 24),
         Row(
           children: [
-            _SocialChip(label: 'IG'),
+            const _SocialChip(label: 'IG'),
             const SizedBox(width: 8),
-            _SocialChip(label: 'TK'),
+            const _SocialChip(label: 'TK'),
             if (telefono.isNotEmpty) ...[
               const SizedBox(width: 8),
               _SocialChip(
@@ -786,7 +864,7 @@ class _SocialChipState extends State<_SocialChip> {
     final color = _hovered ? AppColors.accent : AppColors.gray;
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
-      onExit:  (_) => setState(() => _hovered = false),
+      onExit: (_) => setState(() => _hovered = false),
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: widget.onTap,
@@ -797,7 +875,9 @@ class _SocialChipState extends State<_SocialChip> {
             border: Border.all(
               color: _hovered ? AppColors.accent : const Color(0xFF3A3632),
             ),
-            color: _hovered ? AppColors.accent.withValues(alpha: 0.1) : Colors.transparent,
+            color: _hovered
+                ? AppColors.accent.withValues(alpha: 0.1)
+                : Colors.transparent,
           ),
           child: widget.icon != null
               ? Row(
@@ -805,13 +885,23 @@ class _SocialChipState extends State<_SocialChip> {
                   children: [
                     FaIcon(widget.icon!, size: 11, color: color),
                     const SizedBox(width: 6),
-                    Text(widget.label,
-                      style: GoogleFonts.dmMono(fontSize: 10, color: color, fontWeight: FontWeight.w700, letterSpacing: 0.1),
+                    Text(
+                      widget.label,
+                      style: GoogleFonts.dmMono(
+                          fontSize: 10,
+                          color: color,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.1),
                     ),
                   ],
                 )
-              : Text(widget.label,
-                  style: GoogleFonts.dmMono(fontSize: 10, color: color, fontWeight: FontWeight.w700, letterSpacing: 0.1),
+              : Text(
+                  widget.label,
+                  style: GoogleFonts.dmMono(
+                      fontSize: 10,
+                      color: color,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.1),
                 ),
         ),
       ),
