@@ -200,7 +200,11 @@ namespace backend.Controllers
                 return NotFound("Item no encontrado.");
 
             if (dto.Cantidad < 1)
-                return BadRequest("La cantidad mínima es 1.");
+            return BadRequest("La cantidad mínima es 1.");
+
+            // Validar stock al actualizar cantidad
+            if (dto.Cantidad > item.Producto.Stock)
+                return BadRequest($"Stock insuficiente. Stock disponible: {item.Producto.Stock}.");
 
             item.Cantidad = dto.Cantidad;
             item.Carrito.FechaActualizacion = DateTime.UtcNow;

@@ -8,8 +8,9 @@ import '../models/models.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/widgets.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:url_launcher/url_launcher.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
@@ -230,10 +231,29 @@ class _CartItemRow extends StatelessWidget {
                                 cantidad: item.cantidad - 1,
                               )
                           : null,
-                      onIncrease: () => carrito.actualizarCantidad(
+                      /*onIncrease: () => carrito.actualizarCantidad(
                         itemId: item.id,
                         cantidad: item.cantidad + 1,
-                      ),
+                      ),*/
+                      onIncrease: () async {
+                        await carrito.actualizarCantidad(
+                          itemId: item.id,
+                          cantidad: item.cantidad + 1,
+                        );
+                        if (carrito.error != null && context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(
+                              carrito.error!,
+                              style: GoogleFonts.dmMono(
+                                  fontSize: 11, color: AppColors.cream),
+                            ),
+                            backgroundColor: AppColors.charcoal,
+                            behavior: SnackBarBehavior.floating,
+                            duration: const Duration(seconds: 3),
+                          ));
+                          carrito.clearError();
+                        }
+                      },
                     ),
                   ],
                 ),
@@ -281,7 +301,7 @@ class _CartItemRow extends StatelessWidget {
 class _QtyControl extends StatelessWidget {
   final int cantidad;
   final VoidCallback? onDecrease;
-  final VoidCallback onIncrease;
+  final Future<void> Function() onIncrease;
   const _QtyControl({
     required this.cantidad,
     required this.onDecrease,
@@ -317,7 +337,7 @@ class _QtyControl extends StatelessWidget {
 
 class _QtyBtn extends StatelessWidget {
   final IconData icon;
-  final VoidCallback? onTap;
+  final Function()? onTap;
   const _QtyBtn({required this.icon, this.onTap});
 
   @override
@@ -749,55 +769,57 @@ class _MetodoPagoDialogState extends State<_MetodoPagoDialog> {
         constraints: const BoxConstraints(maxWidth: 540),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(28, 32, 28, 28),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Medio de pago',
-                style: GoogleFonts.cormorantGaramond(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.ink,
-                ),
-              ),
-              const SizedBox(height: 20),
-              ..._metodos.map((m) {
-                final badge =
-                    m.id == 'transferencia' ? _badgeTransferencia() : m.badge;
-                final isMp = m.id == 'mercadopago';
-                return _MetodoRow(
-                  metodo: m,
-                  badge: badge,
-                  isMercadoPago: isMp,
-                  seleccionado: _seleccionado == m.id,
-                  onTap: () => setState(() => _seleccionado = m.id),
-                );
-              }),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _seleccionado == null
-                      ? null
-                      : () => Navigator.of(context).pop(_seleccionado),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.ink,
-                    disabledBackgroundColor: AppColors.sand,
-                    foregroundColor: AppColors.cream,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero),
-                  ),
-                  child: Text(
-                    'REALIZAR PEDIDO',
-                    style:
-                        GoogleFonts.dmMono(fontSize: 11, letterSpacing: 0.15),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Medio de pago',
+                  style: GoogleFonts.cormorantGaramond(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.ink,
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 20),
+                ..._metodos.map((m) {
+                  final badge =
+                      m.id == 'transferencia' ? _badgeTransferencia() : m.badge;
+                  final isMp = m.id == 'mercadopago';
+                  return _MetodoRow(
+                    metodo: m,
+                    badge: badge,
+                    isMercadoPago: isMp,
+                    seleccionado: _seleccionado == m.id,
+                    onTap: () => setState(() => _seleccionado = m.id),
+                  );
+                }),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _seleccionado == null
+                        ? null
+                        : () => Navigator.of(context).pop(_seleccionado),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.ink,
+                      disabledBackgroundColor: AppColors.sand,
+                      foregroundColor: AppColors.cream,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.zero),
+                    ),
+                    child: Text(
+                      'REALIZAR PEDIDO',
+                      style:
+                          GoogleFonts.dmMono(fontSize: 11, letterSpacing: 0.15),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -979,17 +1001,26 @@ class _PagoDialogState extends State<_PagoDialog>
         final initPoint = pagoData['initPoint'] as String;
 
         if (!mounted) return;
-        Navigator.of(context).pop(); // cerrar este dialog
-// Usar WebView interno siempre (sandbox o producción)
-        await Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => _MercadoPagoWebView(
-              initPoint: initPoint,
-              ordenId: ordenId,
+        Navigator.of(context).pop();
+
+        if (kIsWeb) {
+          // En web abrir MP en nueva pestaña
+          // ignore: avoid_web_libraries_in_flutter
+          final uri = Uri.parse(initPoint);
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+          widget.onDone();
+        } else {
+          // En móvil usar WebView interno
+          await Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => _MercadoPagoWebView(
+                initPoint: initPoint,
+                ordenId: ordenId,
+              ),
             ),
-          ),
-        );
-        widget.onDone();
+          );
+          widget.onDone();
+        }
       } catch (e) {
         if (!mounted) return;
         setState(() => _error = 'Error al iniciar el pago con MercadoPago');
