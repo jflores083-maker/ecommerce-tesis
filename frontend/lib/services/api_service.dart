@@ -575,6 +575,35 @@ class ApiService {
     _checkStatus(res);
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
+
+  // ── FAVORITOS ──────────────────────────────────────────────────────
+  Future<List<Favorito>> getFavoritos() async {
+    final uri = Uri.parse('$_baseUrl/favoritos');
+    final res = await http.get(uri, headers: await _headers(auth: true));
+    _checkStatus(res);
+    final List data = jsonDecode(res.body);
+    return data.map((j) => Favorito.fromJson(j)).toList();
+  }
+
+  Future<void> agregarFavorito(int productoId) async {
+    final uri = Uri.parse('$_baseUrl/favoritos/$productoId');
+    final res = await http.post(uri, headers: await _headers(auth: true));
+    _checkStatus(res);
+  }
+
+  Future<void> eliminarFavorito(int productoId) async {
+    final uri = Uri.parse('$_baseUrl/favoritos/$productoId');
+    final res = await http.delete(uri, headers: await _headers(auth: true));
+    _checkStatus(res);
+  }
+
+  Future<bool> checkFavorito(int productoId) async {
+    final uri = Uri.parse('$_baseUrl/favoritos/check/$productoId');
+    final res = await http.get(uri, headers: await _headers(auth: true));
+    _checkStatus(res);
+    final data = jsonDecode(res.body);
+    return data['esFavorito'] as bool;
+  }
 }
 
 // ── Excepción custom ──────────────────────────────────────

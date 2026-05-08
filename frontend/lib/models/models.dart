@@ -17,12 +17,12 @@ class Drop {
   });
 
   factory Drop.fromJson(Map<String, dynamic> j) => Drop(
-    id: j['id'] as int,
-    nombre: j['nombre'] as String,
-    imagenUrl: j['imagenUrl'] as String?,
-    fechaCreacion: DateTime.parse(j['fechaCreacion'] as String),
-    totalProductos: j['totalProductos'] as int? ?? 0,
-  );
+        id: j['id'] as int,
+        nombre: j['nombre'] as String,
+        imagenUrl: j['imagenUrl'] as String?,
+        fechaCreacion: DateTime.parse(j['fechaCreacion'] as String),
+        totalProductos: j['totalProductos'] as int? ?? 0,
+      );
 }
 
 class DropDetalle {
@@ -41,14 +41,14 @@ class DropDetalle {
   });
 
   factory DropDetalle.fromJson(Map<String, dynamic> j) => DropDetalle(
-    id: j['id'] as int,
-    nombre: j['nombre'] as String,
-    imagenUrl: j['imagenUrl'] as String?,
-    fechaCreacion: DateTime.parse(j['fechaCreacion'] as String),
-    productos: (j['productos'] as List)
-        .map((p) => DropProductoItem.fromJson(p as Map<String, dynamic>))
-        .toList(),
-  );
+        id: j['id'] as int,
+        nombre: j['nombre'] as String,
+        imagenUrl: j['imagenUrl'] as String?,
+        fechaCreacion: DateTime.parse(j['fechaCreacion'] as String),
+        productos: (j['productos'] as List)
+            .map((p) => DropProductoItem.fromJson(p as Map<String, dynamic>))
+            .toList(),
+      );
 }
 
 class DropProductoItem {
@@ -67,18 +67,18 @@ class DropProductoItem {
   });
 
   factory DropProductoItem.fromJson(Map<String, dynamic> j) => DropProductoItem(
-    id: j['id'] as int,
-    titulo: j['titulo'] as String,
-    precio: (j['precio'] as num).toDouble(),
-    estado: j['estado'] as String,
-    imagenUrl: j['imagenUrl'] as String?,
-  );
+        id: j['id'] as int,
+        titulo: j['titulo'] as String,
+        precio: (j['precio'] as num).toDouble(),
+        estado: j['estado'] as String,
+        imagenUrl: j['imagenUrl'] as String?,
+      );
 
   String get precioFormateado =>
       '\$${precio.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+$)'), (m) => '${m[1]}.')}';
 }
 
-// ─── Producto (mapea ProductoResponseDto / ProductoListaDto) ───
+// ─── Producto ──────────────────────────────────────────────────
 class Producto {
   final int id;
   final int vendedorId;
@@ -86,9 +86,9 @@ class Producto {
   final String descripcion;
   final double precio;
   final int stock;
-  final List<String> talles;   // Talles viene como JSON string en el backend
+  final List<String> talles;
   final String categoria;
-  final String estado;         // "disponible" | etc.
+  final String estado;
   final String? color;
   final DateTime fechaPublicacion;
   final bool activo;
@@ -113,7 +113,6 @@ class Producto {
   });
 
   factory Producto.fromJson(Map<String, dynamic> json) {
-    // Talles: puede venir como string JSON '["S","M","L"]' o como lista
     List<String> parseTalles(dynamic raw) {
       if (raw == null) return [];
       if (raw is List) return List<String>.from(raw);
@@ -125,24 +124,24 @@ class Producto {
     }
 
     return Producto(
-      id:                  (json['id'] as num).toInt(),
-      vendedorId:          (json['vendedorId'] as num? ?? 0).toInt(),
-      titulo:              json['titulo'] ?? '',
-      descripcion:         json['descripcion'] ?? '',
-      precio:              (json['precio'] as num).toDouble(),
-      stock:               (json['stock'] as num? ?? 0).toInt(),
-      talles:              parseTalles(json['talles']),
-      categoria:           json['categoria'] ?? '',
-      estado:              json['estado'] ?? '',
-      color:               json['color'],
-      fechaPublicacion:    DateTime.tryParse(json['fechaPublicacion'] ?? '') ?? DateTime.now(),
-      activo:              json['activo'] ?? true,
-      vendedorNombre:      json['vendedorNombre'] ?? '',
-      imagenPrincipalUrl:  json['imagenPrincipalUrl'],
+      id: (json['id'] as num).toInt(),
+      vendedorId: (json['vendedorId'] as num? ?? 0).toInt(),
+      titulo: json['titulo'] ?? '',
+      descripcion: json['descripcion'] ?? '',
+      precio: (json['precio'] as num).toDouble(),
+      stock: (json['stock'] as num? ?? 0).toInt(),
+      talles: parseTalles(json['talles']),
+      categoria: json['categoria'] ?? '',
+      estado: json['estado'] ?? '',
+      color: json['color'],
+      fechaPublicacion:
+          DateTime.tryParse(json['fechaPublicacion'] ?? '') ?? DateTime.now(),
+      activo: json['activo'] ?? true,
+      vendedorNombre: json['vendedorNombre'] ?? '',
+      imagenPrincipalUrl: json['imagenPrincipalUrl'],
     );
   }
 
-  // Precio formateado: $89.990
   String get precioFormateado =>
       '\$${precio.toStringAsFixed(0).replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (m) => '.')}';
 
@@ -154,9 +153,9 @@ class Producto {
   }
 }
 
-// ─── ItemCarritoDto ────────────────────────────────────────
+// ─── ItemCarrito ───────────────────────────────────────────────
 class ItemCarrito {
-  final int id;           // itemId (usado para PUT y DELETE)
+  final int id;
   final int productoId;
   final String titulo;
   final String? imagenPrincipalUrl;
@@ -176,12 +175,12 @@ class ItemCarrito {
 
   factory ItemCarrito.fromJson(Map<String, dynamic> json) {
     return ItemCarrito(
-      id:                    (json['id'] as num).toInt(),
-      productoId:            (json['productoId'] as num).toInt(),
-      titulo:                json['titulo'] ?? '',
-      imagenPrincipalUrl:    json['imagenPrincipalUrl'],
-      talle:                 json['talle'] ?? '',
-      cantidad:              (json['cantidad'] as num).toInt(),
+      id: (json['id'] as num).toInt(),
+      productoId: (json['productoId'] as num).toInt(),
+      titulo: json['titulo'] ?? '',
+      imagenPrincipalUrl: json['imagenPrincipalUrl'],
+      talle: json['talle'] ?? '',
+      cantidad: (json['cantidad'] as num).toInt(),
       precioUnitarioVigente: (json['precioUnitarioVigente'] as num).toDouble(),
     );
   }
@@ -195,7 +194,7 @@ class ItemCarrito {
       '\$${precioUnitarioVigente.toStringAsFixed(0).replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (m) => '.')}';
 }
 
-// ─── CarritoDto ────────────────────────────────────────────
+// ─── Carrito ───────────────────────────────────────────────────
 class Carrito {
   final int carritoId;
   final List<ItemCarrito> items;
@@ -219,7 +218,7 @@ class Carrito {
   int get totalItems => items.fold(0, (sum, i) => sum + i.cantidad);
 }
 
-// ─── Usuario ───────────────────────────────────────────────
+// ─── AppUser ───────────────────────────────────────────────────
 class AppUser {
   final int id;
   final String nombre;
@@ -244,23 +243,71 @@ class AppUser {
   });
 
   factory AppUser.fromToken(String token) => AppUser(
-        id: 0, nombre: '', apellido: '', email: '',
-        telefono: '', rol: '', token: token,
+        id: 0,
+        nombre: '',
+        apellido: '',
+        email: '',
+        telefono: '',
+        rol: '',
+        token: token,
       );
 
   factory AppUser.fromJson(Map<String, dynamic> json, {String? token}) {
     return AppUser(
-      id:              (json['id'] as num? ?? 0).toInt(),
-      nombre:          json['nombre'] ?? '',
-      apellido:        json['apellido'] ?? '',
-      email:           json['email'] ?? '',
-      telefono:        json['telefono'] ?? '',
-      rol:             json['rol'] ?? 'Cliente',
-      token:           token,
-      fotoPerfilUrl:   json['fotoPerfilUrl'],
+      id: (json['id'] as num? ?? 0).toInt(),
+      nombre: json['nombre'] ?? '',
+      apellido: json['apellido'] ?? '',
+      email: json['email'] ?? '',
+      telefono: json['telefono'] ?? '',
+      rol: json['rol'] ?? 'Cliente',
+      token: token,
+      fotoPerfilUrl: json['fotoPerfilUrl'],
       emailConfirmado: json['emailConfirmado'] as bool? ?? false,
     );
   }
 
   bool get isAdmin => rol == 'Admin';
+}
+
+// ─── Favorito ─────────────────────────────────────────────────
+class Favorito {
+  final int id;
+  final int productoId;
+  final DateTime fechaAgregado;
+  final String titulo;
+  final double precio;
+  final String estado;
+  final String categoria;
+  final int stock;
+  final String? imagenPrincipal;
+
+  const Favorito({
+    required this.id,
+    required this.productoId,
+    required this.fechaAgregado,
+    required this.titulo,
+    required this.precio,
+    required this.estado,
+    required this.categoria,
+    required this.stock,
+    this.imagenPrincipal,
+  });
+
+  factory Favorito.fromJson(Map<String, dynamic> j) {
+    final p = j['producto'] as Map<String, dynamic>;
+    return Favorito(
+      id: (j['id'] as num).toInt(),
+      productoId: (j['productoId'] as num).toInt(),
+      fechaAgregado: DateTime.parse(j['fechaAgregado'] as String),
+      titulo: p['titulo'] ?? '',
+      precio: (p['precio'] as num).toDouble(),
+      estado: p['estado'] ?? '',
+      categoria: p['categoria'] ?? '',
+      stock: (p['stock'] as num? ?? 0).toInt(),
+      imagenPrincipal: p['imagenPrincipal'],
+    );
+  }
+
+  String get precioFormateado =>
+      '\$${precio.toStringAsFixed(0).replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (m) => '.')}';
 }

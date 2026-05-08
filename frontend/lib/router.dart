@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../screens/home_screen.dart';
 import '../screens/catalog_screen.dart';
@@ -21,12 +20,7 @@ import '../screens/drop_detalle_screen.dart';
 import '../screens/admin_drops_screen.dart';
 import '../screens/admin_crear_drop_screen.dart';
 import '../screens/admin_editar_drop_screen.dart';
-import '../screens/admin_codigos_screen.dart';
-import '../screens/admin_precios_screen.dart';
-import '../screens/admin_dashboard_screen.dart';
-import '../screens/admin_ordenes_screen.dart';
-import '../screens/mis_ordenes_screen.dart';
-import '../screens/verificar_email_screen.dart';
+import '../screens/favoritos_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -42,8 +36,15 @@ GoRouter createRouter(AuthProvider authProvider) {
 
       // Rutas que requieren login
       if ((state.matchedLocation == '/carrito' ||
-           state.matchedLocation == '/perfil' ||
-           state.matchedLocation == '/mis-ordenes') && !isLoggedIn) {
+              state.matchedLocation == '/perfil') &&
+          !isLoggedIn) {
+        return '/login';
+      }
+      if ((state.matchedLocation == '/carrito' ||
+              state.matchedLocation == '/perfil' ||
+              state.matchedLocation == '/mis-ordenes' ||
+              state.matchedLocation == '/favoritos') &&
+          !isLoggedIn) {
         return '/login';
       }
 
@@ -148,31 +149,8 @@ GoRouter createRouter(AuthProvider authProvider) {
         },
       ),
       GoRoute(
-        path: '/admin/codigos',
-        builder: (ctx, state) => const AdminCodigosScreen(),
-      ),
-      GoRoute(
-        path: '/admin/precios',
-        builder: (ctx, state) => const AdminPreciosScreen(),
-      ),
-      GoRoute(
-        path: '/admin/dashboard',
-        builder: (ctx, state) => const AdminDashboardScreen(),
-      ),
-      GoRoute(
-        path: '/admin/ordenes',
-        builder: (ctx, state) => const AdminOrdenesScreen(),
-      ),
-      GoRoute(
-        path: '/mis-ordenes',
-        builder: (ctx, state) => const MisOrdenesScreen(),
-      ),
-      GoRoute(
-        path: '/verificar-email',
-        builder: (ctx, state) {
-          final email = state.extra as String? ?? '';
-          return VerificarEmailScreen(email: email);
-        },
+        path: '/favoritos',
+        builder: (ctx, state) => const FavoritosScreen(),
       ),
     ],
   );

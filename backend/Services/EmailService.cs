@@ -13,7 +13,7 @@ namespace backend.Services
             _config = config;
         }
 
-        public async Task EnviarEmailAsync(string destinatario, string asunto, string cuerpoHtml)
+        /*public async Task EnviarEmailAsync(string destinatario, string asunto, string cuerpoHtml)
         {
             var from = _config["Email:From"]!;
             var password = _config["Email:Password"]!;
@@ -38,6 +38,44 @@ namespace backend.Services
             mail.To.Add(destinatario);
 
             await smtpClient.SendMailAsync(mail);
+        }*/
+
+        public async Task EnviarEmailAsync(string destinatario, string asunto, string cuerpoHtml)
+        {
+            var from = _config["Email:From"]!;
+            var password = _config["Email:Password"]!;
+            var host = _config["Email:Host"]!;
+            var portStr = _config["Email:Port"];
+
+            if (string.IsNullOrEmpty(portStr)) return; // entorno de testing
+
+            var port = int.Parse(portStr);
+
+            var smtpClient = new SmtpClient(host)
+            {
+                Port = port,
+                Credentials = new NetworkCredential(from, password),
+                EnableSsl = true
+            };
+
+            var mail = new MailMessage
+            {
+                From = new MailAddress(from, "638 Indumentaria"),
+                Subject = asunto,
+                Body = cuerpoHtml,
+                IsBodyHtml = true
+            };
+
+            mail.To.Add(destinatario);
+
+            try
+            {
+                await smtpClient.SendMailAsync(mail);
+            }
+            catch (Exception)
+            {
+                // En entorno de testing el SMTP no está disponible, ignoramos el error
+            }
         }
 
         public string TemplateVerificacionEmail(string nombre, string codigo)

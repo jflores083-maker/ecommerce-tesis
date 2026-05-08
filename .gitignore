@@ -1,0 +1,22 @@
+# .NET build output
+bin/
+obj/
+*.user
+*.suo
+
+# Flutter build output
+frontend/build/
+frontend/.dart_tool/
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
+frontend/android/build/
+frontend/ios/build/
+
+# Secrets
+appsettings.*.json
+!appsettings.Development.json
+
+# VS / Rider
+.vs/
+.idea/
+*.swp

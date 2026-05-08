@@ -9,6 +9,7 @@ import 'providers/productos_provider.dart';
 import 'services/api_service.dart';
 import 'router.dart';
 import 'theme/app_theme.dart';
+import 'providers/favoritos_provider.dart';
 
 void main() {
   runApp(const App638());
@@ -42,6 +43,9 @@ class App638 extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => DropsProvider(apiService),
         ),
+        ChangeNotifierProvider(
+          create: (_) => FavoritosProvider(apiService),
+        ),
       ],
       child: const _AppContent(),
     );
@@ -71,8 +75,10 @@ class _AppContentState extends State<_AppContent> {
     auth.addListener(() {
       if (auth.isLoggedIn) {
         context.read<CarritoProvider>().cargarCarrito();
+        context.read<FavoritosProvider>().cargarFavoritos();
       } else {
         context.read<CarritoProvider>().limpiarLocal();
+        context.read<FavoritosProvider>().limpiarLocal();
       }
     });
   }

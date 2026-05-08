@@ -22,6 +22,7 @@ namespace backend.Data
         public DbSet<DropProducto> DropProductos { get; set; } = null!;
         public DbSet<Pago> Pagos { get; set; } = null!;
         public DbSet<CodigoPromocion> CodigosPromocion { get; set; } = null!;
+        public DbSet<Favorito> Favoritos { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -150,6 +151,25 @@ namespace backend.Data
                 .WithMany()
                 .HasForeignKey(dp => dp.ProductoId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+                        // Favoritos
+            modelBuilder.Entity<Favorito>().ToTable("Favoritos");
+
+            modelBuilder.Entity<Favorito>()
+                .HasIndex(f => new { f.UsuarioId, f.ProductoId })
+                .IsUnique();
+
+            modelBuilder.Entity<Favorito>()
+                .HasOne(f => f.Usuario)
+                .WithMany()
+                .HasForeignKey(f => f.UsuarioId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Favorito>()
+                .HasOne(f => f.Producto)
+                .WithMany()
+                .HasForeignKey(f => f.ProductoId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

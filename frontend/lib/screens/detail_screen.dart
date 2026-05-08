@@ -9,6 +9,7 @@ import '../models/models.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/widgets.dart';
+import '../providers/favoritos_provider.dart';
 
 class DetailScreen extends StatefulWidget {
   final int productoId;
@@ -359,9 +360,38 @@ class _ProductInfo extends StatelessWidget {
           fullWidth: true,
         ),
         const SizedBox(height: 12),
-        OutlineBtn(
-          label: '♡  Guardar en favoritos',
-          onPressed: () {},
+        Consumer<FavoritosProvider>(
+          builder: (context, favProvider, _) {
+            final esFav = favProvider.esFavorito(producto.id);
+            return OutlineBtn(
+              label: esFav
+                  ? '♥  Guardado en favoritos'
+                  : '♡  Guardar en favoritos',
+              onPressed: () async {
+                if (!context.read<AuthProvider>().isLoggedIn) {
+                  context.go('/login');
+                  return;
+                }
+                final fueFavorito =
+                    await favProvider.toggleFavorito(producto.id);
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).clearSnackBars();
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(
+                      fueFavorito
+                          ? '♥ Agregado a favoritos'
+                          : 'Eliminado de favoritos',
+                      style: GoogleFonts.dmMono(
+                          fontSize: 11, color: AppColors.cream),
+                    ),
+                    backgroundColor: AppColors.ink,
+                    duration: const Duration(seconds: 2),
+                    behavior: SnackBarBehavior.floating,
+                  ));
+                }
+              },
+            );
+          },
         ),
         const SizedBox(height: 32),
 
