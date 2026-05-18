@@ -254,7 +254,7 @@ namespace backend.Controllers
             if (!ModelState.IsValid) return ValidationProblem(ModelState);
 
             var estado = dto.Estado.Trim().ToLowerInvariant();
-            var estadosValidos = new[] { "enviado", "entregado", "cancelado" };
+            var estadosValidos = new[] { "pagado", "enviado", "entregado", "cancelado" };
             if (!estadosValidos.Contains(estado))
                 return BadRequest("Estado inválido.");
 
@@ -280,6 +280,7 @@ namespace backend.Controllers
             {
                 string? cuerpo = estado switch
                 {
+                    "pagado"     => _emailService.TemplateOrdenPagada(id),
                     "enviado"    => _emailService.TemplateOrdenEnviada(id, orden.NumeroSeguimiento),
                     "entregado"  => _emailService.TemplateOrdenEntregada(id),
                     "cancelado"  => _emailService.TemplateOrdenCancelada(id),
@@ -288,6 +289,7 @@ namespace backend.Controllers
 
                 string? asunto = estado switch
                 {
+                    "pagado"     => $"💳 Recibimos tu pago - Orden #{id} - 638",
                     "enviado"    => $"📦 Tu orden #{id} fue enviada - 638",
                     "entregado"  => $"✅ Tu orden #{id} fue entregada - 638",
                     "cancelado"  => $"Tu orden #{id} fue cancelada - 638",
