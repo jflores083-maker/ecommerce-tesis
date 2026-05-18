@@ -108,6 +108,20 @@ namespace backend.Services
                 </div>";
         }
 
+        public string TemplateOrdenPagada(int ordenId)
+        {
+            return $@"
+                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
+                    <h2 style='color: #333;'>¡Recibimos tu pago! 💳</h2>
+                    <p>Tu pago fue registrado correctamente.</p>
+                    <div style='background: #f5f5f5; padding: 20px; border-radius: 8px;'>
+                        <p><strong>Número de orden:</strong> #{ordenId}</p>
+                    </div>
+                    <p>En breve recibirás información sobre el envío.</p>
+                    <p>Gracias por comprar en <strong>638</strong> 🛍️</p>
+                </div>";
+        }
+
         public string TemplateOrdenEnviada(int ordenId, string? numeroSeguimiento)
         {
             var seguimiento = string.IsNullOrEmpty(numeroSeguimiento)
