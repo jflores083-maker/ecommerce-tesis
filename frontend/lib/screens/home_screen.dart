@@ -818,13 +818,13 @@ class _FooterContact extends StatelessWidget {
           const SizedBox(height: 24),
         ] else
           const SizedBox(height: 24),
-        Row(
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
           children: [
             const _SocialChip(label: 'IG'),
-            const SizedBox(width: 8),
             const _SocialChip(label: 'TK'),
             if (telefono.isNotEmpty) ...[
-              const SizedBox(width: 8),
               _SocialChip(
                 label: 'WhatsApp',
                 icon: FontAwesomeIcons.whatsapp,
