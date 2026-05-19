@@ -168,7 +168,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
 
           // Filtros
           Container(
-            margin: EdgeInsets.fromLTRB(px, 12, px, 0),
+            margin: EdgeInsets.fromLTRB(px, 12, 0, 0),
             padding: const EdgeInsets.only(bottom: 16),
             decoration: const BoxDecoration(
               border: Border(bottom: BorderSide(color: AppColors.sand)),
@@ -179,6 +179,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                 // Categorías
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
+                  padding: EdgeInsets.only(right: px),
                   child: Row(
                     children: _categorias
                         .map((cat) => _FilterChip(
@@ -194,69 +195,69 @@ class _CatalogScreenState extends State<CatalogScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                // Talles + precio + color + limpiar
+                // Talles
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
+                  padding: EdgeInsets.only(right: px),
                   child: Row(
-                    children: [
-                      // Talles
-                      ..._talles.map((t) => _FilterChip(
-                            label: t,
-                            active: _talleSeleccionado == t,
-                            onTap: () => setState(
-                              () => _talleSeleccionado =
-                                  _talleSeleccionado == t ? null : t,
-                            ),
-                          )),
-                      const SizedBox(width: 8),
-                      // Rango de precio
-                      _PrecioRangoBtn(
-                        valor: _precioRango,
-                        maxPrecio: provider.productos.isEmpty
-                            ? 100000
-                            : provider.productos
-                                .map((p) => p.precio)
-                                .reduce((a, b) => a > b ? a : b),
-                        onChanged: (v) => setState(() => _precioRango = v),
-                      ),
-                      const SizedBox(width: 8),
-                      // Color
-                      _ColorDropdown(
-                        valor: _colorSeleccionado,
-                        colores: provider.productos
-                            .map((p) => p.color?.trim())
-                            .where((c) => c != null && c.isNotEmpty)
-                            .cast<String>()
-                            .toSet()
-                            .toList()
-                          ..sort(),
-                        onChanged: (v) =>
-                            setState(() => _colorSeleccionado = v),
-                      ),
-                      // Limpiar filtros
-                      if (_hayFiltrosActivos) ...[
-                        const SizedBox(width: 12),
-                        GestureDetector(
-                          onTap: _limpiarFiltros,
-                          child: Row(
-                            children: [
-                              const Icon(Icons.close,
-                                  size: 12, color: AppColors.stone),
-                              const SizedBox(width: 4),
-                              Text(
-                                'Limpiar filtros',
-                                style: GoogleFonts.dmMono(
-                                  fontSize: 10,
-                                  color: AppColors.stone,
-                                  decoration: TextDecoration.underline,
-                                ),
-                              ),
-                            ],
+                    children: _talles.map((t) => _FilterChip(
+                          label: t,
+                          active: _talleSeleccionado == t,
+                          onTap: () => setState(
+                            () => _talleSeleccionado =
+                                _talleSeleccionado == t ? null : t,
                           ),
-                        ),
-                      ],
-                    ],
+                        )).toList(),
                   ),
+                ),
+                const SizedBox(height: 8),
+                // Precio + color + limpiar (siempre visibles)
+                Row(
+                  children: [
+                    _PrecioRangoBtn(
+                      valor: _precioRango,
+                      maxPrecio: provider.productos.isEmpty
+                          ? 100000
+                          : provider.productos
+                              .map((p) => p.precio)
+                              .reduce((a, b) => a > b ? a : b),
+                      onChanged: (v) => setState(() => _precioRango = v),
+                    ),
+                    const SizedBox(width: 8),
+                    _ColorDropdown(
+                      valor: _colorSeleccionado,
+                      colores: provider.productos
+                          .map((p) => p.color?.trim())
+                          .where((c) => c != null && c.isNotEmpty)
+                          .cast<String>()
+                          .toSet()
+                          .toList()
+                        ..sort(),
+                      onChanged: (v) =>
+                          setState(() => _colorSeleccionado = v),
+                    ),
+                    const Spacer(),
+                    if (_hayFiltrosActivos)
+                      GestureDetector(
+                        onTap: _limpiarFiltros,
+                        child: Row(
+                          children: [
+                            const Icon(Icons.close,
+                                size: 12, color: AppColors.stone),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Limpiar filtros',
+                              style: GoogleFonts.dmMono(
+                                fontSize: 10,
+                                color: AppColors.stone,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    SizedBox(width: px),
+                  ],
                 ),
               ],
             ),
