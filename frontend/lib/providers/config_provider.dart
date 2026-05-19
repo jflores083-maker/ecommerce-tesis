@@ -15,6 +15,8 @@ class ConfigProvider extends ChangeNotifier {
   String _contactoTelefono = '';
   String _contactoDireccion = '';
   String _contactoHorario = '';
+  static const _kEnvioDefault = 'Envío gratis en compras mayores a \$60.000. Entrega en 3-5 días hábiles.';
+  String _envioTexto = _kEnvioDefault;
 
   ConfigProvider(this._api);
 
@@ -27,6 +29,7 @@ class ConfigProvider extends ChangeNotifier {
   String      get contactoTelefono    => _contactoTelefono;
   String      get contactoDireccion   => _contactoDireccion;
   String      get contactoHorario     => _contactoHorario;
+  String      get envioTexto          => _envioTexto.isNotEmpty ? _envioTexto : _kEnvioDefault;
 
   Future<void> cargarConfig() async {
     // Cargar tema guardado localmente
@@ -43,6 +46,7 @@ class ConfigProvider extends ChangeNotifier {
       _contactoTelefono    = (config['contactoTelefono'] as String?) ?? '';
       _contactoDireccion   = (config['contactoDireccion'] as String?) ?? '';
       _contactoHorario     = (config['contactoHorario']  as String?) ?? '';
+      _envioTexto          = (config['envioTexto']        as String?) ?? _envioTexto;
     } catch (_) {}
 
     notifyListeners();
@@ -81,6 +85,15 @@ class ConfigProvider extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('temaIndex', index);
     notifyListeners();
+  }
+
+  Future<bool> guardarEnvio({required String texto}) async {
+    try {
+      await _api.guardarEnvio(texto: texto);
+      _envioTexto = texto;
+      notifyListeners();
+      return true;
+    } catch (_) { return false; }
   }
 
   Future<bool> subirHero(XFile imagen) async {

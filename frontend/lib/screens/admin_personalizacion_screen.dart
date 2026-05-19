@@ -27,6 +27,7 @@ class _AdminPersonalizacionScreenState extends State<AdminPersonalizacionScreen>
   late final TextEditingController _contactoTelefonoCtrl;
   late final TextEditingController _contactoDireccionCtrl;
   late final TextEditingController _contactoHorarioCtrl;
+  late final TextEditingController _envioCtrl;
   bool _inicializado = false;
 
   @override
@@ -37,6 +38,7 @@ class _AdminPersonalizacionScreenState extends State<AdminPersonalizacionScreen>
     _contactoTelefonoCtrl.dispose();
     _contactoDireccionCtrl.dispose();
     _contactoHorarioCtrl.dispose();
+    _envioCtrl.dispose();
     super.dispose();
   }
 
@@ -48,6 +50,7 @@ class _AdminPersonalizacionScreenState extends State<AdminPersonalizacionScreen>
     _contactoTelefonoCtrl  = TextEditingController(text: config.contactoTelefono);
     _contactoDireccionCtrl = TextEditingController(text: config.contactoDireccion);
     _contactoHorarioCtrl   = TextEditingController(text: config.contactoHorario);
+    _envioCtrl             = TextEditingController(text: config.envioTexto);
     _inicializado = true;
   }
 
@@ -90,9 +93,10 @@ class _AdminPersonalizacionScreenState extends State<AdminPersonalizacionScreen>
       direccion: _contactoDireccionCtrl.text.trim(),
       horario:   _contactoHorarioCtrl.text.trim(),
     );
+    final okEnvio = await config.guardarEnvio(texto: _envioCtrl.text.trim());
     if (mounted) {
       setState(() => _guardando = false);
-      if (okAcerca && okContacto) {
+      if (okAcerca && okContacto && okEnvio) {
         context.go('/admin');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -272,6 +276,33 @@ class _AdminPersonalizacionScreenState extends State<AdminPersonalizacionScreen>
                 _campoTexto('Dirección', _contactoDireccionCtrl),
                 const SizedBox(height: 12),
                 _campoTexto('Horario (ej: Lun – Vie, 10 a 18 hs.)', _contactoHorarioCtrl),
+                const SizedBox(height: 48),
+
+                // ── Envío & devoluciones ──────────────────────
+                Text('ENVÍO & DEVOLUCIONES',
+                  style: GoogleFonts.dmMono(fontSize: 10, color: AppColors.gray, letterSpacing: 0.15),
+                ),
+                const SizedBox(height: 8),
+                Text('Texto que aparece en el acordeón de cada producto.',
+                  style: GoogleFonts.dmMono(fontSize: 10, color: AppColors.stone),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _envioCtrl,
+                  maxLines: 4,
+                  decoration: InputDecoration(
+                    labelText: 'Texto de envío y devoluciones',
+                    alignLabelWithHint: true,
+                    labelStyle: GoogleFonts.dmMono(fontSize: 11, color: AppColors.stone),
+                    border: const OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: AppColors.sand)),
+                    enabledBorder: const OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: AppColors.sand)),
+                    focusedBorder: const OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: AppColors.ink)),
+                    filled: true,
+                    fillColor: AppColors.beige,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  ),
+                  style: GoogleFonts.dmMono(fontSize: 12, color: AppColors.charcoal, height: 1.8),
+                ),
                 const SizedBox(height: 48),
 
                 // ── Guardar ───────────────────────────────────

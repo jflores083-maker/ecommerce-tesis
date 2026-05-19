@@ -313,6 +313,14 @@ class ApiService {
     _checkStatus(res);
   }
 
+  Future<void> guardarEnvio({required String texto}) async {
+    final uri = Uri.parse('$_baseUrl/configuracion/envio');
+    final res = await http.put(uri,
+        headers: await _headers(auth: true),
+        body: jsonEncode({'texto': texto}));
+    _checkStatus(res);
+  }
+
   Future<Map<String, dynamic>> subirHeroImage(XFile imagen) async {
     final uri = Uri.parse('$_baseUrl/configuracion/hero');
     final token = await getToken();
