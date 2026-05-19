@@ -90,10 +90,13 @@ namespace backend.Controllers
             if (!string.IsNullOrEmpty(dto.PasswordNueva))
             {
                 if (string.IsNullOrEmpty(dto.PasswordActual))
-                    return BadRequest("Debes ingresar tu contrasena actual para cambiarla.");
+                    return BadRequest("Debes ingresar tu contraseña actual para cambiarla.");
 
                 if (!_passwordHelper.VerifyPassword(usuario, dto.PasswordActual, usuario.Password))
-                    return BadRequest("La contrasena actual es incorrecta.");
+                    return BadRequest("La contraseña actual es incorrecta.");
+
+                if (!EsPasswordValida(dto.PasswordNueva))
+                    return BadRequest("La contraseña debe tener al menos una mayúscula, una minúscula, un número y un símbolo.");
 
                 usuario.Password = _passwordHelper.HashPassword(usuario, dto.PasswordNueva);
             }
@@ -181,7 +184,11 @@ namespace backend.Controllers
             usuario.Apellido = dto.Apellido;
 
             if (!string.IsNullOrEmpty(dto.Password))
+            {
+                if (!EsPasswordValida(dto.Password))
+                    return BadRequest("La contraseña debe tener al menos una mayúscula, una minúscula, un número y un símbolo.");
                 usuario.Password = _passwordHelper.HashPassword(usuario, dto.Password);
+            }
 
             await _context.SaveChangesAsync();
             return Ok("Usuario actualizado correctamente.");
@@ -219,5 +226,11 @@ namespace backend.Controllers
             await _context.SaveChangesAsync();
             return Ok($"El usuario {usuario.Email} ahora es Admin");
         }
+
+        private static bool EsPasswordValida(string password) =>
+            password.Any(char.IsUpper) &&
+            password.Any(char.IsLower) &&
+            password.Any(char.IsDigit) &&
+            password.Any(c => !char.IsLetterOrDigit(c));
     }
 }
