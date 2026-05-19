@@ -29,8 +29,10 @@ class AuthProvider extends ChangeNotifier {
       try {
         _user = await _api.getMiPerfil();
         _status = AuthStatus.authenticated;
+      } on ApiException catch (e) {
+        if (e.isUnauthorized) await _api.logout();
+        _status = AuthStatus.unauthenticated;
       } catch (_) {
-        await _api.logout();
         _status = AuthStatus.unauthenticated;
       }
     } else {

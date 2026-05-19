@@ -37,16 +37,13 @@ GoRouter createRouter(AuthProvider authProvider) {
     initialLocation: '/',
     refreshListenable: authProvider,
     redirect: (context, state) {
+      if (authProvider.status == AuthStatus.unknown) return null;
+
       final isLoggedIn = authProvider.isLoggedIn;
       final isAuthRoute = state.matchedLocation == '/login' ||
           state.matchedLocation == '/register';
 
       // Rutas que requieren login
-      if ((state.matchedLocation == '/carrito' ||
-              state.matchedLocation == '/perfil') &&
-          !isLoggedIn) {
-        return '/login';
-      }
       if ((state.matchedLocation == '/carrito' ||
               state.matchedLocation == '/perfil' ||
               state.matchedLocation == '/mis-ordenes' ||
