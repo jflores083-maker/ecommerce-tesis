@@ -10,6 +10,7 @@ import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/widgets.dart';
 import '../providers/favoritos_provider.dart';
+import '../providers/config_provider.dart';
 
 class DetailScreen extends StatefulWidget {
   final int productoId;
@@ -398,9 +399,8 @@ class _ProductInfo extends StatelessWidget {
         // Acordeón
         _Accordion('Descripción',
             p.descripcion.isNotEmpty ? p.descripcion : 'Sin descripción.'),
-        const _Accordion('Materiales', 'Consultar en el detalle del producto.'),
-        const _Accordion('Envío & devoluciones',
-            'Envío gratis en compras mayores a \$60.000. Entrega en 3-5 días hábiles.'),
+_Accordion('Envío & devoluciones',
+            context.watch<ConfigProvider>().envioTexto),
       ],
     );
   }

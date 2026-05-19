@@ -11,6 +11,7 @@ namespace backend.Controllers
         private readonly IWebHostEnvironment _env;
         private string AcercaPath   => Path.Combine(_env.WebRootPath, "uploads", "acerca.json");
         private string ContactoPath => Path.Combine(_env.WebRootPath, "uploads", "contacto.json");
+        private string EnvioPath    => Path.Combine(_env.WebRootPath, "uploads", "envio.json");
 
         public ConfiguracionController(IWebHostEnvironment env)
         {
@@ -56,10 +57,20 @@ namespace backend.Controllers
                 contactoHorario   = cDoc.GetProperty("horario").GetString()   ?? "";
             }
 
+            // Envío & devoluciones
+            string envioTexto = "Envío gratis en compras mayores a $60.000. Entrega en 3-5 días hábiles.";
+            if (System.IO.File.Exists(EnvioPath))
+            {
+                var eJson = System.IO.File.ReadAllText(EnvioPath);
+                var eDoc  = JsonDocument.Parse(eJson).RootElement;
+                envioTexto = eDoc.GetProperty("texto").GetString() ?? envioTexto;
+            }
+
             return Ok(new {
                 heroImageUrl = heroUrl,
                 acercaTitulo, acercaDescripcion,
-                contactoEmail, contactoTelefono, contactoDireccion, contactoHorario
+                contactoEmail, contactoTelefono, contactoDireccion, contactoHorario,
+                envioTexto
             });
         }
 
@@ -116,6 +127,32 @@ namespace backend.Controllers
             return Ok(new { titulo = dto.Titulo, descripcion = dto.Descripcion });
         }
 
+        // GET /api/configuracion/envio
+        [HttpGet("envio")]
+        [AllowAnonymous]
+        public IActionResult GetEnvio()
+        {
+            string texto = "Envío gratis en compras mayores a $60.000. Entrega en 3-5 días hábiles.";
+            if (System.IO.File.Exists(EnvioPath))
+            {
+                var json = System.IO.File.ReadAllText(EnvioPath);
+                var doc  = JsonDocument.Parse(json).RootElement;
+                texto    = doc.GetProperty("texto").GetString() ?? texto;
+            }
+            return Ok(new { texto });
+        }
+
+        // PUT /api/configuracion/envio
+        [HttpPut("envio")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult GuardarEnvio([FromBody] EnvioDto dto)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(EnvioPath)!);
+            var json = JsonSerializer.Serialize(new { texto = dto.Texto });
+            System.IO.File.WriteAllText(EnvioPath, json);
+            return Ok(new { texto = dto.Texto });
+        }
+
         // PUT /api/configuracion/contacto
         [HttpPut("contacto")]
         [Authorize(Roles = "Admin")]
@@ -137,6 +174,11 @@ namespace backend.Controllers
     {
         public string Titulo      { get; set; } = string.Empty;
         public string Descripcion { get; set; } = string.Empty;
+    }
+
+    public class EnvioDto
+    {
+        public string Texto { get; set; } = string.Empty;
     }
 
     public class ContactoDto
