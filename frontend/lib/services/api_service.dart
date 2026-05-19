@@ -313,6 +313,14 @@ class ApiService {
     _checkStatus(res);
   }
 
+  Future<void> guardarCategorias(List<String> categorias) async {
+    final uri = Uri.parse('$_baseUrl/configuracion/categorias');
+    final res = await http.put(uri,
+        headers: await _headers(auth: true),
+        body: jsonEncode({'categorias': categorias}));
+    _checkStatus(res);
+  }
+
   Future<void> guardarEnvio({required String texto}) async {
     final uri = Uri.parse('$_baseUrl/configuracion/envio');
     final res = await http.put(uri,

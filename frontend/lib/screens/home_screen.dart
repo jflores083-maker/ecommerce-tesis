@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import '../app_constants.dart';
+import '../providers/config_provider.dart';
 import '../providers/config_provider.dart';
 import '../providers/productos_provider.dart';
 import '../services/api_service.dart';
@@ -400,7 +400,7 @@ class _CategoriesSection extends StatelessWidget {
             childAspectRatio: isMobile ? 16 / 7 : 4 / 3,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            children: AppCategorias.todas
+            children: context.read<ConfigProvider>().categorias
                 .map((cat) => _CategoryItem(
                       label: cat,
                       categoria: cat,
