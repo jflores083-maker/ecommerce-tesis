@@ -35,7 +35,7 @@ namespace backend.Controllers
             }
 
             // Acerca de
-            string acercaTitulo = "Sobre 638";
+            string acercaTitulo = "Sobre Urbal";
             string acercaDescripcion = "";
             if (System.IO.File.Exists(AcercaPath))
             {
@@ -119,7 +119,7 @@ namespace backend.Controllers
         [AllowAnonymous]
         public IActionResult GetAcerca()
         {
-            string titulo = "Sobre 638";
+            string titulo = "Sobre Urbal";
             string descripcion = "";
             if (System.IO.File.Exists(AcercaPath))
             {

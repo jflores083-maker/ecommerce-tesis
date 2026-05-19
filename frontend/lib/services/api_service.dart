@@ -446,6 +446,13 @@ class ApiService {
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
 
+  Future<void> pagarEfectivo(int ordenId) async {
+    final uri = Uri.parse('$_baseUrl/pagos/efectivo');
+    final res = await http.post(uri,
+        headers: await _headers(auth: true), body: jsonEncode(ordenId));
+    _checkStatus(res);
+  }
+
   // ── DROPS ─────────────────────────────────────────────────
   Future<List<Map<String, dynamic>>> getDrops() async {
     final uri = Uri.parse('$_baseUrl/drops');

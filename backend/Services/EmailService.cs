@@ -93,6 +93,22 @@ namespace backend.Services
                 </div>";
         }
 
+        public string TemplateEfectivoPendiente(int ordenId, decimal total)
+        {
+            return $@"
+                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
+                    <h2 style='color: #1a1a1a;'>¡Tu pedido está reservado! 🛍️</h2>
+                    <p>Recibimos tu solicitud de compra con pago en efectivo.</p>
+                    <div style='background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 24px 0;'>
+                        <p><strong>Número de orden:</strong> #{ordenId}</p>
+                        <p><strong>Total a abonar:</strong> ${total:N2}</p>
+                    </div>
+                    <p>Para confirmar tu pedido, <strong>acercate a nuestro local dentro de las próximas 72 horas hábiles</strong> a realizar el pago.</p>
+                    <p style='color: #666;'>Si no se realiza el pago en ese plazo, la orden será cancelada automáticamente.</p>
+                    <p>¡Gracias por elegirnos! <strong>Urbal Indumentaria</strong></p>
+                </div>";
+        }
+
         public string TemplateOrdenConfirmada(int ordenId, decimal total)
         {
             return $@"

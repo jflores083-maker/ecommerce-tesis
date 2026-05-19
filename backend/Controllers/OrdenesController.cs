@@ -289,10 +289,10 @@ namespace backend.Controllers
 
                 string? asunto = estado switch
                 {
-                    "pagado"     => $"💳 Recibimos tu pago - Orden #{id} - 638",
-                    "enviado"    => $"📦 Tu orden #{id} fue enviada - 638",
-                    "entregado"  => $"✅ Tu orden #{id} fue entregada - 638",
-                    "cancelado"  => $"Tu orden #{id} fue cancelada - 638",
+                    "pagado"     => $"💳 Recibimos tu pago - Orden #{id} - Urbal",
+                    "enviado"    => $"📦 Tu orden #{id} fue enviada - Urbal",
+                    "entregado"  => $"✅ Tu orden #{id} fue entregada - Urbal",
+                    "cancelado"  => $"Tu orden #{id} fue cancelada - Urbal",
                     _            => null
                 };
 

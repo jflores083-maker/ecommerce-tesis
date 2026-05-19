@@ -74,6 +74,42 @@ namespace backend.Controllers
                 initPoint
             });
         }
+        [HttpPost("efectivo")]
+        public async Task<IActionResult> PagarEfectivo([FromBody] int ordenId)
+        {
+            var orden = await _context.Ordenes
+                .Include(o => o.Comprador)
+                .FirstOrDefaultAsync(o => o.Id == ordenId);
+
+            if (orden == null) return NotFound("Orden no encontrada.");
+            if (orden.Estado != "pendiente") return BadRequest("La orden no está en estado pendiente.");
+
+            var yaTienePago = await _context.Pagos.AnyAsync(p => p.OrdenId == ordenId);
+            if (yaTienePago) return BadRequest("La orden ya tiene un pago registrado.");
+
+            var pago = new Pago
+            {
+                OrdenId = orden.Id,
+                Monto   = orden.Total,
+                Metodo  = "efectivo",
+                Estado  = "pendiente"
+            };
+            _context.Pagos.Add(pago);
+            await _context.SaveChangesAsync();
+
+            if (orden.Comprador != null)
+            {
+                var cuerpo = _emailService.TemplateEfectivoPendiente(orden.Id, orden.Total);
+                await _emailService.EnviarEmailAsync(
+                    orden.Comprador.Email,
+                    $"📦 Pedido #{orden.Id} reservado - Pasá a abonar en Urbal",
+                    cuerpo
+                );
+            }
+
+            return Ok(new { pagoId = pago.Id });
+        }
+
         [HttpPost("webhook")]
         [AllowAnonymous]
         public async Task<IActionResult> Webhook(
@@ -170,7 +206,7 @@ namespace backend.Controllers
                         var cuerpo = _emailService.TemplateOrdenConfirmada(ordenId, pago.Monto);
                         await _emailService.EnviarEmailAsync(
                             comprador.Email,
-                            $"✅ Orden #{ordenId} confirmada - 638",
+                            $"✅ Orden #{ordenId} confirmada - Urbal",
                             cuerpo
                         );
                     }
@@ -188,7 +224,7 @@ namespace backend.Controllers
                     var cuerpo = _emailService.TemplateOrdenCancelada(ordenId);
                     await _emailService.EnviarEmailAsync(
                         comprador.Email,
-                        $"Tu orden #{ordenId} fue cancelada - 638",
+                        $"Tu orden #{ordenId} fue cancelada - Urbal",
                         cuerpo
                     );
                 }
