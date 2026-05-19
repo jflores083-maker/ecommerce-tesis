@@ -68,11 +68,24 @@ class _PerfilScreenState extends State<PerfilScreen> {
     }
   }
 
+  bool _passwordValida(String p) =>
+      p.contains(RegExp(r'[A-Z]')) &&
+      p.contains(RegExp(r'[a-z]')) &&
+      p.contains(RegExp(r'[0-9]')) &&
+      p.contains(RegExp(r'[^A-Za-z0-9]'));
+
   Future<void> _guardar() async {
     if (_cambiarPass &&
         (_passActualCtrl.text.isEmpty || _passNuevaCtrl.text.isEmpty)) {
       ScaffoldMessenger.of(context).showSnackBar(_snack(
         '⚠ Completá ambos campos de contraseña', error: true,
+      ));
+      return;
+    }
+    if (_cambiarPass && !_passwordValida(_passNuevaCtrl.text)) {
+      ScaffoldMessenger.of(context).showSnackBar(_snack(
+        'La contraseña debe tener al menos una mayúscula, una minúscula, un número y un símbolo.',
+        error: true,
       ));
       return;
     }

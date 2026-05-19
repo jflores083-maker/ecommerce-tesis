@@ -32,7 +32,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
+  bool _passwordValida(String p) =>
+      p.contains(RegExp(r'[A-Z]')) &&
+      p.contains(RegExp(r'[a-z]')) &&
+      p.contains(RegExp(r'[0-9]')) &&
+      p.contains(RegExp(r'[^A-Za-z0-9]'));
+
   Future<void> _register() async {
+    if (!_passwordValida(_passwordCtrl.text)) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('La contraseña debe tener al menos una mayúscula, una minúscula, un número y un símbolo.'),
+        backgroundColor: Colors.black87,
+        behavior: SnackBarBehavior.floating,
+      ));
+      return;
+    }
     final auth = context.read<AuthProvider>();
     auth.clearError();
     final email = await auth.register(

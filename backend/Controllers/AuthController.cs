@@ -63,6 +63,9 @@ namespace backend.Controllers
             if (existe)
                 return BadRequest("El email ya está registrado");
 
+            if (!EsPasswordValida(dto.Password))
+                return BadRequest("La contraseña debe tener al menos una mayúscula, una minúscula, un número y un símbolo.");
+
             var codigo = new Random().Next(100000, 999999).ToString();
 
             var usuario = new Usuario
@@ -153,5 +156,11 @@ namespace backend.Controllers
 
             return Ok("Código reenviado");
         }
+
+        private static bool EsPasswordValida(string password) =>
+            password.Any(char.IsUpper) &&
+            password.Any(char.IsLower) &&
+            password.Any(char.IsDigit) &&
+            password.Any(c => !char.IsLetterOrDigit(c));
     }
 }
