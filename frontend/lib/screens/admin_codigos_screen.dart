@@ -96,19 +96,22 @@ class _AdminCodigosScreenState extends State<AdminCodigosScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Códigos de promoción',
-                          style: GoogleFonts.syne(
-                            fontSize: 32, fontWeight: FontWeight.w700, color: AppColors.ink,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Códigos de promoción',
+                            style: GoogleFonts.syne(
+                              fontSize: 32, fontWeight: FontWeight.w700, color: AppColors.ink,
+                            ),
                           ),
-                        ),
-                        Text('Creá y gestioná descuentos para tus clientes.',
-                          style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.charcoal),
-                        ),
-                      ],
+                          Text('Creá y gestioná descuentos para tus clientes.',
+                            style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.charcoal),
+                          ),
+                        ],
+                      ),
                     ),
+                    const SizedBox(width: 16),
                     PrimaryButton(label: '+ Nuevo código', onPressed: _abrirCrear),
                   ],
                 ),
