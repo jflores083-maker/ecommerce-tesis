@@ -21,8 +21,8 @@ class _CatalogScreenState extends State<CatalogScreen> {
 
   String _search = '';
   String? _talleSeleccionado;
-  double? _precioMax;
   String? _colorSeleccionado;
+  RangeValues? _precioRango;
 
   final _talles = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
@@ -58,8 +58,10 @@ class _CatalogScreenState extends State<CatalogScreen> {
           return false;
         }
       }
-      // Filtro precio máximo
-      if (_precioMax != null && p.precio > _precioMax!) return false;
+      // Filtro rango de precio
+      if (_precioRango != null) {
+        if (p.precio < _precioRango!.start || p.precio > _precioRango!.end) return false;
+      }
       // Filtro color
       if (_colorSeleccionado != null && _colorSeleccionado!.isNotEmpty) {
         final color = (p.color ?? '').toLowerCase();
@@ -74,7 +76,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
       _search = '';
       _searchCtrl.clear();
       _talleSeleccionado = null;
-      _precioMax = null;
+      _precioRango = null;
       _colorSeleccionado = null;
     });
   }
@@ -82,7 +84,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
   bool get _hayFiltrosActivos =>
       _search.isNotEmpty ||
       _talleSeleccionado != null ||
-      _precioMax != null ||
+      _precioRango != null ||
       _colorSeleccionado != null;
 
   @override
@@ -207,15 +209,27 @@ class _CatalogScreenState extends State<CatalogScreen> {
                             ),
                           )),
                       const SizedBox(width: 8),
-                      // Precio máximo
-                      _PrecioDropdown(
-                        valor: _precioMax,
-                        onChanged: (v) => setState(() => _precioMax = v),
+                      // Rango de precio
+                      _PrecioRangoBtn(
+                        valor: _precioRango,
+                        maxPrecio: provider.productos.isEmpty
+                            ? 100000
+                            : provider.productos
+                                .map((p) => p.precio)
+                                .reduce((a, b) => a > b ? a : b),
+                        onChanged: (v) => setState(() => _precioRango = v),
                       ),
                       const SizedBox(width: 8),
                       // Color
                       _ColorDropdown(
                         valor: _colorSeleccionado,
+                        colores: provider.productos
+                            .map((p) => p.color?.trim())
+                            .where((c) => c != null && c.isNotEmpty)
+                            .cast<String>()
+                            .toSet()
+                            .toList()
+                          ..sort(),
                         onChanged: (v) =>
                             setState(() => _colorSeleccionado = v),
                       ),
@@ -318,50 +332,170 @@ class _FilterChip extends StatelessWidget {
 }
 
 // ── Dropdown precio máximo ───────────────────────────────────
-class _PrecioDropdown extends StatelessWidget {
-  final double? valor;
-  final ValueChanged<double?> onChanged;
-  const _PrecioDropdown({required this.valor, required this.onChanged});
+class _PrecioRangoBtn extends StatelessWidget {
+  final RangeValues? valor;
+  final double maxPrecio;
+  final ValueChanged<RangeValues?> onChanged;
+  const _PrecioRangoBtn({required this.valor, required this.maxPrecio, required this.onChanged});
+
+  String get _label {
+    if (valor == null) return 'PRECIO';
+    final min = valor!.start > 0 ? '\$${valor!.start.toStringAsFixed(0)}' : '\$0';
+    final max = valor!.end == double.infinity ? 'sin límite' : '\$${valor!.end.toStringAsFixed(0)}';
+    return '$min – $max';
+  }
 
   @override
   Widget build(BuildContext context) {
-    final opciones = {
-      null: 'Precio',
-      10000.0: 'Hasta \$10.000',
-      20000.0: 'Hasta \$20.000',
-      35000.0: 'Hasta \$35.000',
-      50000.0: 'Hasta \$50.000',
-    };
-    return Container(
-      height: 34,
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      decoration: BoxDecoration(
-        border: Border.all(
-            color: valor != null ? AppColors.charcoal : AppColors.sand),
-        color: valor != null ? AppColors.beige : Colors.transparent,
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<double?>(
-          value: valor,
-          isDense: true,
-          style: GoogleFonts.dmMono(fontSize: 10, color: AppColors.ink),
-          icon: const Icon(Icons.keyboard_arrow_down,
-              size: 14, color: AppColors.stone),
-          items: opciones.entries
-              .map((e) => DropdownMenuItem(
-                    value: e.key,
-                    child: Text(
-                      e.value.toUpperCase(),
-                      style: GoogleFonts.dmMono(
-                          fontSize: 10,
-                          color: AppColors.ink,
-                          letterSpacing: 0.12),
-                    ),
-                  ))
-              .toList(),
-          onChanged: onChanged,
+    final activo = valor != null;
+    return GestureDetector(
+      onTap: () async {
+        final result = await showDialog<RangeValues?>(
+          context: context,
+          builder: (_) => _PrecioRangoDialog(
+            inicial: valor ?? const RangeValues(0, double.infinity),
+          ),
+        );
+        if (result == null) {
+          onChanged(null);
+        } else {
+          final sinFiltro = result.start == 0 && result.end == double.infinity;
+          onChanged(sinFiltro ? null : result);
+        }
+      },
+      child: Container(
+        height: 34,
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        decoration: BoxDecoration(
+          border: Border.all(color: activo ? AppColors.charcoal : AppColors.sand),
+          color: activo ? AppColors.beige : Colors.transparent,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              _label,
+              style: GoogleFonts.dmMono(fontSize: 10, color: AppColors.ink, letterSpacing: 0.12),
+            ),
+            const SizedBox(width: 4),
+            const Icon(Icons.keyboard_arrow_down, size: 14, color: AppColors.stone),
+          ],
         ),
       ),
+    );
+  }
+}
+
+class _PrecioRangoDialog extends StatefulWidget {
+  final RangeValues inicial;
+  const _PrecioRangoDialog({required this.inicial});
+
+  @override
+  State<_PrecioRangoDialog> createState() => _PrecioRangoDialogState();
+}
+
+class _PrecioRangoDialogState extends State<_PrecioRangoDialog> {
+  late final TextEditingController _minCtrl;
+  late final TextEditingController _maxCtrl;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _minCtrl = TextEditingController(
+      text: widget.inicial.start > 0 ? widget.inicial.start.toStringAsFixed(0) : '',
+    );
+    _maxCtrl = TextEditingController(
+      text: widget.inicial.end < double.infinity ? widget.inicial.end.toStringAsFixed(0) : '',
+    );
+  }
+
+  @override
+  void dispose() {
+    _minCtrl.dispose();
+    _maxCtrl.dispose();
+    super.dispose();
+  }
+
+  void _aplicar() {
+    final min = double.tryParse(_minCtrl.text.trim()) ?? 0;
+    final max = double.tryParse(_maxCtrl.text.trim());
+    if (max != null && max < min) {
+      setState(() => _error = 'El máximo debe ser mayor al mínimo.');
+      return;
+    }
+    Navigator.pop(context, RangeValues(min, max ?? double.infinity));
+  }
+
+  InputDecoration _inputDeco(String label) => InputDecoration(
+        labelText: label,
+        labelStyle: GoogleFonts.dmMono(fontSize: 11, color: AppColors.stone),
+        prefixText: '\$ ',
+        prefixStyle: GoogleFonts.dmMono(fontSize: 13, color: AppColors.ink),
+        border: const OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: AppColors.sand)),
+        enabledBorder: const OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: AppColors.sand)),
+        focusedBorder: const OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: AppColors.ink)),
+        filled: true,
+        fillColor: AppColors.beige,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: AppColors.cream,
+      shape: const RoundedRectangleBorder(),
+      elevation: 0,
+      title: Text('Rango de precio',
+          style: GoogleFonts.syne(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.ink)),
+      content: SizedBox(
+        width: 320,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _minCtrl,
+                    keyboardType: TextInputType.number,
+                    decoration: _inputDeco('Mínimo'),
+                    style: GoogleFonts.dmMono(fontSize: 13, color: AppColors.ink),
+                    onChanged: (_) => setState(() => _error = null),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Text('–', style: GoogleFonts.dmMono(fontSize: 14, color: AppColors.stone)),
+                ),
+                Expanded(
+                  child: TextField(
+                    controller: _maxCtrl,
+                    keyboardType: TextInputType.number,
+                    decoration: _inputDeco('Máximo'),
+                    style: GoogleFonts.dmMono(fontSize: 13, color: AppColors.ink),
+                    onChanged: (_) => setState(() => _error = null),
+                  ),
+                ),
+              ],
+            ),
+            if (_error != null) ...[
+              const SizedBox(height: 8),
+              Text(_error!, style: GoogleFonts.dmMono(fontSize: 10, color: Colors.red)),
+            ],
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, null),
+          child: Text('Limpiar', style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.stone)),
+        ),
+        TextButton(
+          onPressed: _aplicar,
+          child: Text('Aplicar', style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.ink)),
+        ),
+      ],
     );
   }
 }
@@ -369,21 +503,13 @@ class _PrecioDropdown extends StatelessWidget {
 // ── Dropdown color ───────────────────────────────────────────
 class _ColorDropdown extends StatelessWidget {
   final String? valor;
+  final List<String> colores;
   final ValueChanged<String?> onChanged;
-  const _ColorDropdown({required this.valor, required this.onChanged});
+  const _ColorDropdown({required this.valor, required this.colores, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
-    final colores = [
-      null,
-      'Negro',
-      'Blanco',
-      'Gris',
-      'Azul',
-      'Verde',
-      'Rojo',
-      'Beige'
-    ];
+    final items = [null, ...colores];
     return Container(
       height: 34,
       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -396,10 +522,11 @@ class _ColorDropdown extends StatelessWidget {
         child: DropdownButton<String?>(
           value: valor,
           isDense: true,
+          focusColor: Colors.transparent,
           style: GoogleFonts.dmMono(fontSize: 10, color: AppColors.ink),
           icon: const Icon(Icons.keyboard_arrow_down,
               size: 14, color: AppColors.stone),
-          items: colores
+          items: items
               .map((c) => DropdownMenuItem(
                     value: c,
                     child: Text(
