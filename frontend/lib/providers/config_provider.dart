@@ -9,7 +9,7 @@ class ConfigProvider extends ChangeNotifier {
 
   int _temaIndex = 0;
   String? _heroImageUrl;
-  String _acercaTitulo = 'Sobre 638';
+  String _acercaTitulo = 'Sobre Urbal';
   String _acercaDescripcion = '';
   String _contactoEmail = '';
   String _contactoTelefono = '';
@@ -43,7 +43,7 @@ class ConfigProvider extends ChangeNotifier {
     try {
       final config = await _api.getConfiguracion();
       _heroImageUrl        = config['heroImageUrl']     as String?;
-      _acercaTitulo        = (config['acercaTitulo']     as String?) ?? 'Sobre 638';
+      _acercaTitulo        = (config['acercaTitulo']     as String?) ?? 'Sobre Urbal';
       _acercaDescripcion   = (config['acercaDescripcion'] as String?) ?? '';
       _contactoEmail       = (config['contactoEmail']    as String?) ?? '';
       _contactoTelefono    = (config['contactoTelefono'] as String?) ?? '';

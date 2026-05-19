@@ -369,93 +369,129 @@ class _OrderSummaryState extends State<_OrderSummary> {
   final _promoCtrl = TextEditingController();
 
   Future<void> _checkout() async {
-    final direccionCtrl = TextEditingController();
-    final ciudadCtrl = TextEditingController();
-    final cpCtrl = TextEditingController();
-
-    final confirmed = await showDialog<bool>(
+    // Paso 1: retiro en local o envío a domicilio
+    final esRetiro = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.cream,
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+        elevation: 0,
         title: Text(
-          'Datos de envío',
+          '¿Cómo querés recibir tu pedido?',
           style: GoogleFonts.cormorantGaramond(
-            fontSize: 24,
-            fontWeight: FontWeight.w600,
-            color: AppColors.ink,
-          ),
+              fontSize: 22, fontWeight: FontWeight.w600, color: AppColors.ink),
         ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AuthField(
-                  label: 'DIRECCIÓN',
-                  controller: direccionCtrl,
-                  hint: 'Av. Corrientes 1234'),
-              const SizedBox(height: 16),
-              AuthField(
-                  label: 'CIUDAD',
-                  controller: ciudadCtrl,
-                  hint: 'Buenos Aires'),
-              const SizedBox(height: 16),
-              AuthField(
-                  label: 'CÓDIGO POSTAL',
-                  controller: cpCtrl,
-                  hint: '1043',
-                  keyboardType: TextInputType.number),
-            ],
-          ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _OpcionEntrega(
+              icono: Icons.store_outlined,
+              titulo: 'Retiro en local',
+              subtitulo: 'Pasás a buscar tu pedido cuando esté listo',
+              onTap: () => Navigator.pop(ctx, true),
+            ),
+            const SizedBox(height: 12),
+            _OpcionEntrega(
+              icono: Icons.local_shipping_outlined,
+              titulo: 'Envío a domicilio',
+              subtitulo: 'Te lo enviamos a la dirección que indiques',
+              onTap: () => Navigator.pop(ctx, false),
+            ),
+          ],
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
+            onPressed: () => Navigator.pop(ctx, null),
             child: Text('Cancelar',
-                style:
-                    GoogleFonts.dmMono(fontSize: 11, color: AppColors.stone)),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.ink,
-              foregroundColor: AppColors.cream,
-              shape:
-                  const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-              elevation: 0,
-            ),
-            child: Text('Confirmar', style: GoogleFonts.dmMono(fontSize: 11)),
+                style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.stone)),
           ),
         ],
       ),
     );
 
-    if (confirmed != true || !mounted) return;
+    if (esRetiro == null || !mounted) return;
 
-    final dir = direccionCtrl.text.trim();
-    final ciudad = ciudadCtrl.text.trim();
-    final cp = cpCtrl.text.trim();
+    // Paso 2: si eligió envío, pedir dirección
+    String dir = 'Retiro en local';
+    String ciudad = 'Local';
+    String cp = '0000';
 
-    if (dir.isEmpty || ciudad.isEmpty || cp.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Completá todos los campos de envío',
-            style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.cream)),
-        backgroundColor: AppColors.charcoal,
-        behavior: SnackBarBehavior.floating,
-      ));
-      return;
+    if (!esRetiro) {
+      final direccionCtrl = TextEditingController();
+      final ciudadCtrl = TextEditingController();
+      final cpCtrl = TextEditingController();
+
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          backgroundColor: AppColors.cream,
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+          elevation: 0,
+          title: Text(
+            'Datos de envío',
+            style: GoogleFonts.cormorantGaramond(
+                fontSize: 24, fontWeight: FontWeight.w600, color: AppColors.ink),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AuthField(label: 'DIRECCIÓN', controller: direccionCtrl, hint: 'Av. Corrientes 1234'),
+                const SizedBox(height: 16),
+                AuthField(label: 'CIUDAD', controller: ciudadCtrl, hint: 'Buenos Aires'),
+                const SizedBox(height: 16),
+                AuthField(label: 'CÓDIGO POSTAL', controller: cpCtrl, hint: '1043', keyboardType: TextInputType.number),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text('Cancelar',
+                  style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.stone)),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.ink,
+                foregroundColor: AppColors.cream,
+                shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                elevation: 0,
+              ),
+              child: Text('Confirmar', style: GoogleFonts.dmMono(fontSize: 11)),
+            ),
+          ],
+        ),
+      );
+
+      if (confirmed != true || !mounted) return;
+
+      dir    = direccionCtrl.text.trim();
+      ciudad = ciudadCtrl.text.trim();
+      cp     = cpCtrl.text.trim();
+
+      if (dir.isEmpty || ciudad.isEmpty || cp.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Completá todos los campos de envío',
+              style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.cream)),
+          backgroundColor: AppColors.charcoal,
+          behavior: SnackBarBehavior.floating,
+        ));
+        return;
+      }
     }
 
     if (!mounted) return;
     final carrito = context.read<CarritoProvider>();
 
-    // Paso 2: selección de medio de pago
+    // Paso 3: selección de medio de pago
     final metodo = await showDialog<String>(
       context: context,
-      builder: (_) => _MetodoPagoDialog(subtotal: carrito.subtotal),
+      builder: (_) => _MetodoPagoDialog(subtotal: carrito.subtotal, esRetiro: esRetiro),
     );
     if (metodo == null || !mounted) return;
 
-    // Paso 3: procesamiento
+    // Paso 4: procesamiento
     await showDialog(
       context: context,
       barrierDismissible: false,
@@ -726,7 +762,8 @@ class _ItemThumbnail extends StatelessWidget {
 // ─── SELECCIÓN MEDIO DE PAGO ───────────────────────────────
 class _MetodoPagoDialog extends StatefulWidget {
   final double subtotal;
-  const _MetodoPagoDialog({required this.subtotal});
+  final bool esRetiro;
+  const _MetodoPagoDialog({required this.subtotal, required this.esRetiro});
 
   @override
   State<_MetodoPagoDialog> createState() => _MetodoPagoDialogState();
@@ -735,7 +772,7 @@ class _MetodoPagoDialog extends StatefulWidget {
 class _MetodoPagoDialogState extends State<_MetodoPagoDialog> {
   String? _seleccionado;
 
-  static const _metodos = [
+  static const _todosMetodos = [
     _Metodo('tarjeta', 'Tarjeta de crédito o débito',
         Icons.credit_card_outlined, 'HASTA 6 CUOTAS SIN INTERÉS'),
     _Metodo(
@@ -746,6 +783,10 @@ class _MetodoPagoDialogState extends State<_MetodoPagoDialog> {
     _Metodo('cuotas_mp', 'Cuotas sin Tarjeta de Mercado Pago',
         Icons.open_in_new_outlined, null),
   ];
+
+  List<_Metodo> get _metodos => widget.esRetiro
+      ? _todosMetodos
+      : _todosMetodos.where((m) => m.id != 'efectivo').toList();
 
   String _badgeTransferencia() {
     final precio = (widget.subtotal * 0.9).toStringAsFixed(0);
@@ -974,7 +1015,7 @@ class _PagoDialogState extends State<_PagoDialog>
       duration: const Duration(milliseconds: 600),
     );
     _tickAnim = CurvedAnimation(parent: _tickCtrl, curve: Curves.easeOutBack);
-    _procesarPago();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _procesarPago());
   }
 
   Future<void> _procesarPago() async {
@@ -1027,7 +1068,16 @@ class _PagoDialogState extends State<_PagoDialog>
       }
       return;
     }
-    // Paso 3: otros métodos → mostrar confirmación directa
+    // Paso 3: efectivo → registrar pago y enviar email
+    if (widget.metodo == 'efectivo') {
+      try {
+        final api = context.read<ApiService>();
+        await api.pagarEfectivo(ordenId);
+      } catch (_) {
+        // El email falla silenciosamente pero la orden queda creada
+      }
+    }
+
     setState(() => _exitoso = true);
     _tickCtrl.forward();
   }
@@ -1246,6 +1296,48 @@ class _MercadoPagoWebViewState extends State<_MercadoPagoWebView> {
               child: CircularProgressIndicator(color: AppColors.ink),
             ),
         ],
+      ),
+    );
+  }
+}
+
+class _OpcionEntrega extends StatelessWidget {
+  final IconData icono;
+  final String titulo;
+  final String subtitulo;
+  final VoidCallback onTap;
+  const _OpcionEntrega({required this.icono, required this.titulo, required this.subtitulo, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        decoration: BoxDecoration(
+          border: Border.all(color: AppColors.sand),
+          color: AppColors.beige,
+        ),
+        child: Row(
+          children: [
+            Icon(icono, size: 24, color: AppColors.charcoal),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(titulo,
+                      style: GoogleFonts.dmMono(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.ink)),
+                  const SizedBox(height: 2),
+                  Text(subtitulo,
+                      style: GoogleFonts.dmMono(fontSize: 10, color: AppColors.stone)),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, size: 18, color: AppColors.stone),
+          ],
+        ),
       ),
     );
   }
