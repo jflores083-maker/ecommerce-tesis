@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import '../app_constants.dart';
+import '../providers/config_provider.dart';
 import '../providers/admin_provider.dart';
 import '../providers/drops_provider.dart';
 import '../models/models.dart';
@@ -183,7 +183,8 @@ class _FormEditarState extends State<_FormEditar> {
     _precioCtrl      = TextEditingController(text: p.precio.toStringAsFixed(2));
     _stockCtrl       = TextEditingController(text: p.stock.toString());
     _colorCtrl       = TextEditingController(text: p.color ?? '');
-    _categoriaSeleccionada = AppCategorias.todas.contains(p.categoria) ? p.categoria : AppCategorias.todas.first;
+    final cats = context.read<ConfigProvider>().categorias;
+    _categoriaSeleccionada = cats.contains(p.categoria) ? p.categoria : cats.first;
     _estadoSeleccionado    = p.estado;
     _tallesSeleccionados   = Set<String>.from(p.talles);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -317,7 +318,7 @@ class _FormEditarState extends State<_FormEditar> {
           label: 'CATEGORÍA',
           child: _DropdownField(
             value: _categoriaSeleccionada,
-            items: AppCategorias.todas,
+            items: context.read<ConfigProvider>().categorias,
             onChanged: (v) => setState(() => _categoriaSeleccionada = v!),
           ),
         ),

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import '../app_constants.dart';
+import '../providers/config_provider.dart';
 import '../providers/admin_provider.dart';
 import '../providers/drops_provider.dart';
 import '../theme/app_theme.dart';
@@ -30,7 +30,7 @@ class _AdminAgregarScreenState extends State<AdminAgregarScreen> {
   XFile? _imagenSeleccionada;
   Uint8List? _imagenBytes;
 
-  static List<String> get _categorias => AppCategorias.todas;
+  List<String> get _categorias => context.read<ConfigProvider>().categorias;
   static const _estados = ['disponible', 'no disponible'];
   static const _talles  = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 

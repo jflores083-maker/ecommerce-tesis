@@ -101,6 +101,13 @@ class AdminScreen extends StatelessWidget {
                   description: 'Ver y gestionar todos los pedidos',
                   onTap: () => context.go('/admin/ordenes'),
                 ),
+                const SizedBox(height: 16),
+                _AdminMenuBtn(
+                  icon: Icons.category_outlined,
+                  label: 'Categorías',
+                  description: 'Agregar o eliminar categorías de productos',
+                  onTap: () => context.go('/admin/categorias'),
+                ),
               ],
             ),
           ),

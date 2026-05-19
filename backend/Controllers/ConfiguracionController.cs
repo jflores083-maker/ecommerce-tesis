@@ -11,7 +11,8 @@ namespace backend.Controllers
         private readonly IWebHostEnvironment _env;
         private string AcercaPath   => Path.Combine(_env.WebRootPath, "uploads", "acerca.json");
         private string ContactoPath => Path.Combine(_env.WebRootPath, "uploads", "contacto.json");
-        private string EnvioPath    => Path.Combine(_env.WebRootPath, "uploads", "envio.json");
+        private string EnvioPath       => Path.Combine(_env.WebRootPath, "uploads", "envio.json");
+        private string CategoriasPath  => Path.Combine(_env.WebRootPath, "uploads", "categorias.json");
 
         public ConfiguracionController(IWebHostEnvironment env)
         {
@@ -66,11 +67,25 @@ namespace backend.Controllers
                 envioTexto = eDoc.GetProperty("texto").GetString() ?? envioTexto;
             }
 
+            // Categorías
+            var defaultCategorias = new[] { "Remeras","Pantalones","Buzos","Abrigos","Accesorios","Calzado","Otros" };
+            string[] categorias = defaultCategorias;
+            if (System.IO.File.Exists(CategoriasPath))
+            {
+                var cJson = System.IO.File.ReadAllText(CategoriasPath);
+                var cDoc  = JsonDocument.Parse(cJson).RootElement;
+                categorias = cDoc.GetProperty("categorias").EnumerateArray()
+                    .Select(e => e.GetString() ?? "")
+                    .Where(s => s.Length > 0)
+                    .ToArray();
+            }
+
             return Ok(new {
                 heroImageUrl = heroUrl,
                 acercaTitulo, acercaDescripcion,
                 contactoEmail, contactoTelefono, contactoDireccion, contactoHorario,
-                envioTexto
+                envioTexto,
+                categorias
             });
         }
 
@@ -127,6 +142,36 @@ namespace backend.Controllers
             return Ok(new { titulo = dto.Titulo, descripcion = dto.Descripcion });
         }
 
+        // GET /api/configuracion/categorias
+        [HttpGet("categorias")]
+        [AllowAnonymous]
+        public IActionResult GetCategorias()
+        {
+            var defaults = new[] { "Remeras","Pantalones","Buzos","Abrigos","Accesorios","Calzado","Otros" };
+            if (!System.IO.File.Exists(CategoriasPath))
+                return Ok(new { categorias = defaults });
+
+            var json = System.IO.File.ReadAllText(CategoriasPath);
+            var doc  = JsonDocument.Parse(json).RootElement;
+            var cats = doc.GetProperty("categorias").EnumerateArray()
+                .Select(e => e.GetString() ?? "")
+                .Where(s => s.Length > 0)
+                .ToArray();
+            return Ok(new { categorias = cats });
+        }
+
+        // PUT /api/configuracion/categorias
+        [HttpPut("categorias")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult GuardarCategorias([FromBody] CategoriasDto dto)
+        {
+            var cats = dto.Categorias.Where(c => !string.IsNullOrWhiteSpace(c)).Select(c => c.Trim()).ToList();
+            Directory.CreateDirectory(Path.GetDirectoryName(CategoriasPath)!);
+            var json = JsonSerializer.Serialize(new { categorias = cats });
+            System.IO.File.WriteAllText(CategoriasPath, json);
+            return Ok(new { categorias = cats });
+        }
+
         // GET /api/configuracion/envio
         [HttpGet("envio")]
         [AllowAnonymous]
@@ -174,6 +219,11 @@ namespace backend.Controllers
     {
         public string Titulo      { get; set; } = string.Empty;
         public string Descripcion { get; set; } = string.Empty;
+    }
+
+    public class CategoriasDto
+    {
+        public List<string> Categorias { get; set; } = new();
     }
 
     public class EnvioDto

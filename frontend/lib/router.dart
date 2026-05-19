@@ -26,6 +26,7 @@ import '../screens/admin_ordenes_screen.dart';
 import '../screens/admin_dashboard_screen.dart';
 import '../screens/admin_codigos_screen.dart';
 import '../screens/admin_precios_screen.dart';
+import '../screens/admin_categorias_screen.dart';
 import '../screens/verificar_email_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -177,6 +178,10 @@ GoRouter createRouter(AuthProvider authProvider) {
       GoRoute(
         path: '/admin/precios',
         builder: (ctx, state) => const AdminPreciosScreen(),
+      ),
+      GoRoute(
+        path: '/admin/categorias',
+        builder: (ctx, state) => const AdminCategoriasScreen(),
       ),
       GoRoute(
         path: '/verificar-email',

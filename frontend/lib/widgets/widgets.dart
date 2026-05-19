@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import '../app_constants.dart';
+import '../providers/config_provider.dart';
 import '../models/models.dart';
 import '../providers/auth_provider.dart';
 import '../providers/carrito_provider.dart';
@@ -385,7 +385,7 @@ class _MenuColeccionState extends State<_MenuColeccion> {
               ),
             ),
           ),
-          ...AppCategorias.todas.map((cat) => InkWell(
+          ...context.read<ConfigProvider>().categorias.map((cat) => InkWell(
                 onTap: () => widget.onSelectCategoria(cat),
                 child: Padding(
                   padding: const EdgeInsets.only(
@@ -588,7 +588,7 @@ class _DropdownMenu extends StatelessWidget {
                   onTap: () => onSelectCategoria(null),
                 ),
                 Container(height: 1, color: AppColors.sand),
-                ...AppCategorias.todas.map((cat) => _DropdownItem(
+                ...context.read<ConfigProvider>().categorias.map((cat) => _DropdownItem(
                       label: cat,
                       onTap: () => onSelectCategoria(cat),
                     )),

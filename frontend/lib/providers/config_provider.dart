@@ -16,7 +16,9 @@ class ConfigProvider extends ChangeNotifier {
   String _contactoDireccion = '';
   String _contactoHorario = '';
   static const _kEnvioDefault = 'Envío gratis en compras mayores a \$60.000. Entrega en 3-5 días hábiles.';
+  static const _kCategoriasDefault = ['Remeras','Pantalones','Buzos','Abrigos','Accesorios','Calzado','Otros'];
   String _envioTexto = _kEnvioDefault;
+  List<String> _categorias = List.of(_kCategoriasDefault);
 
   ConfigProvider(this._api);
 
@@ -30,6 +32,7 @@ class ConfigProvider extends ChangeNotifier {
   String      get contactoDireccion   => _contactoDireccion;
   String      get contactoHorario     => _contactoHorario;
   String      get envioTexto          => _envioTexto.isNotEmpty ? _envioTexto : _kEnvioDefault;
+  List<String> get categorias         => _categorias.isNotEmpty ? _categorias : List.of(_kCategoriasDefault);
 
   Future<void> cargarConfig() async {
     // Cargar tema guardado localmente
@@ -47,6 +50,10 @@ class ConfigProvider extends ChangeNotifier {
       _contactoDireccion   = (config['contactoDireccion'] as String?) ?? '';
       _contactoHorario     = (config['contactoHorario']  as String?) ?? '';
       _envioTexto          = (config['envioTexto']        as String?) ?? _envioTexto;
+      final cats = config['categorias'];
+      if (cats is List && cats.isNotEmpty) {
+        _categorias = cats.whereType<String>().toList();
+      }
     } catch (_) {}
 
     notifyListeners();
@@ -85,6 +92,15 @@ class ConfigProvider extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('temaIndex', index);
     notifyListeners();
+  }
+
+  Future<bool> guardarCategorias(List<String> cats) async {
+    try {
+      await _api.guardarCategorias(cats);
+      _categorias = List.of(cats);
+      notifyListeners();
+      return true;
+    } catch (_) { return false; }
   }
 
   Future<bool> guardarEnvio({required String texto}) async {
