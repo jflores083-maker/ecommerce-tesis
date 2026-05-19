@@ -23,6 +23,7 @@ import '../screens/admin_editar_drop_screen.dart';
 import '../screens/favoritos_screen.dart';
 import '../screens/mis_ordenes_screen.dart';
 import '../screens/admin_ordenes_screen.dart';
+import '../screens/verificar_email_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -161,6 +162,13 @@ GoRouter createRouter(AuthProvider authProvider) {
       GoRoute(
         path: '/admin/ordenes',
         builder: (ctx, state) => const AdminOrdenesScreen(),
+      ),
+      GoRoute(
+        path: '/verificar-email',
+        builder: (ctx, state) {
+          final email = state.extra as String? ?? '';
+          return VerificarEmailScreen(email: email);
+        },
       ),
     ],
   );

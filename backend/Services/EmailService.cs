@@ -29,7 +29,7 @@ namespace backend.Services
 
             var mail = new MailMessage
             {
-                From = new MailAddress(from, "638 Indumentaria"),
+                From = new MailAddress(from, "Urbal Indumentaria"),
                 Subject = asunto,
                 Body = cuerpoHtml,
                 IsBodyHtml = true
@@ -60,7 +60,7 @@ namespace backend.Services
 
             var mail = new MailMessage
             {
-                From = new MailAddress(from, "638 Indumentaria"),
+                From = new MailAddress(from, "Urbal Indumentaria"),
                 Subject = asunto,
                 Body = cuerpoHtml,
                 IsBodyHtml = true
@@ -83,13 +83,13 @@ namespace backend.Services
             return $@"
                 <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
                     <h2 style='color: #1a1a1a;'>Verificá tu email</h2>
-                    <p>Hola {nombre}, gracias por registrarte en <strong>638</strong>.</p>
+                    <p>Hola {nombre}, gracias por registrarte en <strong>Urbal</strong>.</p>
                     <p>Tu código de verificación es:</p>
                     <div style='background: #f5f5f5; padding: 32px; text-align: center; margin: 24px 0;'>
                         <span style='font-size: 40px; font-weight: bold; letter-spacing: 12px; color: #1a1a1a;'>{codigo}</span>
                     </div>
                     <p style='color: #666;'>Este código expira en <strong>15 minutos</strong>.</p>
-                    <p style='color: #666;'>Si no creaste una cuenta en 638, ignorá este email.</p>
+                    <p style='color: #666;'>Si no creaste una cuenta en <strong>Urbal Indumentaria</strong>, ignorá este email.</p>
                 </div>";
         }
 
@@ -104,7 +104,7 @@ namespace backend.Services
                         <p><strong>Total pagado:</strong> ${total:N2}</p>
                     </div>
                     <p>En breve recibirás información sobre el envío.</p>
-                    <p>Gracias por comprar en <strong>638</strong> 🛍️</p>
+                    <p>Gracias por comprar en <strong>Urbal</strong> 🛍️</p>
                 </div>";
         }
 
@@ -118,7 +118,7 @@ namespace backend.Services
                         <p><strong>Número de orden:</strong> #{ordenId}</p>
                     </div>
                     <p>En breve recibirás información sobre el envío.</p>
-                    <p>Gracias por comprar en <strong>638</strong> 🛍️</p>
+                    <p>Gracias por comprar en <strong>Urbal</strong> 🛍️</p>
                 </div>";
         }
 
@@ -136,7 +136,7 @@ namespace backend.Services
                         <p><strong>Número de orden:</strong> #{ordenId}</p>
                         <p><strong>Número de seguimiento:</strong> {seguimiento}</p>
                     </div>
-                    <p>Gracias por comprar en <strong>638</strong> 🛍️</p>
+                    <p>Gracias por comprar en <strong>Urbal</strong> 🛍️</p>
                 </div>";
         }
 
@@ -149,7 +149,7 @@ namespace backend.Services
                     <div style='background: #f5f5f5; padding: 20px; border-radius: 8px;'>
                         <p><strong>Número de orden:</strong> #{ordenId}</p>
                     </div>
-                    <p>Gracias por comprar en <strong>638</strong> 🛍️</p>
+                    <p>Gracias por comprar en <strong>Urbal</strong> 🛍️</p>
                 </div>";
         }
 
@@ -162,7 +162,7 @@ namespace backend.Services
                     <div style='background: #f5f5f5; padding: 20px; border-radius: 8px;'>
                         <p><strong>Número de orden:</strong> #{ordenId}</p>
                     </div>
-                    <p>Si tenés dudas, contactanos. <strong>638</strong></p>
+                    <p>Si tenés dudas, contactanos. <strong>Urbal</strong></p>
                 </div>";
         }
     }

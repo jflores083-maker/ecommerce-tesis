@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/Users/diego/Downloads/ecommerce-tesis/backend.Tests/backend.Tests.csproj": {}
+    "C:\\Users\\Julio\\ecommerce-tesis\\backend.Tests\\backend.Tests.csproj": {}
   },
   "projects": {
-    "/Users/diego/Downloads/ecommerce-tesis/backend.Tests/backend.Tests.csproj": {
+    "C:\\Users\\Julio\\ecommerce-tesis\\backend.Tests\\backend.Tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/diego/Downloads/ecommerce-tesis/backend.Tests/backend.Tests.csproj",
+        "projectUniqueName": "C:\\Users\\Julio\\ecommerce-tesis\\backend.Tests\\backend.Tests.csproj",
         "projectName": "backend.Tests",
-        "projectPath": "/Users/diego/Downloads/ecommerce-tesis/backend.Tests/backend.Tests.csproj",
-        "packagesPath": "/Users/diego/.nuget/packages/",
-        "outputPath": "/Users/diego/Downloads/ecommerce-tesis/backend.Tests/obj/",
+        "projectPath": "C:\\Users\\Julio\\ecommerce-tesis\\backend.Tests\\backend.Tests.csproj",
+        "packagesPath": "C:\\Users\\Julio\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Julio\\ecommerce-tesis\\backend.Tests\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/diego/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Julio\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
@@ -26,8 +26,8 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "/Users/diego/Downloads/ecommerce-tesis/backend/backend.csproj": {
-                "projectPath": "/Users/diego/Downloads/ecommerce-tesis/backend/backend.csproj"
+              "C:\\Users\\Julio\\ecommerce-tesis\\backend\\backend.csproj": {
+                "projectPath": "C:\\Users\\Julio\\ecommerce-tesis\\backend\\backend.csproj"
               }
             }
           }
@@ -60,6 +60,10 @@
               "target": "Package",
               "version": "[17.12.0, )"
             },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
+            },
             "coverlet.collector": {
               "target": "Package",
               "version": "[6.0.2, )"
@@ -89,21 +93,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.304/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "/Users/diego/Downloads/ecommerce-tesis/backend/backend.csproj": {
+    "C:\\Users\\Julio\\ecommerce-tesis\\backend\\backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/diego/Downloads/ecommerce-tesis/backend/backend.csproj",
+        "projectUniqueName": "C:\\Users\\Julio\\ecommerce-tesis\\backend\\backend.csproj",
         "projectName": "backend",
-        "projectPath": "/Users/diego/Downloads/ecommerce-tesis/backend/backend.csproj",
-        "packagesPath": "/Users/diego/.nuget/packages/",
-        "outputPath": "/Users/diego/Downloads/ecommerce-tesis/backend/obj/",
+        "projectPath": "C:\\Users\\Julio\\ecommerce-tesis\\backend\\backend.csproj",
+        "packagesPath": "C:\\Users\\Julio\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Julio\\ecommerce-tesis\\backend\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/diego/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Julio\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
@@ -133,6 +137,10 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
+            "MercadoPago": {
+              "target": "Package",
+              "version": "[1.0.4477.31589, )"
+            },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
               "version": "[9.0.0, )"
@@ -177,7 +185,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.304/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

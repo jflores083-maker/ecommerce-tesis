@@ -166,8 +166,8 @@ class _FiltroChip extends StatelessWidget {
   const _FiltroChip({
     required this.label,
     required this.selected,
-    required this.onTap,
     this.color,
+    required this.onTap,
   });
 
   @override
