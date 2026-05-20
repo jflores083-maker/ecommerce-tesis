@@ -367,6 +367,49 @@ class _OrderSummary extends StatefulWidget {
 
 class _OrderSummaryState extends State<_OrderSummary> {
   final _promoCtrl = TextEditingController();
+  double? _descuento;
+  String? _codigoAplicado;
+  bool _promoLoading = false;
+  String? _promoError;
+
+  Future<void> _aplicarCodigo() async {
+    final codigo = _promoCtrl.text.trim().toUpperCase();
+    if (codigo.isEmpty) return;
+    setState(() { _promoLoading = true; _promoError = null; });
+    try {
+      final result = await context.read<ApiService>().validarCodigoPromocion(
+        codigo: codigo,
+        subtotal: widget.carrito.subtotal,
+      );
+      setState(() {
+        _descuento = (result['descuento'] as num).toDouble();
+        _codigoAplicado = result['codigo'] as String;
+        _promoLoading = false;
+      });
+    } on ApiException catch (e) {
+      setState(() { _promoError = e.message; _promoLoading = false; });
+    }
+  }
+
+  void _quitarCodigo() {
+    setState(() {
+      _descuento = null;
+      _codigoAplicado = null;
+      _promoError = null;
+      _promoCtrl.clear();
+    });
+  }
+
+  String _formatPrecio(double precio) {
+    final n = precio.round();
+    final s = n.toString();
+    final parts = <String>[];
+    for (int i = 0; i < s.length; i++) {
+      if (i > 0 && (s.length - i) % 3 == 0) parts.add('.');
+      parts.add(s[i]);
+    }
+    return '\$${parts.join()}';
+  }
 
   Future<void> _checkout() async {
     // Paso 1: retiro en local o envío a domicilio
@@ -531,59 +574,89 @@ class _OrderSummaryState extends State<_OrderSummary> {
 
         _SummaryRow(label: 'Subtotal', value: c.subtotalFormateado),
         const _SummaryRow(label: 'Envío', value: 'Calculado al pagar'),
-        const _SummaryRow(label: 'Descuento', value: '—'),
+        _SummaryRow(
+          label: 'Descuento',
+          value: _descuento != null ? '- ${_formatPrecio(_descuento!)}' : '—',
+        ),
 
         // Código promo
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 24),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: TextField(
-                  controller: _promoCtrl,
-                  decoration: InputDecoration(
-                    hintText: 'CÓDIGO PROMO',
-                    hintStyle: GoogleFonts.dmMono(
-                      fontSize: 10,
-                      color: AppColors.stone,
-                      letterSpacing: 0.12,
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 14,
-                    ),
-                    border: const OutlineInputBorder(
-                      borderRadius: BorderRadius.zero,
-                      borderSide: BorderSide(color: AppColors.sand),
-                    ),
-                    enabledBorder: const OutlineInputBorder(
-                      borderRadius: BorderRadius.zero,
-                      borderSide: BorderSide(color: AppColors.sand),
-                    ),
-                    focusedBorder: const OutlineInputBorder(
-                      borderRadius: BorderRadius.zero,
-                      borderSide: BorderSide(color: AppColors.charcoal),
+              if (_codigoAplicado != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        color: AppColors.ink,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              _codigoAplicado!,
+                              style: GoogleFonts.dmMono(fontSize: 10, color: AppColors.cream, letterSpacing: 0.1),
+                            ),
+                            const SizedBox(width: 8),
+                            GestureDetector(
+                              onTap: _quitarCodigo,
+                              child: const Icon(Icons.close, size: 12, color: AppColors.cream),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _promoCtrl,
+                      enabled: _codigoAplicado == null,
+                      textCapitalization: TextCapitalization.characters,
+                      decoration: InputDecoration(
+                        hintText: 'CÓDIGO PROMO',
+                        hintStyle: GoogleFonts.dmMono(fontSize: 10, color: AppColors.stone, letterSpacing: 0.12),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                        border: const OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: AppColors.sand)),
+                        enabledBorder: const OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: AppColors.sand)),
+                        focusedBorder: const OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: AppColors.charcoal)),
+                        disabledBorder: const OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: AppColors.sand)),
+                      ),
+                      style: GoogleFonts.dmMono(fontSize: 11),
+                      onSubmitted: (_) => _aplicarCodigo(),
                     ),
                   ),
-                  style: GoogleFonts.dmMono(fontSize: 11),
-                ),
+                  GestureDetector(
+                    onTap: (_promoLoading || _codigoAplicado != null) ? null : _aplicarCodigo,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      color: _codigoAplicado != null ? AppColors.stone : AppColors.charcoal,
+                      child: _promoLoading
+                          ? const SizedBox(
+                              width: 14, height: 14,
+                              child: CircularProgressIndicator(strokeWidth: 1.5, color: AppColors.cream),
+                            )
+                          : Text(
+                              'APLICAR',
+                              style: GoogleFonts.dmMono(fontSize: 10, color: AppColors.cream, letterSpacing: 0.12),
+                            ),
+                    ),
+                  ),
+                ],
               ),
-              GestureDetector(
-                onTap: () {},
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  color: AppColors.charcoal,
+              if (_promoError != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
                   child: Text(
-                    'APLICAR',
-                    style: GoogleFonts.dmMono(
-                      fontSize: 10,
-                      color: AppColors.cream,
-                      letterSpacing: 0.12,
-                    ),
+                    _promoError!,
+                    style: GoogleFonts.dmMono(fontSize: 10, color: Colors.red.shade700),
                   ),
                 ),
-              ),
             ],
           ),
         ),
@@ -592,28 +665,20 @@ class _OrderSummaryState extends State<_OrderSummary> {
         Container(
           padding: const EdgeInsets.symmetric(vertical: 20),
           decoration: const BoxDecoration(
-            border: Border(
-              top: BorderSide(color: AppColors.stone),
-            ),
+            border: Border(top: BorderSide(color: AppColors.stone)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 'TOTAL',
-                style: GoogleFonts.syne(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.ink,
-                ),
+                style: GoogleFonts.syne(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.ink),
               ),
               Text(
-                c.subtotalFormateado,
-                style: GoogleFonts.syne(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.ink,
-                ),
+                _descuento != null
+                    ? _formatPrecio(c.subtotal - _descuento!)
+                    : c.subtotalFormateado,
+                style: GoogleFonts.syne(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.ink),
               ),
             ],
           ),
