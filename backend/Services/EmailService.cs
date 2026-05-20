@@ -169,6 +169,23 @@ namespace backend.Services
                 </div>";
         }
 
+        public string TemplateTransferenciaPendiente(int ordenId, decimal total)
+        {
+            return $@"
+                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
+                    <h2 style='color: #1a1a1a;'>¡Tu pedido está reservado! 🛍️</h2>
+                    <p>Recibimos tu solicitud de compra con pago por transferencia bancaria.</p>
+                    <div style='background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 24px 0;'>
+                        <p><strong>Número de orden:</strong> #{ordenId}</p>
+                        <p><strong>Total a transferir:</strong> ${total:N2}</p>
+                        <p><strong>Alias:</strong> urbal.mp</p>
+                    </div>
+                    <p>Realizá la transferencia y envianos el comprobante por nuestros canales de contacto para confirmar tu pedido.</p>
+                    <p style='color: #666;'>Si no se confirma el pago dentro de las próximas 72 horas hábiles, la orden será cancelada automáticamente.</p>
+                    <p>¡Gracias por elegirnos! <strong>Urbal Indumentaria</strong></p>
+                </div>";
+        }
+
         public string TemplateOrdenCancelada(int ordenId)
         {
             return $@"
