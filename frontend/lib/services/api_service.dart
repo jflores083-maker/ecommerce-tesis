@@ -453,6 +453,13 @@ class ApiService {
     _checkStatus(res);
   }
 
+  Future<void> pagarTransferencia(int ordenId) async {
+    final uri = Uri.parse('$_baseUrl/pagos/transferencia');
+    final res = await http.post(uri,
+        headers: await _headers(auth: true), body: jsonEncode(ordenId));
+    _checkStatus(res);
+  }
+
   // ── DROPS ─────────────────────────────────────────────────
   Future<List<Map<String, dynamic>>> getDrops() async {
     final uri = Uri.parse('$_baseUrl/drops');

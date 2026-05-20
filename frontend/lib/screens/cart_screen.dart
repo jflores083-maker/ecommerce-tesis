@@ -838,15 +838,11 @@ class _MetodoPagoDialogState extends State<_MetodoPagoDialog> {
   String? _seleccionado;
 
   static const _todosMetodos = [
-    _Metodo('tarjeta', 'Tarjeta de crédito o débito',
-        Icons.credit_card_outlined, 'HASTA 6 CUOTAS SIN INTERÉS'),
     _Metodo(
         'transferencia', 'Transferencia', Icons.account_balance_outlined, null),
     _Metodo('efectivo', 'Efectivo', Icons.payments_outlined, null),
     _Metodo('mercadopago', 'Mercado Pago', Icons.open_in_new_outlined,
         'HASTA 6 CUOTAS SIN INTERÉS'),
-    _Metodo('cuotas_mp', 'Cuotas sin Tarjeta de Mercado Pago',
-        Icons.open_in_new_outlined, null),
   ];
 
   List<_Metodo> get _metodos => widget.esRetiro
@@ -1133,11 +1129,20 @@ class _PagoDialogState extends State<_PagoDialog>
       }
       return;
     }
-    // Paso 3: efectivo → registrar pago y enviar email
+    // Paso 3: efectivo o transferencia → registrar pago y enviar email
     if (widget.metodo == 'efectivo') {
       try {
         final api = context.read<ApiService>();
         await api.pagarEfectivo(ordenId);
+      } catch (_) {
+        // El email falla silenciosamente pero la orden queda creada
+      }
+    }
+
+    if (widget.metodo == 'transferencia') {
+      try {
+        final api = context.read<ApiService>();
+        await api.pagarTransferencia(ordenId);
       } catch (_) {
         // El email falla silenciosamente pero la orden queda creada
       }
@@ -1233,6 +1238,14 @@ class _PagoDialogState extends State<_PagoDialog>
           style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.stone),
           textAlign: TextAlign.center,
         ),
+        if (widget.metodo == 'efectivo' || widget.metodo == 'transferencia') ...[
+          const SizedBox(height: 12),
+          Text(
+            'Terminá el pago a través del correo enviado.',
+            style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.charcoal),
+            textAlign: TextAlign.center,
+          ),
+        ],
         const SizedBox(height: 32),
         PrimaryButton(
           label: 'Continuar',

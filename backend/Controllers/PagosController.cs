@@ -110,6 +110,42 @@ namespace backend.Controllers
             return Ok(new { pagoId = pago.Id });
         }
 
+        [HttpPost("transferencia")]
+        public async Task<IActionResult> PagarTransferencia([FromBody] int ordenId)
+        {
+            var orden = await _context.Ordenes
+                .Include(o => o.Comprador)
+                .FirstOrDefaultAsync(o => o.Id == ordenId);
+
+            if (orden == null) return NotFound("Orden no encontrada.");
+            if (orden.Estado != "pendiente") return BadRequest("La orden no está en estado pendiente.");
+
+            var yaTienePago = await _context.Pagos.AnyAsync(p => p.OrdenId == ordenId);
+            if (yaTienePago) return BadRequest("La orden ya tiene un pago registrado.");
+
+            var pago = new Pago
+            {
+                OrdenId = orden.Id,
+                Monto   = orden.Total,
+                Metodo  = "transferencia",
+                Estado  = "pendiente"
+            };
+            _context.Pagos.Add(pago);
+            await _context.SaveChangesAsync();
+
+            if (orden.Comprador != null)
+            {
+                var cuerpo = _emailService.TemplateTransferenciaPendiente(orden.Id, orden.Total);
+                await _emailService.EnviarEmailAsync(
+                    orden.Comprador.Email,
+                    $"🏦 Pedido #{orden.Id} reservado - Completá tu transferencia a Urbal",
+                    cuerpo
+                );
+            }
+
+            return Ok(new { pagoId = pago.Id });
+        }
+
         [HttpPost("webhook")]
         [AllowAnonymous]
         public async Task<IActionResult> Webhook(
