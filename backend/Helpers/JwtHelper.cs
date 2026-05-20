@@ -33,7 +33,7 @@ namespace backend.Helpers
                 issuer: jwtSettings["Issuer"],
                 audience: jwtSettings["Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddHours(24),
+                expires: DateTime.UtcNow.AddDays(7),
                 signingCredentials: creds
             );
 
