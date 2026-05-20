@@ -23,6 +23,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _showPass = false;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AuthProvider>().clearError();
+    });
+  }
+
+  @override
   void dispose() {
     _nombreCtrl.dispose();
     _apellidoCtrl.dispose();
