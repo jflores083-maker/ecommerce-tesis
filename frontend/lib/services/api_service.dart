@@ -390,15 +390,21 @@ class ApiService {
   Future<Map<String, dynamic>> crearOrden(
       {required String direccionEnvio,
       required String ciudad,
-      required String codigoPostal}) async {
+      required String codigoPostal,
+      bool esRetiro = false,
+      String? metodoPago,
+      String? codigoPromocion}) async {
     final uri = Uri.parse('$_baseUrl/ordenes');
+    final body = <String, dynamic>{
+      'direccionEnvio': direccionEnvio,
+      'ciudad': ciudad,
+      'codigoPostal': codigoPostal,
+      'esRetiro': esRetiro,
+      if (metodoPago != null) 'metodoPago': metodoPago,
+      if (codigoPromocion != null) 'codigoPromocion': codigoPromocion,
+    };
     final res = await http.post(uri,
-        headers: await _headers(auth: true),
-        body: jsonEncode({
-          'direccionEnvio': direccionEnvio,
-          'ciudad': ciudad,
-          'codigoPostal': codigoPostal
-        }));
+        headers: await _headers(auth: true), body: jsonEncode(body));
     _checkStatus(res);
     return jsonDecode(res.body) as Map<String, dynamic>;
   }

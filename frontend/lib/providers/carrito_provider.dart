@@ -104,6 +104,9 @@ class CarritoProvider extends ChangeNotifier {
     required String direccionEnvio,
     required String ciudad,
     required String codigoPostal,
+    bool esRetiro = false,
+    String? metodoPago,
+    String? codigoPromocion,
   }) async {
     _error = null;
     _loading = true;
@@ -113,6 +116,9 @@ class CarritoProvider extends ChangeNotifier {
         direccionEnvio: direccionEnvio,
         ciudad: ciudad,
         codigoPostal: codigoPostal,
+        esRetiro: esRetiro,
+        metodoPago: metodoPago,
+        codigoPromocion: codigoPromocion,
       );
       _carrito = _carrito != null
           ? Carrito(carritoId: _carrito!.carritoId, items: [])

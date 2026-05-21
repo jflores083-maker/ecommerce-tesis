@@ -76,7 +76,30 @@ namespace backend.Controllers
 
                 // Totales
                 var subtotal = carrito.Items.Sum(i => i.Cantidad * i.Producto.Precio);
-                var costoEnvio = CalcularEnvio(dto.CodigoPostal, subtotal);
+
+                // Aplicar código de promoción
+                if (!string.IsNullOrWhiteSpace(dto.CodigoPromocion))
+                {
+                    var codigo = await _db.CodigosPromocion.FirstOrDefaultAsync(c =>
+                        c.Codigo == dto.CodigoPromocion.Trim().ToUpperInvariant() && c.Activo);
+                    if (codigo != null &&
+                        !(codigo.FechaExpiracion.HasValue && codigo.FechaExpiracion < DateTime.UtcNow) &&
+                        !(codigo.UsosMaximos.HasValue && codigo.UsosActuales >= codigo.UsosMaximos))
+                    {
+                        var descuentoPromo = codigo.Tipo == "porcentaje"
+                            ? subtotal * (decimal)codigo.Valor / 100
+                            : Math.Min((decimal)codigo.Valor, subtotal);
+                        subtotal -= descuentoPromo;
+                        codigo.UsosActuales++;
+                    }
+                }
+
+                // Descuento por método de pago: efectivo/transferencia → 10%
+                if (dto.MetodoPago == "efectivo" || dto.MetodoPago == "transferencia")
+                    subtotal = Math.Round(subtotal * 0.9m, 2);
+
+                // Envío: gratis si es retiro en local
+                var costoEnvio = dto.EsRetiro ? 0m : CalcularEnvio(dto.CodigoPostal, subtotal);
                 var total = subtotal + costoEnvio;
 
                 var orden = new Orden
