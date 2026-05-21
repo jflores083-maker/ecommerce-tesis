@@ -33,7 +33,7 @@ namespace backend.Controllers
                     d.Nombre,
                     d.ImagenUrl,
                     d.FechaCreacion,
-                    totalProductos = d.DropProductos.Count
+                    totalProductos = d.DropProductos.Count(dp => dp.Producto.Activo)
                 })
                 .ToListAsync();
 
@@ -59,14 +59,16 @@ namespace backend.Controllers
                 Nombre = drop.Nombre,
                 ImagenUrl = drop.ImagenUrl,
                 FechaCreacion = drop.FechaCreacion,
-                Productos = drop.DropProductos.Select(dp => new DropProductoDto
-                {
-                    Id = dp.Producto.Id,
-                    Titulo = dp.Producto.Titulo,
-                    Precio = dp.Producto.Precio,
-                    Estado = dp.Producto.Estado,
-                    ImagenUrl = dp.Producto.Imagenes.FirstOrDefault()?.Url
-                }).ToList()
+                Productos = drop.DropProductos
+                    .Where(dp => dp.Producto.Activo)
+                    .Select(dp => new DropProductoDto
+                    {
+                        Id = dp.Producto.Id,
+                        Titulo = dp.Producto.Titulo,
+                        Precio = dp.Producto.Precio,
+                        Estado = dp.Producto.Estado,
+                        ImagenUrl = dp.Producto.Imagenes.FirstOrDefault()?.Url
+                    }).ToList()
             };
 
             return Ok(dto);
