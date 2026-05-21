@@ -74,6 +74,24 @@ namespace backend.Controllers
                 initPoint
             });
         }
+        private async Task _DescontarStock(int ordenId)
+        {
+            var items = await _context.ItemsOrden
+                .Include(i => i.Producto)
+                .Where(i => i.OrdenId == ordenId)
+                .ToListAsync();
+
+            foreach (var item in items)
+            {
+                item.Producto.Stock -= item.Cantidad;
+                if (item.Producto.Stock <= 0)
+                {
+                    item.Producto.Stock = 0;
+                    item.Producto.Estado = "agotado";
+                }
+            }
+        }
+
         [HttpPost("efectivo")]
         public async Task<IActionResult> PagarEfectivo([FromBody] int ordenId)
         {
@@ -95,6 +113,8 @@ namespace backend.Controllers
                 Estado  = "pendiente"
             };
             _context.Pagos.Add(pago);
+
+            await _DescontarStock(ordenId);
             await _context.SaveChangesAsync();
 
             if (orden.Comprador != null)
@@ -131,6 +151,8 @@ namespace backend.Controllers
                 Estado  = "pendiente"
             };
             _context.Pagos.Add(pago);
+
+            await _DescontarStock(ordenId);
             await _context.SaveChangesAsync();
 
             if (orden.Comprador != null)
