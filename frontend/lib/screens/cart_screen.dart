@@ -544,6 +544,8 @@ class _OrderSummaryState extends State<_OrderSummary> {
         ciudad: ciudad,
         codigoPostal: cp,
         metodo: metodo,
+        esRetiro: esRetiro,
+        codigoPromocion: _codigoAplicado,
         onDone: () => context.go('/'),
       ),
     );
@@ -849,7 +851,7 @@ class _MetodoPagoDialogState extends State<_MetodoPagoDialog> {
       ? _todosMetodos
       : _todosMetodos.where((m) => m.id != 'efectivo').toList();
 
-  String _badgeTransferencia() {
+  String _badgeDescuento10() {
     final precio = (widget.subtotal * 0.9).toStringAsFixed(0);
     final parts = <String>[];
     int n = int.tryParse(precio) ?? 0;
@@ -887,7 +889,7 @@ class _MetodoPagoDialogState extends State<_MetodoPagoDialog> {
                 const SizedBox(height: 20),
                 ..._metodos.map((m) {
                   final badge =
-                      m.id == 'transferencia' ? _badgeTransferencia() : m.badge;
+                      (m.id == 'transferencia' || m.id == 'efectivo') ? _badgeDescuento10() : m.badge;
                   final isMp = m.id == 'mercadopago';
                   return _MetodoRow(
                     metodo: m,
@@ -1045,6 +1047,8 @@ class _PagoDialog extends StatefulWidget {
   final String ciudad;
   final String codigoPostal;
   final String metodo;
+  final bool esRetiro;
+  final String? codigoPromocion;
   final VoidCallback onDone;
 
   const _PagoDialog({
@@ -1053,7 +1057,9 @@ class _PagoDialog extends StatefulWidget {
     required this.ciudad,
     required this.codigoPostal,
     required this.metodo,
+    required this.esRetiro,
     required this.onDone,
+    this.codigoPromocion,
   });
 
   @override
@@ -1085,6 +1091,9 @@ class _PagoDialogState extends State<_PagoDialog>
       direccionEnvio: widget.direccionEnvio,
       ciudad: widget.ciudad,
       codigoPostal: widget.codigoPostal,
+      esRetiro: widget.esRetiro,
+      metodoPago: widget.metodo,
+      codigoPromocion: widget.codigoPromocion,
     );
     if (!mounted) return;
     if (result == null) {
