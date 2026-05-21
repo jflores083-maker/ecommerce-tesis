@@ -259,6 +259,12 @@ namespace backend.Controllers
 
             // Borrado lógico
             producto.Activo = false;
+
+            var dropEntries = await _context.DropProductos
+                .Where(dp => dp.ProductoId == id)
+                .ToListAsync();
+            _context.DropProductos.RemoveRange(dropEntries);
+
             await _context.SaveChangesAsync();
 
             return Ok("Producto eliminado correctamente");
