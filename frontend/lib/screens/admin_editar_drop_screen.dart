@@ -189,56 +189,7 @@ class _AdminEditarDropScreenState extends State<AdminEditarDropScreen> {
                   style: GoogleFonts.dmMono(fontSize: 10, color: AppColors.stone),
                 ),
                 const SizedBox(height: 12),
-                ...productos.map((p) {
-                  final sel = _seleccionados.contains(p.id);
-                  return GestureDetector(
-                    onTap: () => setState(() {
-                      if (sel) _seleccionados.remove(p.id);
-                      else _seleccionados.add(p.id);
-                    }),
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: sel ? AppColors.ink : AppColors.sand,
-                          width: sel ? 2 : 1,
-                        ),
-                        color: sel ? AppColors.ink.withValues(alpha: 0.04) : AppColors.cream,
-                      ),
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            width: 48, height: 48,
-                            child: p.imagenPrincipalUrl != null
-                                ? Image.network(
-                                    '${ApiService.serverUrl}${p.imagenPrincipalUrl}',
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => Container(color: AppColors.sand),
-                                  )
-                                : Container(color: AppColors.sand),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(p.titulo,
-                                  style: GoogleFonts.syne(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.ink),
-                                ),
-                                Text(p.precioFormateado,
-                                  style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.stone),
-                                ),
-                              ],
-                            ),
-                          ),
-                          if (sel)
-                            const Icon(Icons.check_circle, size: 20, color: AppColors.ink),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
+                _buildAcordeon(productos),
                 const SizedBox(height: 40),
 
                 // ── Guardar ──
@@ -266,6 +217,106 @@ class _AdminEditarDropScreenState extends State<AdminEditarDropScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildAcordeon(List<Producto> productos) {
+    final categorias = productos.map((p) => p.categoria).toSet().toList()..sort();
+    return Column(
+      children: categorias.asMap().entries.map((entry) {
+        final cat = entry.value;
+        final items = productos.where((p) => p.categoria == cat).toList();
+        final selEnCat = items.where((p) => _seleccionados.contains(p.id)).length;
+        return Container(
+          margin: entry.key < categorias.length - 1
+              ? const EdgeInsets.only(bottom: 8)
+              : EdgeInsets.zero,
+          decoration: BoxDecoration(border: Border.all(color: AppColors.sand)),
+          child: Theme(
+            data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+            child: ExpansionTile(
+              initiallyExpanded: selEnCat > 0,
+              tilePadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+              backgroundColor: AppColors.beige,
+              collapsedBackgroundColor: AppColors.beige,
+              shape: const Border(),
+              collapsedShape: const Border(),
+              title: Row(
+                children: [
+                  Text(cat.toUpperCase(),
+                    style: GoogleFonts.dmMono(
+                      fontSize: 10, color: AppColors.charcoal, letterSpacing: 0.15,
+                    ),
+                  ),
+                  if (selEnCat > 0) ...[
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      color: AppColors.ink,
+                      child: Text('$selEnCat',
+                        style: GoogleFonts.dmMono(fontSize: 9, color: AppColors.cream),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+              trailing: const Icon(Icons.expand_more, color: AppColors.charcoal, size: 18),
+              childrenPadding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+              children: items.map((p) {
+                final sel = _seleccionados.contains(p.id);
+                return GestureDetector(
+                  onTap: () => setState(() {
+                    if (sel) _seleccionados.remove(p.id);
+                    else _seleccionados.add(p.id);
+                  }),
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: sel ? AppColors.ink : AppColors.sand,
+                        width: sel ? 2 : 1,
+                      ),
+                      color: sel ? AppColors.ink.withValues(alpha: 0.04) : AppColors.cream,
+                    ),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 48, height: 48,
+                          child: p.imagenPrincipalUrl != null
+                              ? Image.network(
+                                  '${ApiService.serverUrl}${p.imagenPrincipalUrl}',
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => Container(color: AppColors.sand),
+                                )
+                              : Container(color: AppColors.sand),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(p.titulo,
+                                style: GoogleFonts.syne(
+                                  fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.ink,
+                                ),
+                              ),
+                              Text(p.precioFormateado,
+                                style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.stone),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (sel) const Icon(Icons.check_circle, size: 20, color: AppColors.ink),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 
