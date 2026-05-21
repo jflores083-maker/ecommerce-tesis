@@ -48,6 +48,7 @@ namespace backend.Controllers
             // Contacto
             string contactoEmail = ""; string contactoTelefono = "";
             string contactoDireccion = ""; string contactoHorario = "";
+            string contactoInstagram = ""; string contactoTiktok = "";
             if (System.IO.File.Exists(ContactoPath))
             {
                 var cJson = System.IO.File.ReadAllText(ContactoPath);
@@ -56,6 +57,8 @@ namespace backend.Controllers
                 contactoTelefono  = cDoc.GetProperty("telefono").GetString()  ?? "";
                 contactoDireccion = cDoc.GetProperty("direccion").GetString() ?? "";
                 contactoHorario   = cDoc.GetProperty("horario").GetString()   ?? "";
+                contactoInstagram = cDoc.TryGetProperty("instagram", out var ig)  ? ig.GetString() ?? "" : "";
+                contactoTiktok    = cDoc.TryGetProperty("tiktok",    out var tt)  ? tt.GetString() ?? "" : "";
             }
 
             // Envío & devoluciones
@@ -84,6 +87,7 @@ namespace backend.Controllers
                 heroImageUrl = heroUrl,
                 acercaTitulo, acercaDescripcion,
                 contactoEmail, contactoTelefono, contactoDireccion, contactoHorario,
+                contactoInstagram, contactoTiktok,
                 envioTexto,
                 categorias
             });
@@ -208,7 +212,9 @@ namespace backend.Controllers
                 email     = dto.Email,
                 telefono  = dto.Telefono,
                 direccion = dto.Direccion,
-                horario   = dto.Horario
+                horario   = dto.Horario,
+                instagram = dto.Instagram,
+                tiktok    = dto.Tiktok
             });
             System.IO.File.WriteAllText(ContactoPath, json);
             return Ok(dto);
@@ -237,5 +243,7 @@ namespace backend.Controllers
         public string Telefono  { get; set; } = string.Empty;
         public string Direccion { get; set; } = string.Empty;
         public string Horario   { get; set; } = string.Empty;
+        public string Instagram { get; set; } = string.Empty;
+        public string Tiktok    { get; set; } = string.Empty;
     }
 }

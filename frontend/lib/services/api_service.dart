@@ -300,7 +300,9 @@ class ApiService {
       {required String email,
       required String telefono,
       required String direccion,
-      required String horario}) async {
+      required String horario,
+      required String instagram,
+      required String tiktok}) async {
     final uri = Uri.parse('$_baseUrl/configuracion/contacto');
     final res = await http.put(uri,
         headers: await _headers(auth: true),
@@ -308,7 +310,9 @@ class ApiService {
           'email': email,
           'telefono': telefono,
           'direccion': direccion,
-          'horario': horario
+          'horario': horario,
+          'instagram': instagram,
+          'tiktok': tiktok,
         }));
     _checkStatus(res);
   }

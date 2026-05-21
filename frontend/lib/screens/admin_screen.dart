@@ -70,7 +70,7 @@ class AdminScreen extends StatelessWidget {
                 _AdminMenuBtn(
                   icon: Icons.palette_outlined,
                   label: 'Personalización',
-                  description: 'Imagen del inicio y tema de colores',
+                  description: 'Imagen, colores, categorías, contacto y redes sociales',
                   onTap: () => context.go('/admin/personalizacion'),
                 ),
                 const SizedBox(height: 16),

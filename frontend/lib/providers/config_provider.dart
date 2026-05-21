@@ -15,6 +15,8 @@ class ConfigProvider extends ChangeNotifier {
   String _contactoTelefono = '';
   String _contactoDireccion = '';
   String _contactoHorario = '';
+  String _contactoInstagram = '';
+  String _contactoTiktok = '';
   static const _kEnvioDefault = 'Envío gratis en compras mayores a \$60.000. Entrega en 3-5 días hábiles.';
   static const _kCategoriasDefault = ['Remeras','Pantalones','Buzos','Abrigos','Accesorios','Calzado','Otros'];
   String _envioTexto = _kEnvioDefault;
@@ -31,6 +33,8 @@ class ConfigProvider extends ChangeNotifier {
   String      get contactoTelefono    => _contactoTelefono;
   String      get contactoDireccion   => _contactoDireccion;
   String      get contactoHorario     => _contactoHorario;
+  String      get contactoInstagram   => _contactoInstagram;
+  String      get contactoTiktok      => _contactoTiktok;
   String      get envioTexto          => _envioTexto.isNotEmpty ? _envioTexto : _kEnvioDefault;
   List<String> get categorias         => _categorias.isNotEmpty ? _categorias : List.of(_kCategoriasDefault);
 
@@ -45,10 +49,12 @@ class ConfigProvider extends ChangeNotifier {
       _heroImageUrl        = config['heroImageUrl']     as String?;
       _acercaTitulo        = (config['acercaTitulo']     as String?) ?? 'Sobre Urbal';
       _acercaDescripcion   = (config['acercaDescripcion'] as String?) ?? '';
-      _contactoEmail       = (config['contactoEmail']    as String?) ?? '';
+      _contactoEmail       = (config['contactoEmail']     as String?) ?? '';
       _contactoTelefono    = (config['contactoTelefono'] as String?) ?? '';
       _contactoDireccion   = (config['contactoDireccion'] as String?) ?? '';
       _contactoHorario     = (config['contactoHorario']  as String?) ?? '';
+      _contactoInstagram   = (config['contactoInstagram'] as String?) ?? '';
+      _contactoTiktok      = (config['contactoTiktok']   as String?) ?? '';
       _envioTexto          = (config['envioTexto']        as String?) ?? _envioTexto;
       final cats = config['categorias'];
       if (cats is List && cats.isNotEmpty) {
@@ -62,13 +68,20 @@ class ConfigProvider extends ChangeNotifier {
   Future<bool> guardarContacto({
     required String email, required String telefono,
     required String direccion, required String horario,
+    required String instagram, required String tiktok,
   }) async {
     try {
-      await _api.guardarContacto(email: email, telefono: telefono, direccion: direccion, horario: horario);
+      await _api.guardarContacto(
+        email: email, telefono: telefono,
+        direccion: direccion, horario: horario,
+        instagram: instagram, tiktok: tiktok,
+      );
       _contactoEmail     = email;
       _contactoTelefono  = telefono;
       _contactoDireccion = direccion;
       _contactoHorario   = horario;
+      _contactoInstagram = instagram;
+      _contactoTiktok    = tiktok;
       notifyListeners();
       return true;
     } catch (_) { return false; }
