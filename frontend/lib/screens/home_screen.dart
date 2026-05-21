@@ -557,6 +557,13 @@ class _Footer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.of(context).size.width < 768;
+    final categorias = context.watch<ConfigProvider>().categorias;
+
+    final tiendaItems = [
+      const _FooterLink('Nueva colección', '/catalogo'),
+      ...categorias.map((c) => _FooterLink(c, '/catalogo?categoria=$c')),
+      const _FooterLink('Ver todo', '/catalogo'),
+    ];
 
     return Container(
       color: AppColors.ink,
@@ -577,17 +584,7 @@ class _Footer extends StatelessWidget {
                     children: [
                       _FooterBrand(),
                       const SizedBox(height: 40),
-                      const _FooterCol(
-                        title: 'Tienda',
-                        items: [
-                          _FooterLink('Nueva colección', '/catalogo'),
-                          _FooterLink('Remeras', '/catalogo?categoria=Remeras'),
-                          _FooterLink(
-                              'Pantalones', '/catalogo?categoria=Pantalones'),
-                          _FooterLink('Abrigos', '/catalogo?categoria=Abrigos'),
-                          _FooterLink('Ver todo', '/catalogo'),
-                        ],
-                      ),
+                      _FooterCol(title: 'Tienda', items: tiendaItems),
                       const SizedBox(height: 32),
                       const _FooterCol(
                         title: 'Nosotros',
@@ -604,21 +601,9 @@ class _Footer extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(flex: 3, child: _FooterBrand()),
-                      const Expanded(
+                      Expanded(
                         flex: 2,
-                        child: _FooterCol(
-                          title: 'Tienda',
-                          items: [
-                            _FooterLink('Nueva colección', '/catalogo'),
-                            _FooterLink(
-                                'Remeras', '/catalogo?categoria=Remeras'),
-                            _FooterLink(
-                                'Pantalones', '/catalogo?categoria=Pantalones'),
-                            _FooterLink(
-                                'Abrigos', '/catalogo?categoria=Abrigos'),
-                            _FooterLink('Ver todo', '/catalogo'),
-                          ],
-                        ),
+                        child: _FooterCol(title: 'Tienda', items: tiendaItems),
                       ),
                       const Expanded(
                         flex: 2,
@@ -649,7 +634,7 @@ class _Footer extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '© 2025 Urbal. Todos los derechos reservados.',
+                        '© ${DateTime.now().year} Urbal. Todos los derechos reservados.',
                         style: GoogleFonts.dmMono(
                             fontSize: 10, color: AppColors.gray),
                       ),
@@ -665,7 +650,7 @@ class _Footer extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '© 2025 Urbal. Todos los derechos reservados.',
+                        '© ${DateTime.now().year} Urbal. Todos los derechos reservados.',
                         style: GoogleFonts.dmMono(
                             fontSize: 10, color: AppColors.gray),
                       ),
@@ -778,10 +763,12 @@ class _FooterContact extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final config = context.watch<ConfigProvider>();
-    final telefono = config.contactoTelefono;
-    final email = config.contactoEmail;
+    final telefono  = config.contactoTelefono;
+    final email     = config.contactoEmail;
     final direccion = config.contactoDireccion;
-    final horario = config.contactoHorario;
+    final horario   = config.contactoHorario;
+    final instagram = config.contactoInstagram;
+    final tiktok    = config.contactoTiktok;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -822,9 +809,23 @@ class _FooterContact extends StatelessWidget {
           spacing: 8,
           runSpacing: 8,
           children: [
-            const _SocialChip(label: 'IG'),
-            const _SocialChip(label: 'TK'),
-            if (telefono.isNotEmpty) ...[
+            if (instagram.isNotEmpty)
+              _SocialChip(
+                label: 'Instagram',
+                icon: FontAwesomeIcons.instagram,
+                onTap: () async {
+                  try { await launchUrl(Uri.parse(instagram), webOnlyWindowName: '_blank'); } catch (_) {}
+                },
+              ),
+            if (tiktok.isNotEmpty)
+              _SocialChip(
+                label: 'TikTok',
+                icon: FontAwesomeIcons.tiktok,
+                onTap: () async {
+                  try { await launchUrl(Uri.parse(tiktok), webOnlyWindowName: '_blank'); } catch (_) {}
+                },
+              ),
+            if (telefono.isNotEmpty)
               _SocialChip(
                 label: 'WhatsApp',
                 icon: FontAwesomeIcons.whatsapp,
@@ -838,7 +839,6 @@ class _FooterContact extends StatelessWidget {
                   } catch (_) {}
                 },
               ),
-            ],
           ],
         ),
       ],

@@ -27,6 +27,8 @@ class _AdminPersonalizacionScreenState extends State<AdminPersonalizacionScreen>
   late final TextEditingController _contactoTelefonoCtrl;
   late final TextEditingController _contactoDireccionCtrl;
   late final TextEditingController _contactoHorarioCtrl;
+  late final TextEditingController _contactoInstagramCtrl;
+  late final TextEditingController _contactoTiktokCtrl;
   late final TextEditingController _envioCtrl;
   bool _inicializado = false;
 
@@ -38,6 +40,8 @@ class _AdminPersonalizacionScreenState extends State<AdminPersonalizacionScreen>
     _contactoTelefonoCtrl.dispose();
     _contactoDireccionCtrl.dispose();
     _contactoHorarioCtrl.dispose();
+    _contactoInstagramCtrl.dispose();
+    _contactoTiktokCtrl.dispose();
     _envioCtrl.dispose();
     super.dispose();
   }
@@ -46,11 +50,13 @@ class _AdminPersonalizacionScreenState extends State<AdminPersonalizacionScreen>
     if (_inicializado) return;
     _tituloCtrl            = TextEditingController(text: config.acercaTitulo);
     _descripcionCtrl       = TextEditingController(text: config.acercaDescripcion);
-    _contactoEmailCtrl     = TextEditingController(text: config.contactoEmail);
-    _contactoTelefonoCtrl  = TextEditingController(text: config.contactoTelefono);
-    _contactoDireccionCtrl = TextEditingController(text: config.contactoDireccion);
-    _contactoHorarioCtrl   = TextEditingController(text: config.contactoHorario);
-    _envioCtrl             = TextEditingController(text: config.envioTexto);
+    _contactoEmailCtrl      = TextEditingController(text: config.contactoEmail);
+    _contactoTelefonoCtrl   = TextEditingController(text: config.contactoTelefono);
+    _contactoDireccionCtrl  = TextEditingController(text: config.contactoDireccion);
+    _contactoHorarioCtrl    = TextEditingController(text: config.contactoHorario);
+    _contactoInstagramCtrl  = TextEditingController(text: config.contactoInstagram);
+    _contactoTiktokCtrl     = TextEditingController(text: config.contactoTiktok);
+    _envioCtrl              = TextEditingController(text: config.envioTexto);
     _inicializado = true;
   }
 
@@ -92,6 +98,8 @@ class _AdminPersonalizacionScreenState extends State<AdminPersonalizacionScreen>
       telefono:  _contactoTelefonoCtrl.text.trim(),
       direccion: _contactoDireccionCtrl.text.trim(),
       horario:   _contactoHorarioCtrl.text.trim(),
+      instagram: _contactoInstagramCtrl.text.trim(),
+      tiktok:    _contactoTiktokCtrl.text.trim(),
     );
     final okEnvio = await config.guardarEnvio(texto: _envioCtrl.text.trim());
     if (mounted) {
@@ -132,7 +140,7 @@ class _AdminPersonalizacionScreenState extends State<AdminPersonalizacionScreen>
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text('Cambiá la imagen y los colores de la tienda.',
+                Text('Imagen de inicio, colores, categorías, redes sociales, datos de contacto y más.',
                   style: GoogleFonts.dmMono(fontSize: 11, color: AppColors.stone),
                 ),
                 const SizedBox(height: 40),
@@ -276,6 +284,10 @@ class _AdminPersonalizacionScreenState extends State<AdminPersonalizacionScreen>
                 _campoTexto('Dirección', _contactoDireccionCtrl),
                 const SizedBox(height: 12),
                 _campoTexto('Horario (ej: Lun – Vie, 10 a 18 hs.)', _contactoHorarioCtrl),
+                const SizedBox(height: 12),
+                _campoTexto('Instagram (ej: https://instagram.com/urbal)', _contactoInstagramCtrl, keyboardType: TextInputType.url),
+                const SizedBox(height: 12),
+                _campoTexto('TikTok (ej: https://tiktok.com/@urbal)', _contactoTiktokCtrl, keyboardType: TextInputType.url),
                 const SizedBox(height: 48),
 
                 // ── Envío & devoluciones ──────────────────────
