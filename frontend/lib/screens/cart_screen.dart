@@ -530,7 +530,7 @@ class _OrderSummaryState extends State<_OrderSummary> {
     // Paso 3: selección de medio de pago
     final metodo = await showDialog<String>(
       context: context,
-      builder: (_) => _MetodoPagoDialog(subtotal: carrito.subtotal, esRetiro: esRetiro),
+      builder: (_) => _MetodoPagoDialog(subtotal: carrito.subtotal, esRetiro: esRetiro, descuentoPromo: _descuento ?? 0),
     );
     if (metodo == null || !mounted) return;
 
@@ -829,8 +829,9 @@ class _ItemThumbnail extends StatelessWidget {
 // ─── SELECCIÓN MEDIO DE PAGO ───────────────────────────────
 class _MetodoPagoDialog extends StatefulWidget {
   final double subtotal;
+  final double descuentoPromo;
   final bool esRetiro;
-  const _MetodoPagoDialog({required this.subtotal, required this.esRetiro});
+  const _MetodoPagoDialog({required this.subtotal, required this.esRetiro, this.descuentoPromo = 0});
 
   @override
   State<_MetodoPagoDialog> createState() => _MetodoPagoDialogState();
@@ -852,7 +853,7 @@ class _MetodoPagoDialogState extends State<_MetodoPagoDialog> {
       : _todosMetodos.where((m) => m.id != 'efectivo').toList();
 
   String _badgeDescuento10() {
-    final precio = (widget.subtotal * 0.9).toStringAsFixed(0);
+    final precio = ((widget.subtotal - widget.descuentoPromo) * 0.9).toStringAsFixed(0);
     final parts = <String>[];
     int n = int.tryParse(precio) ?? 0;
     String s = n.toString();
