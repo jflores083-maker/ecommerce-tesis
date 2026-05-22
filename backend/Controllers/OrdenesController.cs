@@ -131,8 +131,8 @@ namespace backend.Controllers
                 _db.ItemsOrden.AddRange(itemsOrden);
 
                 // Vaciar carrito
-                _db.ItemsCarrito.RemoveRange(carrito.Items);
-                carrito.FechaActualizacion = DateTime.UtcNow;
+                //_db.ItemsCarrito.RemoveRange(carrito.Items);
+                //carrito.FechaActualizacion = DateTime.UtcNow;
 
                 await _db.SaveChangesAsync();
                 await tx.CommitAsync();

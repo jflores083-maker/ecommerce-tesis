@@ -231,65 +231,74 @@ namespace backend.Controllers
                 return Ok();
 
             if (estado == "approved")
-                {
-                    pago.Estado = "aprobado";
-                    pago.TransaccionId = dataId;
-                    pago.FechaPago = DateTime.UtcNow;
-                    pago.Orden.Estado = "pagado";
+{
+    pago.Estado = "aprobado";
+    pago.TransaccionId = dataId;
+    pago.FechaPago = DateTime.UtcNow;
+    pago.Orden.Estado = "pagado";
 
-                    // Descontar stock por cada item de la orden
-                    var items = await _context.ItemsOrden
-                        .Include(i => i.Producto)
-                        .Where(i => i.OrdenId == ordenId)
-                        .ToListAsync();
+    // Descontar stock
+    var items = await _context.ItemsOrden
+        .Include(i => i.Producto)
+        .Where(i => i.OrdenId == ordenId)
+        .ToListAsync();
 
-                    foreach (var item in items)
-                    {
-                        item.Producto.Stock -= item.Cantidad;
+    foreach (var item in items)
+    {
+        item.Producto.Stock -= item.Cantidad;
+        if (item.Producto.Stock <= 0)
+        {
+            item.Producto.Stock = 0;
+            item.Producto.Estado = "agotado";
+        }
+    }
 
-                        // Si el stock llega a 0, marcamos el producto como agotado
-                        if (item.Producto.Stock <= 0)
-                        {
-                            item.Producto.Stock = 0;
-                            item.Producto.Estado = "agotado";
-                        }
-                    }
+    // Vaciar carrito — solo si el pago fue aprobado
+    var carrito = await _context.Carritos
+        .Include(c => c.Items)
+        .FirstOrDefaultAsync(c => c.UsuarioId == pago.Orden.CompradorId);
 
-                    // Enviar email de confirmación al comprador
-                    var comprador = await _context.Usuarios
-                        .FirstOrDefaultAsync(u => u.Id == pago.Orden.CompradorId);
+    if (carrito != null)
+    {
+        _context.ItemsCarrito.RemoveRange(carrito.Items);
+        carrito.FechaActualizacion = DateTime.UtcNow;
+    }
 
-                    if (comprador != null)
-                    {
-                        var cuerpo = _emailService.TemplateOrdenConfirmada(ordenId, pago.Monto);
-                        await _emailService.EnviarEmailAsync(
-                            comprador.Email,
-                            $"✅ Orden #{ordenId} confirmada - Urbal",
-                            cuerpo
-                        );
-                    }
-                }
-            else if (estado == "rejected" || estado == "cancelled")
-            {
-                pago.Estado = "rechazado";
-                pago.Orden.Estado = "cancelado";
+    // Enviar email de confirmación
+    var comprador = await _context.Usuarios
+        .FirstOrDefaultAsync(u => u.Id == pago.Orden.CompradorId);
 
-                var comprador = await _context.Usuarios
-                    .FirstOrDefaultAsync(u => u.Id == pago.Orden.CompradorId);
+    if (comprador != null)
+    {
+        var cuerpo = _emailService.TemplateOrdenConfirmada(ordenId, pago.Monto);
+        await _emailService.EnviarEmailAsync(
+            comprador.Email,
+            $"✅ Orden #{ordenId} confirmada - Urbal",
+            cuerpo
+        );
+    }
+}
+else if (estado == "rejected" || estado == "cancelled")
+{
+    pago.Estado = "rechazado";
+    pago.Orden.Estado = "cancelado";
 
-                if (comprador != null)
-                {
-                    var cuerpo = _emailService.TemplateOrdenCancelada(ordenId);
-                    await _emailService.EnviarEmailAsync(
-                        comprador.Email,
-                        $"Tu orden #{ordenId} fue cancelada - Urbal",
-                        cuerpo
-                    );
-                }
-            }
+    var comprador = await _context.Usuarios
+        .FirstOrDefaultAsync(u => u.Id == pago.Orden.CompradorId);
 
-            await _context.SaveChangesAsync();
-            return Ok();
+    if (comprador != null)
+    {
+        var cuerpo = _emailService.TemplateOrdenCancelada(ordenId);
+        await _emailService.EnviarEmailAsync(
+            comprador.Email,
+            $"Tu orden #{ordenId} fue cancelada - Urbal",
+            cuerpo
+        );
+    }
+}
+
+await _context.SaveChangesAsync();
+return Ok();
         }
     }
 }
