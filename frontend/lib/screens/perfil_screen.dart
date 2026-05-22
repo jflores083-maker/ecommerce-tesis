@@ -434,8 +434,11 @@ class _InfoRow extends StatelessWidget {
               ),
             ),
           ),
-          Text(value,
-            style: GoogleFonts.dmMono(fontSize: 13, color: AppColors.charcoal),
+          Expanded(
+            child: Text(value,
+              style: GoogleFonts.dmMono(fontSize: 13, color: AppColors.charcoal),
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),
